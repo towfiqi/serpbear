@@ -1,34 +1,41 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![SerpBear](https://i.imgur.com/0S2zIH3.png) 
+# SerpBear
 
-## Getting Started
+SerpBear is an Open Source Search Engine Position Tracking App. It allows you to track your website's keyword positions in Google and get notified of their positions.
 
-First, run the development server:
+![Easy to Use Search Engine Rank Tracker](https://i.imgur.com/bRzpmCK.gif)
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+**Features**
+ - **Unlimited Keywords:** Add unlimited domains and unlimited keywords to track their SERP.
+ - **Email Notification:** Get notified of your keyword position changes daily/weekly/monthly through email.
+ - **SERP API:** SerpBear comes with built-in API that you can use for your marketing & data reporting tools.
+ - **Mobile App:** Add the PWA app to your mobile for a better mobile experience. 
+ - **Zero Cost to RUN:** Run the App on mogenius.com or Fly.io for free.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**How it Works**
+The App uses third party website scrapers like ScrapingAnt, ScrapingRobot or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+**Getting Started**
+ - **Step 1:** Deploy & Run the App.
+ - **Step 2:** Access your App and Login.
+ - **Step 3:** Add your First domain.
+ - **Step 4:** Get an free API key from either ScrapingAnt or ScrapingRobot. Skip if you want to use Proxy ips.
+ - **Step 5:** Setup the Scraping API/Proxy from the App's Settings interface.
+ - **Step 6:** Add your keywords and start tracking.
+ - **Step 7:** Optional. From the Settings panel, setup SMTP details to get notified of your keywords positions through email. You can use ElasticEmail and Sendpulse SMTP services that are free.  
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+**Compare SerpBear with other SERP tracking services:**
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+|Service  | Cost | SERP Lookup | API |
+|--|--|--|--|
+| SerpBear | Free* | Unlimited* | Yes |
+| ranktracker.com | $18/mo| 3,000/mo| No |
+| SerpWatch.io | $29/mo | 7500/mo | Yes |
+| Serpwatcher.com | $49/mo| 3000/mo | No |
+| whatsmyserp.com | $49/mo| 30,000/mo| No |
 
-## Learn More
+(*) Free upto a limit. If you are using ScrapingAnt you can lookup 10,000 times per month for free.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+**Stack**
+ - Next.js for Frontend & Backend.  
+ - Sqlite for Database.

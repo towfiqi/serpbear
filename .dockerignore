@@ -1,0 +1,13 @@
+
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.vscode
+TODO
+data/database.sqlite
+data/settings.json
+data/failed_queue.json

@@ -1,26 +1,97 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('./fflag.css');
+
+body{
+   background-color: #f8f9ff;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.domKeywords{
+   min-height: 70vh;
+   border-color: #E9EBFF;
+   box-shadow: 0 0 20px rgba(20, 34, 71, 0.05);
 }
 
-* {
-  box-sizing: border-box;
+
+.customShadow{
+   border-color: #E9EBFF;
+   box-shadow: 0 0 20px rgba(20, 34, 71, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+.styled-scrollbar {
+   scrollbar-color: #d6dbec transparent;
+   scrollbar-width: thin;
+}
+.styled-scrollbar::-webkit-scrollbar {
+   width: 6px;
+   height: 6px;
+   border-radius: 0px;
+   background: #f5f7ff;
+   margin-right: 4px;
+   border: 0px solid transparent;
+}
+   
+.styled-scrollbar::-webkit-scrollbar-thumb {
+   width: 6px;
+   height: 6px;
+   border-radius: 0px;
+   color: #d6dbec;
+   background:  #d6d8e1;
+   border: 0px solid transparent;
+   box-shadow: none;
+}
+
+.ct-area {
+   fill: #10b98d73;
+}
+.ct-label.ct-horizontal {
+   font-size: 11px;
+}
+.ct-label.ct-vertical {
+   font-size: 12px;
+}
+.chart_tooltip{
+   width: 95px; 
+   height: 75px; 
+   background-color: white;
+   position: absolute; 
+   display: none; 
+   padding: 0 8px; 
+   box-sizing: border-box; 
+   font-size: 12px; 
+   text-align: left; 
+   z-index: 1000; 
+   top: 12px; 
+   left: 12px; 
+   pointer-events: none; 
+   border: 1px solid; 
+   border-radius: 4px;
+    border-color: #a7aed3;
+    box-shadow: 0 0 10px rgb(0 0 0 / 12%);
+   font-family: 'Trebuchet MS', Roboto, Ubuntu, sans-serif;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+}
+
+
+.react_toaster{
+   font-size: 13px;
+}
+
+.domKeywords_head--alpha_desc .domKeywords_head_keyword:after,
+.domKeywords_head--pos_desc .domKeywords_head_position:after
+{content: '↓' ; display: inline-block; margin-left: 2px; font-size: 14px; opacity: 0.8;}
+
+.domKeywords_head--alpha_asc .domKeywords_head_keyword:after,
+.domKeywords_head--pos_asc .domKeywords_head_position:after
+{content: '↑' ; display: inline-block; margin-left: 2px; font-size: 14px; opacity: 0.8;}
+
+.keywordDetails__section__results{
+   height: calc(100vh - 550px);
+}
+
+.settings__content{
+   height: calc(100vh - 185px);
+   overflow: auto;
 }
