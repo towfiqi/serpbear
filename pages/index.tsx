@@ -17,6 +17,9 @@ const Home: NextPage = () => {
       setLoading(true);
       fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/domains`)
       .then((result) => {
+         if (result.status === 401) {
+            router.push('/login');
+         }
          return result.json();
       })
       .then((domainsRes:any) => {
