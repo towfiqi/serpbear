@@ -18,23 +18,21 @@ WORKDIR /app
 ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-# COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
+RUN set -xe && mkdir -p /app/data && chown nextjs:nodejs /app/data
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-# COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/data ./data
+# COPY --from=builder --chown=nextjs:nodejs /app/data ./data
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # setup the cron
 COPY --from=builder --chown=nextjs:nodejs /app/cron.js ./
-RUN npm i cryptr dotenv
+RUN rm package.json
+RUN npm init -y 
+RUN npm i cryptr dotenv node-cron
 RUN npm i -g concurrently
 
 USER nextjs
 
 EXPOSE 3000
 
-# CMD ["node", "server.js"]
-# CMD ["npm", "start"]
 CMD ["concurrently","node server.js", "node cron.js"]
-
