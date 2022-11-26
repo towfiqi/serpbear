@@ -18,6 +18,7 @@
 .DS_Store
 *.pem
 .vscode
+fly.toml
 
 # debug
 npm-debug.log*
