@@ -32,31 +32,36 @@ export type RefreshResult = false | {
  * @param {SettingsType} settings - the App Settings that contains the scraper details
  * @returns {Promise}
  */
-export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Promise<AxiosResponse> | false => {
-   let apiURL = '';
-   const axiosConfig: CreateAxiosDefaults = {};
-   let userAgent = keyword && keyword.device === 'mobile' ? {
-      // eslint-disable-next-line max-len
-      'User-Agent': 'Mozilla/5.0 (Linux; Android 10; SM-G996U Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36',
-   } : undefined;
+export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Promise<AxiosResponse|Response> | false => {
+   let apiURL = ''; let client: Promise<AxiosResponse|Response> | false = false;
+   const headers = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
+      Accept: 'application/json; charset=utf8;',
+   };
+
+   // eslint-disable-next-line max-len
+   const mobileAgent = 'Mozilla/5.0 (Linux; Android 10; SM-G996U Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Mobile Safari/537.36';
+   if (keyword && keyword.device === 'mobile') {
+      headers['User-Agent'] = mobileAgent;
+   }
 
    if (settings && settings.scraper_type === 'scrapingant' && settings.scaping_api) {
       const scraperCountries = ['AE', 'BR', 'CN', 'DE', 'ES', 'FR', 'GB', 'HK', 'PL', 'IN', 'IT', 'IL', 'JP', 'NL', 'RU', 'SA', 'US', 'CZ'];
       const country = scraperCountries.includes(keyword.country.toUpperCase()) ? keyword.country : 'US';
       const lang = countries[country][2];
-      apiURL = `https://api.scrapingant.com/v2/general?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}&x-api-key=${settings.scaping_api}&proxy_country=${country}&browser=false`;
-      axiosConfig.headers = userAgent;
+      apiURL = `https://api.scrapingant.com/v2/extended?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}&x-api-key=${settings.scaping_api}&proxy_country=${country}&browser=false`;
    }
 
    if (settings && settings.scraper_type === 'scrapingrobot' && settings.scaping_api) {
       const country = keyword.country || 'US';
       const lang = countries[country][2];
       apiURL = `https://api.scrapingrobot.com/?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}&token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}`;
-      userAgent = undefined;
    }
 
    if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
-      apiURL = `https://www.google.com/search?num=100&q=${encodeURI(keyword.keyword)}`;
+      const axiosConfig: CreateAxiosDefaults = {};
+      axiosConfig.headers = headers;
       const proxies = settings.proxy.split(/\r?\n|\r|\n/g);
       let proxyURL = '';
       if (proxies.length > 1) {
@@ -66,16 +71,15 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
          proxyURL = firstProxy;
       }
 
-      // axiosConfig.baseURL = apiURL;
       axiosConfig.httpsAgent = new (HttpsProxyAgent as any)(proxyURL.trim());
-      axiosConfig.headers = userAgent;
       axiosConfig.proxy = false;
+      const axiosClient = axios.create(axiosConfig);
+      client = axiosClient.get(`https://www.google.com/search?num=100&q=${encodeURI(keyword.keyword)}`);
+   } else {
+      client = fetch(apiURL, { method: 'GET', headers }).then((res) => res.json());
    }
 
-   const client = axios.create(axiosConfig);
-   // axiosRetry(client, { retries: 3 });
-
-   return client.get(apiURL);
+   return client;
 };
 
 /**
@@ -91,17 +95,16 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
    if (!scraperClient) { return false; }
 
    try {
-      const res = await scraperClient;
-      if (res.data) {
-         // writeFile(`result${index}.txt`, res.data, { encoding: 'utf-8'});
-         const extracted = extractScrapedResult(res.data, settings.scraper_type);
+      const res:any = await scraperClient;
+      if (res && (res.data || res.html)) {
+         // writeFile('result.txt', res.data, { encoding: 'utf-8' });
+         const extracted = extractScrapedResult(res.data || res.html, settings.scraper_type);
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted };
-         // console.log(extracted);
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
       }
    } catch (error:any) {
-      console.log('#### SCRAPE ERROR: ', keyword.keyword, error?.code, error?.response?.status, error?.response?.data);
+      console.log('#### SCRAPE ERROR: ', keyword.keyword, error?.code, error?.response?.status, error?.response?.data, error);
       // If Failed, Send back the original Keyword
       refreshedResults = {
          ID: keyword.ID,
