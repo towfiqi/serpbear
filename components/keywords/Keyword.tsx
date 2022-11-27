@@ -136,8 +136,8 @@ const Keyword = (props: KeywordProps) => {
          {lastUpdateError !== 'false' && showPositionError
             && <div className=' absolute mt-[-70px] p-2 bg-white z-30 border border-red-200 rounded w-[220px] left-4 shadow-sm text-xs'>
                Error Updating Keyword position (Tried <TimeAgo
-                                                         title={dayjs(parseInt(lastUpdateError, 10)).format('DD-MMM-YYYY, hh:mm:ss A')}
-                                                         date={parseInt(lastUpdateError, 10)} />)
+                                                         title={dayjs(lastUpdateError).format('DD-MMM-YYYY, hh:mm:ss A')}
+                                                         date={lastUpdateError} />)
                <i className='absolute top-0 right-0 ml-2 p-2 font-semibold not-italic cursor-pointer' onClick={() => setPositionError(false)}>
                   <Icon type="close" size={16} color="#999" />
                </i>
