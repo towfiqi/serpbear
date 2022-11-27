@@ -89,7 +89,14 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
  * @returns {RefreshResult[]}
  */
 export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:SettingsType) : Promise<RefreshResult> => {
-   let refreshedResults: RefreshResult = false;
+   let refreshedResults:RefreshResult = {
+      ID: keyword.ID,
+      keyword: keyword.keyword,
+      position: keyword.position,
+      url: keyword.url,
+      result: keyword.lastResult,
+      error: true,
+   };
    const scraperClient = getScraperClient(keyword, settings);
 
    if (!scraperClient) { return false; }
@@ -100,20 +107,12 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          // writeFile('result.txt', res.data, { encoding: 'utf-8' });
          const extracted = extractScrapedResult(res.data || res.html, settings.scraper_type);
          const serp = getSerp(keyword.domain, extracted);
-         refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted };
+         refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
       }
    } catch (error:any) {
       console.log('#### SCRAPE ERROR: ', keyword.keyword, error?.code, error?.response?.status, error?.response?.data, error);
       // If Failed, Send back the original Keyword
-      refreshedResults = {
-         ID: keyword.ID,
-         keyword: keyword.keyword,
-         position: keyword.position,
-         url: keyword.url,
-         result: keyword.lastResult,
-         error: true,
-      };
    }
 
    return refreshedResults;
