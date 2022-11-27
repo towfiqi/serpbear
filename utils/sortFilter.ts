@@ -1,6 +1,5 @@
 /**
- * When a Refresh request is failed, automatically add the keyword id to a failed_queue.json file
- * so that the retry cron tries to scrape it every hour until the scrape is successful.
+ * Sorrt Keywords by user's given input.
  * @param {KeywordType[]} theKeywords - The Keywords to sort.
  * @param {string} sortBy - The sort method.
  * @returns {KeywordType[]}
@@ -51,7 +50,7 @@ export const keywordsByDevice = (sortedKeywords: KeywordType[], device: string):
 };
 
 /**
- * Fitlers the keywords by country, search string or tags.
+ * Filters the keywords by country, search string or tags.
  * @param {KeywordType[]} keywords - The keywords.
  * @param {KeywordFilters} filterParams - The user Selected filter object.
  * @returns {KeywordType[]}
