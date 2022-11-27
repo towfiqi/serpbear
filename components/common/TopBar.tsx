@@ -42,7 +42,7 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
             className={`text-sm font-semibold text-gray-500 absolute mt-[-10px] right-3 bg-white 
             border border-gray-200 lg:mt-2 lg:relative lg:block lg:border-0 lg:bg-transparent ${showMobileMenu ? 'block' : 'hidden'}`}>
                <li className='block lg:inline-block lg:ml-5'>
-                  <a className='block px-3 py-2 cursor-pointer' href='https://serpbear.com/documentation' target="_blank" rel='noreferrer'>
+                  <a className='block px-3 py-2 cursor-pointer' href='https://docs.serpbear.com/' target="_blank" rel='noreferrer'>
                      <Icon type="question" color={'#888'} size={14} /> Help
                   </a>
                </li>
