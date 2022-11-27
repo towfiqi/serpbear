@@ -95,3 +95,55 @@ body{
    height: calc(100vh - 185px);
    overflow: auto;
 }
+
+
+/* Animation */
+.modal_anim-enter {
+   opacity: 0;
+}
+.modal_anim-enter-active {
+   opacity: 1;
+   transition: opacity 300ms;
+}
+.modal_anim-enter .modal__content{
+   transform: translateY(50px);
+}
+.modal_anim-enter-active .modal__content{
+   transform: translateY(0);
+   transition: all 300ms;
+}
+
+.modal_anim-exit {
+   opacity: 1;
+}
+.modal_anim-exit-active {
+   opacity: 0;
+   transition: all 300ms;
+}
+.modal_anim-exit .modal__content{
+   transform: translateY(0px);
+}
+.modal_anim-exit-active .modal__content{
+   transform: translateY(50px);
+   transition: all 300ms;
+}
+
+
+.settings_anim-enter {
+   opacity: 0;
+   transform: translateX(400px);
+}
+.settings_anim-enter-active {
+   opacity: 1;
+   transform: translateX(0);
+   transition: all 300ms;
+}
+.settings_anim-exit {
+   opacity: 1;
+   transform: translateX(0);
+}
+.settings_anim-exit-active {
+   opacity: 0;
+   transform: translateX(400px);
+   transition: all 300ms;
+}

@@ -5,7 +5,7 @@ import Modal from '../common/Modal';
 import { useDeleteDomain, useUpdateDomain } from '../../services/domains';
 
 type DomainSettingsProps = {
-   domain:Domain,
+   domain:Domain|false,
    domains: Domain[],
    closeModal: Function
 }
@@ -24,15 +24,17 @@ const DomainSettings = ({ domain, domains, closeModal }: DomainSettingsProps) =>
    const { mutate: updateMutate } = useUpdateDomain(() => closeModal(false));
    const { mutate: deleteMutate } = useDeleteDomain(() => {
       closeModal(false);
-      const fitleredDomains = domains.filter((d:Domain) => d.domain !== domain.domain);
-      if (fitleredDomains[0] && fitleredDomains[0].slug) {
+      const fitleredDomains = domain && domains.filter((d:Domain) => d.domain !== domain.domain);
+      if (fitleredDomains && fitleredDomains[0] && fitleredDomains[0].slug) {
          router.push(`/domain/${fitleredDomains[0].slug}`);
       }
    });
 
    useEffect(() => {
-      setDomainSettings({ notification_interval: domain.notification_interval, notification_emails: domain.notification_emails });
-   }, [domain.notification_interval, domain.notification_emails]);
+      if (domain) {
+         setDomainSettings({ notification_interval: domain.notification_interval, notification_emails: domain.notification_emails });
+      }
+   }, [domain]);
 
    const updateNotiEmails = (event:React.FormEvent<HTMLInputElement>) => {
       setDomainSettings({ ...domainSettings, notification_emails: event.currentTarget.value });
@@ -55,9 +57,9 @@ const DomainSettings = ({ domain, domains, closeModal }: DomainSettingsProps) =>
          setTimeout(() => {
             setSettingsError({ type: '', msg: '' });
          }, 3000);
-      } else {
-         updateMutate({ domainSettings, domain });
-      }
+      } else if (domain) {
+            updateMutate({ domainSettings, domain });
+         }
    };
 
    return (
@@ -91,7 +93,7 @@ const DomainSettings = ({ domain, domains, closeModal }: DomainSettingsProps) =>
                </button>
             </div>
          </Modal>
-         {showRemoveDomain && (
+         {showRemoveDomain && domain && (
             <Modal closeModal={() => setShowRemoveDomain(false) } title={`Remove Domain ${domain.domain}`}>
                <div className='text-sm'>
                   <p>Are you sure you want to remove this Domain? Removing this domain will remove all its keywords.</p>

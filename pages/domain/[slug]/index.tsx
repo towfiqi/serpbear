@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 // import { useQuery } from 'react-query';
 // import toast from 'react-hot-toast';
+import { CSSTransition } from 'react-transition-group';
 import Sidebar from '../../../components/common/Sidebar';
 import TopBar from '../../../components/common/TopBar';
 import DomainHeader from '../../../components/domains/DomainHeader';
@@ -81,15 +82,21 @@ const SingleDomain: NextPage = () => {
                />
             </div>
          </div>
-         {showAddDomain && <AddDomain closeModal={() => setShowAddDomain(false)} />}
-         {showDomainSettings && theDomains && activDomain && activDomain.domain
-         && <DomainSettings
-            domain={activDomain}
+
+         <CSSTransition in={showAddDomain} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+            <AddDomain closeModal={() => setShowAddDomain(false)} />
+         </CSSTransition>
+
+         <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+            <DomainSettings
+            domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
             domains={theDomains}
             closeModal={setShowDomainSettings}
             />
-         }
-         {showSettings && <Settings closeSettings={() => setShowSettings(false)} />}
+         </CSSTransition>
+         <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
+             <Settings closeSettings={() => setShowSettings(false)} />
+         </CSSTransition>
       </div>
    );
 };

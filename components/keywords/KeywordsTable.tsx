@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Toaster } from 'react-hot-toast';
+import { CSSTransition } from 'react-transition-group';
 import AddKeywords from './AddKeywords';
 import { filterKeywords, keywordsByDevice, sortKeywords } from '../../utils/sortFilter';
 import Icon from '../common/Icon';
@@ -156,13 +157,13 @@ const KeywordsTable = ({ domain, keywords = [], isLoading = true, showAddModal =
                   </div>
             </Modal>
          )}
-         {showAddModal && domain && (
+         <CSSTransition in={showAddModal} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
             <AddKeywords
-               domain={domain.domain}
+               domain={domain?.domain || ''}
                keywords={keywords}
                closeModal={() => setShowAddModal(false)}
                />
-         )}
+         </CSSTransition>
          {showTagManager && (
             <KeywordTagManager
                allTags={allDomainTags}

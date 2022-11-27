@@ -30,7 +30,7 @@ const Modal = ({ children, width = '1/2', closeModal, title }:ModalProps) => {
    return (
       <div className='modal fixed top-0 left-0 bg-white/[.7] w-full h-screen z-50' onClick={closeOnBGClick}>
          <div
-         className={` max-w-[340px] absolute top-1/4 left-0 right-0 ml-auto mr-auto w-${width} 
+         className={`modal__content max-w-[340px] absolute top-1/4 left-0 right-0 ml-auto mr-auto w-${width} 
          lg:max-w-md bg-white shadow-md rounded-md p-5 border-t-[1px] border-gray-100 text-base`}>
             {title && <h3 className=' font-semibold mb-3'>{title}</h3>}
             <button
