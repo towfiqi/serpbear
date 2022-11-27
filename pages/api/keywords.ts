@@ -86,8 +86,8 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
             url: '',
             tags: JSON.stringify(tagsArray),
             sticky: false,
-            lastUpdated: new Date().toString(),
-            added: new Date().toString(),
+            lastUpdated: new Date().toJSON(),
+            added: new Date().toJSON(),
          };
          keywordsToAdd.push(newKeyword);
       });
