@@ -26,6 +26,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # setup the cron
 COPY --from=builder --chown=nextjs:nodejs /app/cron.js ./
+COPY --from=builder --chown=nextjs:nodejs /app/email ./
 RUN rm package.json
 RUN npm init -y 
 RUN npm i cryptr dotenv node-cron
