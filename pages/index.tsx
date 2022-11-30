@@ -15,7 +15,7 @@ const Home: NextPage = () => {
    const router = useRouter();
    useEffect(() => {
       setLoading(true);
-      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/domains`)
+      fetch(`${window.location.origin}/api/domains`)
       .then((result) => {
          if (result.status === 401) {
             router.push('/login');

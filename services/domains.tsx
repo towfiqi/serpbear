@@ -8,7 +8,7 @@ type UpdatePayload = {
 }
 
 export async function fetchDomains(router: NextRouter) {
-   const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/domains`, { method: 'GET' });
+   const res = await fetch(`${window.location.origin}/api/domains`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
          console.log('Unauthorized!!');
@@ -29,7 +29,7 @@ export function useAddDomain(onSuccess:Function) {
    return useMutation(async (domainName:string) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ domain: domainName }) };
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/domains`, fetchOpts);
+      const res = await fetch(`${window.location.origin}/api/domains`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
@@ -57,7 +57,7 @@ export function useUpdateDomain(onSuccess:Function) {
    return useMutation(async ({ domainSettings, domain }: UpdatePayload) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify(domainSettings) };
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/domains?domain=${domain.domain}`, fetchOpts);
+      const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
@@ -79,7 +79,7 @@ export function useUpdateDomain(onSuccess:Function) {
 export function useDeleteDomain(onSuccess:Function) {
    const queryClient = useQueryClient();
    return useMutation(async (domain:Domain) => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/domains?domain=${domain.domain}`, { method: 'DELETE' });
+      const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, { method: 'DELETE' });
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }

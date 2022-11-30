@@ -15,7 +15,7 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
    const logoutUser = async () => {
       try {
          const fetchOpts = { method: 'POST', headers: new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' }) };
-         const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/logout`, fetchOpts).then((result) => result.json());
+         const res = await fetch(`${window.location.origin}/api/logout`, fetchOpts).then((result) => result.json());
          console.log(res);
          if (!res.success) {
             toast(res.error, { icon: '⚠️' });

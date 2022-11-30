@@ -2,7 +2,7 @@ import toast from 'react-hot-toast';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 export async function fetchSettings() {
-   const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/settings`, { method: 'GET' });
+   const res = await fetch(`${window.location.origin}/api/settings`, { method: 'GET' });
    return res.json();
 }
 
@@ -18,7 +18,7 @@ const useUpdateSettings = (onSuccess:Function|undefined) => {
 
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify({ settings }) };
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/settings`, fetchOpts);
+      const res = await fetch(`${window.location.origin}/api/settings`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }

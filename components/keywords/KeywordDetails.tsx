@@ -29,7 +29,7 @@ const KeywordDetails = ({ keyword, closeDetails }:KeywordDetailsProps) => {
    useEffect(() => {
       const fetchFullKeyword = async () => {
          try {
-            const fetchURL = `${process.env.NEXT_PUBLIC_APP_URL}/api/keyword?id=${keyword.ID}`;
+            const fetchURL = `${window.location.origin}/api/keyword?id=${keyword.ID}`;
             const res = await fetch(fetchURL, { method: 'GET' }).then((result) => result.json());
             if (res.keyword) {
                console.log(res.keyword, new Date().getTime());

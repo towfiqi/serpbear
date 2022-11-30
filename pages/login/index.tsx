@@ -33,7 +33,7 @@ const Login: NextPage = () => {
          try {
             const header = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
             const fetchOpts = { method: 'POST', headers: header, body: JSON.stringify({ username, password }) };
-            const fetchRoute = `${process.env.NEXT_PUBLIC_APP_URL}/api/login`;
+            const fetchRoute = `${window.location.origin}/api/login`;
             const res = await fetch(fetchRoute, fetchOpts).then((result) => result.json());
             // console.log(res);
             if (!res.success) {

@@ -12,7 +12,7 @@ type KeywordsInput = {
 
 export const fetchKeywords = async (router: NextRouter) => {
    if (!router.query.slug) { return []; }
-   const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/keywords?domain=${router.query.slug}`, { method: 'GET' });
+   const res = await fetch(`${window.location.origin}/api/keywords?domain=${router.query.slug}`, { method: 'GET' });
    return res.json();
 };
 
@@ -47,7 +47,7 @@ export function useAddKeywords(onSuccess:Function) {
    return useMutation(async (newKeywords:KeywordsInput) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'POST', headers, body: JSON.stringify(newKeywords) };
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/keywords`, fetchOpts);
+      const res = await fetch(`${window.location.origin}/api/keywords`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
@@ -70,7 +70,7 @@ export function useDeleteKeywords(onSuccess:Function) {
    const queryClient = useQueryClient();
    return useMutation(async (keywordIDs:number[]) => {
       const keywordIds = keywordIDs.join(',');
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/keywords?id=${keywordIds}`, { method: 'DELETE' });
+      const res = await fetch(`${window.location.origin}/api/keywords?id=${keywordIds}`, { method: 'DELETE' });
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
@@ -94,7 +94,7 @@ export function useFavKeywords(onSuccess:Function) {
    return useMutation(async ({ keywordID, sticky }:{keywordID:number, sticky:boolean}) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify({ sticky }) };
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/keywords?id=${keywordID}`, fetchOpts);
+      const res = await fetch(`${window.location.origin}/api/keywords?id=${keywordID}`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
@@ -119,7 +119,7 @@ export function useUpdateKeywordTags(onSuccess:Function) {
       const keywordIds = Object.keys(tags).join(',');
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify({ tags }) };
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/keywords?id=${keywordIds}`, fetchOpts);
+      const res = await fetch(`${window.location.origin}/api/keywords?id=${keywordIds}`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
@@ -143,7 +143,7 @@ export function useRefreshKeywords(onSuccess:Function) {
       const keywordIds = ids.join(',');
       console.log(keywordIds);
       const query = ids.length === 0 && domain ? `?id=all&domain=${domain}` : `?id=${keywordIds}`;
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/refresh${query}`, { method: 'POST' });
+      const res = await fetch(`${window.location.origin}/api/refresh${query}`, { method: 'POST' });
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
