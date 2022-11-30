@@ -3,6 +3,8 @@
 
 SerpBear is an Open Source Search Engine Position Tracking App. It allows you to track your website's keyword positions in Google and get notified of their positions.
 
+#### [Documentation](https://docs.serpbear.com/)
+
 ![Easy to Use Search Engine Rank Tracker](https://i.imgur.com/bRzpmCK.gif)
 
 **Features**
@@ -12,10 +14,10 @@ SerpBear is an Open Source Search Engine Position Tracking App. It allows you to
  - **Mobile App:** Add the PWA app to your mobile for a better mobile experience. 
  - **Zero Cost to RUN:** Run the App on mogenius.com or Fly.io for free.
 
-**How it Works**
+#### How it Works
 The App uses third party website scrapers like ScrapingAnt, ScrapingRobot or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword.
 
-**Getting Started**
+#### Getting Started
  - **Step 1:** Deploy & Run the App.
  - **Step 2:** Access your App and Login.
  - **Step 3:** Add your First domain.
