@@ -112,7 +112,6 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       }
    } catch (error:any) {
       console.log('#### SCRAPE ERROR: ', keyword.keyword, error?.code, error?.response?.status, error?.response?.data, error);
-      // If Failed, Send back the original Keyword
    }
 
    return refreshedResults;
@@ -148,7 +147,6 @@ export const extractScrapedResult = (content:string, scraper_type:string): Searc
             const url = $(searchResult[i]).find('a').attr('href');
             if (title && url) {
                extractedResult.push({ title, url, position: i });
-               // console.log(i, ' ',title, ' ', url);
             }
          }
      }
@@ -182,7 +180,6 @@ export const retryScrape = async (keywordID: number) : Promise<void> => {
    if (!keywordID) { return; }
    let currentQueue: number[] = [];
 
-   // const filePath = path.join(__dirname, '..', '..', '..', '..', 'data', 'failed_queue.json');
    const filePath = `${process.cwd()}/data/failed_queue.json`;
    const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
    currentQueue = JSON.parse(currentQueueRaw);
@@ -203,7 +200,6 @@ export const removeFromRetryQueue = async (keywordID: number) : Promise<void> =>
    if (!keywordID) { return; }
    let currentQueue: number[] = [];
 
-   // const filePath = path.join(__dirname, '..', '..', '..', '..', 'data', 'failed_queue.json');
    const filePath = `${process.cwd()}/data/failed_queue.json`;
    const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
    currentQueue = JSON.parse(currentQueueRaw);

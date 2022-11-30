@@ -26,7 +26,6 @@ const refreshKeywords = async (keywords:KeywordType[], settings:SettingsType): P
 
    const end = performance.now();
    console.log(`time taken: ${end - start}ms`);
-   // console.log('refreshedResults: ', refreshedResults);
    return refreshedResults;
 };
 

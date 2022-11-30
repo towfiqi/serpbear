@@ -98,9 +98,6 @@ const generateEmail = async (domainName:string, keywords:KeywordType[]) : Promis
          .replace('{{stat}}', stat)
          .replace('{{preheader}}', stat);
 
-   // const writePath = path.join(__dirname, '..', 'email',  'email_update.html');
-   // await writeFile(writePath, updatedEmail, {encoding:'utf-8'});
-
    return updatedEmail;
 };
 
