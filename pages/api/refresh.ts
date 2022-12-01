@@ -79,18 +79,21 @@ export const refreshAndUpdateKeywords = async (initKeywords:Keyword[], settings:
          const newPos = udpatedkeyword.position;
          const newPosition = newPos !== false ? newPos : keyword.position;
          const { history } = keyword;
-         const currentDate = new Date();
-         history[`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`] = newPosition;
+         const theDate = new Date();
+         history[`${theDate.getFullYear()}-${theDate.getMonth() + 1}-${theDate.getDate()}`] = newPosition;
+
          const updatedVal = {
             position: newPosition,
             updating: false,
             url: udpatedkeyword.url,
             lastResult: udpatedkeyword.result,
             history,
-            lastUpdated: udpatedkeyword.error ? keyword.lastUpdated : new Date().toJSON(),
-            lastUpdateError: udpatedkeyword.error ? new Date().toJSON() : 'false',
+            lastUpdated: udpatedkeyword.error ? keyword.lastUpdated : theDate.toJSON(),
+            lastUpdateError: udpatedkeyword.error
+               ? JSON.stringify({ date: theDate.toJSON(), error: `${udpatedkeyword.error}`, scraper: settings.scraper_type })
+               : 'false',
          };
-         updatedKeywords.push({ ...keyword, ...updatedVal });
+         updatedKeywords.push({ ...keyword, ...{ ...updatedVal, lastUpdateError: JSON.parse(updatedVal.lastUpdateError) } });
 
          // If failed, Add to Retry Queue Cron
          if (udpatedkeyword.error) {

@@ -31,7 +31,7 @@ type KeywordType = {
    url: string,
    tags: string[],
    updating: boolean,
-   lastUpdateError: string
+   lastUpdateError: {date: string, error: string, scraper: string} | false
 }
 
 type KeywordLastResult = {

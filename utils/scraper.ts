@@ -20,10 +20,10 @@ type SERPObject = {
 export type RefreshResult = false | {
    ID: number,
    keyword: string,
-   position:number|boolean,
+   position:number | boolean,
    url: string,
    result: SearchResult[],
-   error?: boolean
+   error?: boolean | string
 }
 
 /**
@@ -76,7 +76,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
       const axiosClient = axios.create(axiosConfig);
       client = axiosClient.get(`https://www.google.com/search?num=100&q=${encodeURI(keyword.keyword)}`);
    } else {
-      client = fetch(apiURL, { method: 'GET', headers }).then((res) => res.json());
+      client = fetch(apiURL, { method: 'GET', headers });
    }
 
    return client;
@@ -100,17 +100,26 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
    const scraperClient = getScraperClient(keyword, settings);
 
    if (!scraperClient) { return false; }
-
+   let res:any = null; let scraperError:any = null;
    try {
-      const res:any = await scraperClient;
+      if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
+         res = await scraperClient;
+      } else {
+         res = await scraperClient.then((result:any) => result.json());
+      }
+
       if (res && (res.data || res.html || res.result)) {
          const extracted = extractScrapedResult(res.data || res.html || res.result, settings.scraper_type);
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
+      } else {
+         scraperError = res.detail || res.error || 'Unknown Error';
+         throw new Error(res);
       }
    } catch (error:any) {
-      console.log('#### SCRAPE ERROR: ', keyword.keyword, error?.code, error?.response?.status, error?.response?.data, error);
+      console.log('#### SCRAPE ERROR: ', keyword.keyword, '. Error: ', scraperError);
+      refreshedResults.error = scraperError;
    }
 
    return refreshedResults;

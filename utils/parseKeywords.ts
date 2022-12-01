@@ -11,6 +11,7 @@ const parseKeywords = (allKeywords: Keyword[]) : KeywordType[] => {
          history: JSON.parse(keywrd.history),
          tags: JSON.parse(keywrd.tags),
          lastResult: JSON.parse(keywrd.lastResult),
+         lastUpdateError: keywrd.lastUpdateError !== 'false' && keywrd.lastUpdateError.includes('{') ? JSON.parse(keywrd.lastUpdateError) : false,
       }));
    return parsedItems;
 };
