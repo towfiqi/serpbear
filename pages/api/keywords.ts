@@ -44,7 +44,8 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
    if (!req.query.domain && typeof req.query.domain !== 'string') {
       return res.status(400).json({ error: 'Domain is Required!' });
    }
-   const domain = (req.query.domain as string).replace('-', '.');
+   const domain = (req.query.domain as string).replaceAll('-', '.');
+
    try {
       const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain } });
       const keywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));

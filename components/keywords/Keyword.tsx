@@ -21,7 +21,7 @@ type KeywordProps = {
 const Keyword = (props: KeywordProps) => {
    const { keywordData, refreshkeyword, favoriteKeyword, removeKeyword, selectKeyword, selected, showKeywordDetails, manageTags, lastItem } = props;
    const {
-      keyword, domain, ID, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = 'false',
+      keyword, domain, ID, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = false,
    } = keywordData;
    const [showOptions, setShowOptions] = useState(false);
    const [showPositionError, setPositionError] = useState(false);
@@ -77,7 +77,7 @@ const Keyword = (props: KeywordProps) => {
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />{keyword}
             </a>
             {sticky && <button className='ml-2 relative top-[2px]' title='Favorite'><Icon type="star-filled" size={16} color="#fbd346" /></button>}
-            {lastUpdateError !== 'false'
+            {lastUpdateError && lastUpdateError.date
                && <button className='ml-2 relative top-[2px]' onClick={() => setPositionError(true)}>
                   <Icon type="error" size={18} color="#FF3672" />
                </button>
@@ -133,16 +133,19 @@ const Keyword = (props: KeywordProps) => {
                </ul>
             )}
          </div>
-         {lastUpdateError !== 'false' && showPositionError
-            && <div className=' absolute mt-[-70px] p-2 bg-white z-30 border border-red-200 rounded w-[220px] left-4 shadow-sm text-xs'>
+         {lastUpdateError && lastUpdateError.date && showPositionError && (
+            <div className=' absolute mt-[-70px] p-2 bg-white z-30 border border-red-200 rounded w-[220px] left-4 shadow-sm text-xs lg:bottom-12'>
                Error Updating Keyword position (Tried <TimeAgo
-                                                         title={dayjs(lastUpdateError).format('DD-MMM-YYYY, hh:mm:ss A')}
-                                                         date={lastUpdateError} />)
+                                                         title={dayjs(lastUpdateError.date).format('DD-MMM-YYYY, hh:mm:ss A')}
+                                                         date={lastUpdateError.date} />)
                <i className='absolute top-0 right-0 ml-2 p-2 font-semibold not-italic cursor-pointer' onClick={() => setPositionError(false)}>
                   <Icon type="close" size={16} color="#999" />
                </i>
+               <div className=' border-t-[1px] border-red-100 mt-2 pt-1'>
+                  {lastUpdateError.scraper && <strong className='capitalize'>{lastUpdateError.scraper}: </strong>}{lastUpdateError.error}
+               </div>
             </div>
-         }
+            )}
       </div>
    );
  };

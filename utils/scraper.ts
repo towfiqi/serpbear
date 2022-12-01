@@ -20,10 +20,10 @@ type SERPObject = {
 export type RefreshResult = false | {
    ID: number,
    keyword: string,
-   position:number|boolean,
+   position:number | boolean,
    url: string,
    result: SearchResult[],
-   error?: boolean
+   error?: boolean | string
 }
 
 interface SerplyResult {
@@ -62,7 +62,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
    if (settings && settings.scraper_type === 'scrapingrobot' && settings.scaping_api) {
       const country = keyword.country || 'US';
       const lang = countries[country][2];
-      apiURL = `https://api.scrapingrobot.com/?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}&token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}`;
+      apiURL = `https://api.scrapingrobot.com/?token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}&url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}`;
    }
 
     // Serply.io docs https://docs.serply.io/api
@@ -75,7 +75,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
          headers['X-User-Agent'] = 'desktop';
       }
       headers['X-Proxy-Location'] = country;
-      headers['X-Api-Key'] = settings.scaping_api
+      headers['X-Api-Key'] = settings.scaping_api;
       apiURL = `https://api.serply.io/v1/search/q=${encodeURI(keyword.keyword)}&num=100&hl=${country}`;
    }
 
@@ -96,8 +96,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
       const axiosClient = axios.create(axiosConfig);
       client = axiosClient.get(`https://www.google.com/search?num=100&q=${encodeURI(keyword.keyword)}`);
    } else {
-      console.log(`calling ${apiURL}`);
-      client = fetch(apiURL, { method: 'GET', headers }).then((res) => res.json());
+      client = fetch(apiURL, { method: 'GET', headers });
    }
 
    return client;
@@ -121,18 +120,26 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
    const scraperClient = getScraperClient(keyword, settings);
 
    if (!scraperClient) { return false; }
-
+   let res:any = null; let scraperError:any = null;
    try {
-      const res:any = await scraperClient;
-      if (res && (res.data || res.html || res.results)) {
-         // writeFile('result.txt', res.data, { encoding: 'utf-8' });
-         const extracted = extractScrapedResult(res.data || res.html || res.results, settings.scraper_type);
+      if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
+         res = await scraperClient;
+      } else {
+         res = await scraperClient.then((result:any) => result.json());
+      }
+
+      if (res && (res.data || res.html || res.result || res.results)) {
+         const extracted = extractScrapedResult(res.data || res.html || res.result || res.results, settings.scraper_type);
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
+      } else {
+         scraperError = res.detail || res.error || 'Unknown Error';
+         throw new Error(res);
       }
    } catch (error:any) {
-      console.log('#### SCRAPE ERROR: ', keyword.keyword, error?.code, error?.response?.status, error?.response?.data, error);
+      console.log('#### SCRAPE ERROR: ', keyword.keyword, '. Error: ', scraperError);
+      refreshedResults.error = scraperError;
    }
 
    return refreshedResults;
@@ -147,21 +154,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 export const extractScrapedResult = (content: string, scraper_type:string): SearchResult[] => {
    const extractedResult = [];
 
-   if (scraper_type === 'serply') {
-      // results already in json
-      const results: SerplyResult[] = (typeof content === 'string') ? JSON.parse(content) :  content as SerplyResult[];
-      for (const result of results) {
-         if (result.title && result.link) {
-            extractedResult.push({
-               title: result.title,
-               url: result.link,
-               position: result.realPosition,
-            });
-         }
-      }
 
-      return extractedResult;
-   }
    const $ = cheerio.load(content);
    const hasNumberofResult = $('body').find('#search  > div > div');
    const searchResult = hasNumberofResult.children();
@@ -175,6 +168,18 @@ export const extractScrapedResult = (content: string, scraper_type:string): Sear
          const url = $(children[index]).closest('a').attr('href');
          const cleanedURL = url ? url.replace('/url?q=', '').replace(/&sa=.*/, '') : '';
          extractedResult.push({ title, url: cleanedURL, position: index });
+      }
+   } else if (scraper_type === 'serply') {
+      // results already in json
+      const results: SerplyResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerplyResult[];
+      for (const result of results) {
+         if (result.title && result.link) {
+            extractedResult.push({
+               title: result.title,
+               url: result.link,
+               position: result.realPosition,
+            });
+         }
       }
    } else {
       for (let i = 1; i < searchResult.length; i += 1) {
@@ -200,8 +205,8 @@ export const extractScrapedResult = (content: string, scraper_type:string): Sear
 export const getSerp = (domain:string, result:SearchResult[]) : SERPObject => {
    if (result.length === 0 || !domain) { return { postion: false, url: '' }; }
    const foundItem = result.find((item) => {
-      const itemDomain = item.url.match(/^(?:https?:)?(?:\/\/)?([^/?]+)/i);
-      return itemDomain && itemDomain.includes(domain);
+      const itemDomain = item.url.replace('www.', '').match(/^(?:https?:)?(?:\/\/)?([^/?]+)/i);
+      return itemDomain && itemDomain.includes(domain.replace('www.', ''));
    });
    return { postion: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
 };
