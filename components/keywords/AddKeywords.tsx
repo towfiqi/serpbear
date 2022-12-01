@@ -49,7 +49,7 @@ const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
                <div>
                   <textarea
                      className='w-full h-40 border rounded border-gray-200 p-4 outline-none focus:border-indigo-300'
-                     placeholder='Type or Paste Keywords here...'
+                     placeholder="Type or Paste Keywords here. Insert Each keyword in a New line."
                      value={newKeywordsData.keywords}
                      onChange={(e) => setNewKeywordsData({ ...newKeywordsData, keywords: e.target.value })}>
                   </textarea>
