@@ -30,7 +30,9 @@ const SelectField = (props: SelectFieldProps) => {
       flags = false,
       emptyMsg = '' } = props;
 
-   const [showOptions, setShowOptions] = useState(false);
+   const [showOptions, setShowOptions] = useState<boolean>(false);
+   const [filterInput, setFilterInput] = useState<string>('');
+   const [filterdOptions, setFilterdOptions] = useState<SelectionOption[]>([]);
 
    const selectedLabels = useMemo(() => {
       return options.reduce((acc:string[], item:SelectionOption) :string[] => {
@@ -51,6 +53,18 @@ const SelectField = (props: SelectFieldProps) => {
       if (!multiple) { setShowOptions(false); }
    };
 
+   const filterOptions = (event:React.FormEvent<HTMLInputElement>) => {
+      setFilterInput(event.currentTarget.value);
+      const filteredItems:SelectionOption[] = [];
+      const userVal = event.currentTarget.value.toLowerCase();
+      options.forEach((option:SelectionOption) => {
+         if (flags ? option.label.toLowerCase().startsWith(userVal) : option.label.toLowerCase().includes(userVal)) {
+            filteredItems.push(option);
+         }
+      });
+      setFilterdOptions(filteredItems);
+   };
+
    return (
        <div className="select font-semibold text-gray-500">
          <div
@@ -68,8 +82,19 @@ const SelectField = (props: SelectFieldProps) => {
             <div
             className={`select_list mt-1 border absolute min-w-[${minWidth}px] 
             ${rounded === 'rounded-3xl' ? 'rounded-lg' : rounded} max-h-${maxHeight} bg-white z-50 overflow-y-auto styled-scrollbar`}>
+               {options.length > 20 && (
+                  <div className=''>
+                     <input
+                     className=' border-b-[1px] p-3 w-full focus:outline-0 focus:border-blue-100'
+                     type="text"
+                     placeholder='Search..'
+                     onChange={filterOptions}
+                     value={filterInput}
+                     />
+                  </div>
+               )}
                <ul>
-                  {options.map((opt) => {
+                  {(options.length > 20 && filterdOptions.length > 0 && filterInput ? filterdOptions : options).map((opt) => {
                      const itemActive = selected.includes(opt.value);
                      return (
                         <li
