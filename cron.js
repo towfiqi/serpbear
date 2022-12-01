@@ -50,6 +50,9 @@ const generateCronTime = (interval) => {
    if (interval === 'daily') {
       cronTime = '0 0 0 * * *';
    }
+   if (interval === 'daily_morning') {
+      cronTime = '0 0 0 7 * *';
+   }
    if (interval === 'weekly') {
       cronTime = '0 0 0 */7 * *';
    }
@@ -103,7 +106,7 @@ const runAppCronJobs = () => {
    getAppSettings().then((settings) => {
       const notif_interval = (!settings.notification_interval || settings.notification_interval === 'never') ? false : settings.notification_interval;
       if (notif_interval) {
-         const cronTime = generateCronTime(notif_interval);
+         const cronTime = generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval);
          if (cronTime) {
             cron.schedule(cronTime, () => {
                // console.log('### Sending Notification Email...');
