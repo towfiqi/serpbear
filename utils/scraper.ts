@@ -164,7 +164,7 @@ export const extractScrapedResult = (content:string, scraper_type:string): Searc
 export const getSerp = (domain:string, result:SearchResult[]) : SERPObject => {
    if (result.length === 0 || !domain) { return { postion: false, url: '' }; }
    const foundItem = result.find((item) => {
-      const itemDomain = item.url.match(/^(?:https?:)?(?:\/\/)?([^/?]+)/i);
+      const itemDomain = item.url.replace('www.', '').match(/^(?:https?:)?(?:\/\/)?([^/?]+)/i);
       return itemDomain && itemDomain.includes(domain);
    });
    return { postion: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
