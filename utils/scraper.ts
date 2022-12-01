@@ -56,7 +56,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
    if (settings && settings.scraper_type === 'scrapingrobot' && settings.scaping_api) {
       const country = keyword.country || 'US';
       const lang = countries[country][2];
-      apiURL = `https://api.scrapingrobot.com/?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}&token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}`;
+      apiURL = `https://api.scrapingrobot.com/?token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}&url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}`;
    }
 
    if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
@@ -103,9 +103,8 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 
    try {
       const res:any = await scraperClient;
-      if (res && (res.data || res.html)) {
-         // writeFile('result.txt', res.data, { encoding: 'utf-8' });
-         const extracted = extractScrapedResult(res.data || res.html, settings.scraper_type);
+      if (res && (res.data || res.html || res.result)) {
+         const extracted = extractScrapedResult(res.data || res.html || res.result, settings.scraper_type);
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
