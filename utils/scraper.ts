@@ -26,6 +26,12 @@ export type RefreshResult = false | {
    error?: boolean
 }
 
+interface SerplyResult {
+   title: string,
+   link: string,
+   realPosition: number,
+}
+
 /**
  * Creates a SERP Scraper client promise based on the app settings.
  * @param {KeywordType} keyword - the keyword to get the SERP for.
@@ -34,7 +40,7 @@ export type RefreshResult = false | {
  */
 export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Promise<AxiosResponse|Response> | false => {
    let apiURL = ''; let client: Promise<AxiosResponse|Response> | false = false;
-   const headers = {
+   const headers: any = {
       'Content-Type': 'application/json',
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
       Accept: 'application/json; charset=utf8;',
@@ -59,6 +65,20 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
       apiURL = `https://api.scrapingrobot.com/?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}&token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}`;
    }
 
+    // Serply.io docs https://docs.serply.io/api
+   if (settings && settings.scraper_type === 'serply' && settings.scaping_api) {
+      const scraperCountries = ['US', 'CA', 'IE', 'GB', 'FR', 'DE', 'SE', 'IN', 'JP', 'KR', 'SG', 'AU', 'BR'];
+      const country = scraperCountries.includes(keyword.country.toUpperCase()) ? keyword.country : 'US';
+      if (keyword.device === 'mobile') {
+          headers['X-User-Agent'] = 'mobile';
+      } else {
+         headers['X-User-Agent'] = 'desktop';
+      }
+      headers['X-Proxy-Location'] = country;
+      headers['X-Api-Key'] = settings.scaping_api
+      apiURL = `https://api.serply.io/v1/search/q=${encodeURI(keyword.keyword)}&num=100&hl=${country}`;
+   }
+
    if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
       const axiosConfig: CreateAxiosDefaults = {};
       axiosConfig.headers = headers;
@@ -76,6 +96,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
       const axiosClient = axios.create(axiosConfig);
       client = axiosClient.get(`https://www.google.com/search?num=100&q=${encodeURI(keyword.keyword)}`);
    } else {
+      console.log(`calling ${apiURL}`);
       client = fetch(apiURL, { method: 'GET', headers }).then((res) => res.json());
    }
 
@@ -103,9 +124,9 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 
    try {
       const res:any = await scraperClient;
-      if (res && (res.data || res.html)) {
+      if (res && (res.data || res.html || res.results)) {
          // writeFile('result.txt', res.data, { encoding: 'utf-8' });
-         const extracted = extractScrapedResult(res.data || res.html, settings.scraper_type);
+         const extracted = extractScrapedResult(res.data || res.html || res.results, settings.scraper_type);
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
@@ -123,10 +144,25 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
  * @param {string} scraper_type - the type of scraper (Proxy or Scraper)
  * @returns {SearchResult[]}
  */
-export const extractScrapedResult = (content:string, scraper_type:string): SearchResult[] => {
+export const extractScrapedResult = (content: string, scraper_type:string): SearchResult[] => {
    const extractedResult = [];
-   const $ = cheerio.load(content);
 
+   if (scraper_type === 'serply') {
+      // results already in json
+      const results: SerplyResult[] = (typeof content === 'string') ? JSON.parse(content) :  content as SerplyResult[];
+      for (const result of results) {
+         if (result.title && result.link) {
+            extractedResult.push({
+               title: result.title,
+               url: result.link,
+               position: result.realPosition,
+            });
+         }
+      }
+
+      return extractedResult;
+   }
+   const $ = cheerio.load(content);
    const hasNumberofResult = $('body').find('#search  > div > div');
    const searchResult = hasNumberofResult.children();
 
