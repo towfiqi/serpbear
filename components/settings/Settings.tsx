@@ -79,7 +79,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
          }
       }
 
-      if (['scrapingant', 'scrapingrobot'].includes(settings.scraper_type) && !settings.scaping_api) {
+      if (['scrapingant', 'scrapingrobot', 'serply', 'serpapi'].includes(settings.scraper_type) && !settings.scaping_api) {
          error = { type: 'no_api_key', msg: 'Insert a Valid API Key or Token for the Scraper Service.' };
       }
 
@@ -106,6 +106,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       { label: 'ScrapingAnt.com', value: 'scrapingant' },
       { label: 'ScrapingRobot.com', value: 'scrapingrobot' },
       { label: 'serply.io', value: 'serply' },
+      { label: 'serpapi.com', value: 'serpapi' },
    ];
 
    const tabStyle = 'inline-block px-4 py-1 rounded-full mr-3 cursor-pointer text-sm';
@@ -151,7 +152,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                            minWidth={270}
                            />
                         </div>
-                        {['scrapingant', 'scrapingrobot', 'serply'].includes(settings.scraper_type) && (
+                        {['scrapingant', 'scrapingrobot', 'serply', 'serpapi'].includes(settings.scraper_type) && (
                            <div className="settings__section__input mr-3">
                               <label className={labelStyle}>Scraper API Key or Token</label>
                               <input
