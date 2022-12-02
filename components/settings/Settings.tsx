@@ -105,6 +105,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       { label: 'Proxy', value: 'proxy' },
       { label: 'ScrapingAnt.com', value: 'scrapingant' },
       { label: 'ScrapingRobot.com', value: 'scrapingrobot' },
+      { label: 'serply.io', value: 'serply' },
    ];
 
    const tabStyle = 'inline-block px-4 py-1 rounded-full mr-3 cursor-pointer text-sm';
@@ -150,7 +151,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                            minWidth={270}
                            />
                         </div>
-                        {['scrapingant', 'scrapingrobot'].includes(settings.scraper_type) && (
+                        {['scrapingant', 'scrapingrobot', 'serply'].includes(settings.scraper_type) && (
                            <div className="settings__section__input mr-3">
                               <label className={labelStyle}>Scraper API Key or Token</label>
                               <input

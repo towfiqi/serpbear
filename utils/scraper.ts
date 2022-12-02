@@ -26,6 +26,12 @@ export type RefreshResult = false | {
    error?: boolean | string
 }
 
+interface SerplyResult {
+   title: string,
+   link: string,
+   realPosition: number,
+}
+
 /**
  * Creates a SERP Scraper client promise based on the app settings.
  * @param {KeywordType} keyword - the keyword to get the SERP for.
@@ -34,7 +40,7 @@ export type RefreshResult = false | {
  */
 export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Promise<AxiosResponse|Response> | false => {
    let apiURL = ''; let client: Promise<AxiosResponse|Response> | false = false;
-   const headers = {
+   const headers: any = {
       'Content-Type': 'application/json',
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
       Accept: 'application/json; charset=utf8;',
@@ -57,6 +63,20 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
       const country = keyword.country || 'US';
       const lang = countries[country][2];
       apiURL = `https://api.scrapingrobot.com/?token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}&url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}`;
+   }
+
+    // Serply.io docs https://docs.serply.io/api
+   if (settings && settings.scraper_type === 'serply' && settings.scaping_api) {
+      const scraperCountries = ['US', 'CA', 'IE', 'GB', 'FR', 'DE', 'SE', 'IN', 'JP', 'KR', 'SG', 'AU', 'BR'];
+      const country = scraperCountries.includes(keyword.country.toUpperCase()) ? keyword.country : 'US';
+      if (keyword.device === 'mobile') {
+          headers['X-User-Agent'] = 'mobile';
+      } else {
+         headers['X-User-Agent'] = 'desktop';
+      }
+      headers['X-Proxy-Location'] = country;
+      headers['X-Api-Key'] = settings.scaping_api;
+      apiURL = `https://api.serply.io/v1/search/q=${encodeURI(keyword.keyword)}&num=100&hl=${country}`;
    }
 
    if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
@@ -108,8 +128,8 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          res = await scraperClient.then((result:any) => result.json());
       }
 
-      if (res && (res.data || res.html || res.result)) {
-         const extracted = extractScrapedResult(res.data || res.html || res.result, settings.scraper_type);
+      if (res && (res.data || res.html || res.result || res.results)) {
+         const extracted = extractScrapedResult(res.data || res.html || res.result || res.results, settings.scraper_type);
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
@@ -131,10 +151,11 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
  * @param {string} scraper_type - the type of scraper (Proxy or Scraper)
  * @returns {SearchResult[]}
  */
-export const extractScrapedResult = (content:string, scraper_type:string): SearchResult[] => {
+export const extractScrapedResult = (content: string, scraper_type:string): SearchResult[] => {
    const extractedResult = [];
-   const $ = cheerio.load(content);
 
+
+   const $ = cheerio.load(content);
    const hasNumberofResult = $('body').find('#search  > div > div');
    const searchResult = hasNumberofResult.children();
 
@@ -147,6 +168,18 @@ export const extractScrapedResult = (content:string, scraper_type:string): Searc
          const url = $(children[index]).closest('a').attr('href');
          const cleanedURL = url ? url.replace('/url?q=', '').replace(/&sa=.*/, '') : '';
          extractedResult.push({ title, url: cleanedURL, position: index });
+      }
+   } else if (scraper_type === 'serply') {
+      // results already in json
+      const results: SerplyResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerplyResult[];
+      for (const result of results) {
+         if (result.title && result.link) {
+            extractedResult.push({
+               title: result.title,
+               url: result.link,
+               position: result.realPosition,
+            });
+         }
       }
    } else {
       for (let i = 1; i < searchResult.length; i += 1) {
