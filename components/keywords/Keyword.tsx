@@ -50,7 +50,7 @@ const Keyword = (props: KeywordProps) => {
 
    const renderPosition = () => {
       if (position === 0) {
-         return <span title='Not in Top 100'>{'-'}</span>;
+         return <span className='text-gray-400' title='Not in Top 100'>{'>100'}</span>;
       }
       if (updating) {
          return <span title='Updating Keyword Position'><Icon type="loading" /></span>;
