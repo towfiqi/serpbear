@@ -130,6 +130,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 
       if (res && (res.data || res.html || res.result || res.results)) {
          const extracted = extractScrapedResult(res.data || res.html || res.result || res.results, settings.scraper_type);
+         // await writeFile('result.txt', JSON.stringify(extracted), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
@@ -154,20 +155,23 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 export const extractScrapedResult = (content: string, scraper_type:string): SearchResult[] => {
    const extractedResult = [];
 
-
    const $ = cheerio.load(content);
    const hasNumberofResult = $('body').find('#search  > div > div');
    const searchResult = hasNumberofResult.children();
+   let lastPosition = 0;
 
    if (scraper_type === 'proxy') {
       const mainContent = $('body').find('#main');
       const children = $(mainContent).find('h3');
 
-      for (let index = 1; index < children.length; index += 1) {
+      for (let index = 0; index < children.length; index += 1) {
          const title = $(children[index]).text();
          const url = $(children[index]).closest('a').attr('href');
          const cleanedURL = url ? url.replace('/url?q=', '').replace(/&sa=.*/, '') : '';
-         extractedResult.push({ title, url: cleanedURL, position: index });
+         if (title && url) {
+            lastPosition += 1;
+            extractedResult.push({ title, url: cleanedURL, position: lastPosition });
+         }
       }
    } else if (scraper_type === 'serply') {
       // results already in json
@@ -182,12 +186,14 @@ export const extractScrapedResult = (content: string, scraper_type:string): Sear
          }
       }
    } else {
-      for (let i = 1; i < searchResult.length; i += 1) {
+      for (let i = 0; i < searchResult.length; i += 1) {
          if (searchResult[i]) {
             const title = $(searchResult[i]).find('h3').html();
             const url = $(searchResult[i]).find('a').attr('href');
+            // console.log(i, url?.slice(0, 40), title?.slice(0, 40));
             if (title && url) {
-               extractedResult.push({ title, url, position: i });
+               lastPosition += 1;
+               extractedResult.push({ title, url, position: lastPosition });
             }
          }
      }
