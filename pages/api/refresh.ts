@@ -106,7 +106,7 @@ export const refreshAndUpdateKeywords = async (initKeywords:Keyword[], settings:
          try {
             await keywordRaw.update({
                ...updatedVal,
-               lastResult: JSON.stringify(udpatedkeyword.result),
+               lastResult: Array.isArray(udpatedkeyword.result) ? JSON.stringify(udpatedkeyword.result) : udpatedkeyword.result,
                history: JSON.stringify(history),
             });
             console.log('[SUCCESS] Updating the Keyword: ', keyword.keyword);
