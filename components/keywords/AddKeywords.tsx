@@ -27,13 +27,14 @@ const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
 
    const addKeywords = () => {
       if (newKeywordsData.keywords) {
-         const keywordsArray = newKeywordsData.keywords.replaceAll('\n', ',').split(',').map((item:string) => item.trim());
+         const keywordsArray = [...new Set(newKeywordsData.keywords.split('\n').map((item) => item.trim()).filter((item) => !!item))];
          const currentKeywords = keywords.map((k) => `${k.keyword}-${k.device}-${k.country}`);
          const keywordExist = keywordsArray.filter((k) => currentKeywords.includes(`${k}-${newKeywordsData.device}-${newKeywordsData.country}`));
          if (keywordExist.length > 0) {
             setError(`Keywords ${keywordExist.join(',')} already Exist`);
             setTimeout(() => { setError(''); }, 3000);
          } else {
+            newKeywordsData.keywords = keywordsArray.join('\n');
             addMutate(newKeywordsData);
          }
       } else {
