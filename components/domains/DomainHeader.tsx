@@ -19,6 +19,7 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
    const { mutate: refreshMutate } = useRefreshKeywords(() => {});
 
    const buttonStyle = 'leading-6 inline-block px-2 py-2 text-gray-500 hover:text-gray-700';
+   const buttonLabelStyle = 'ml-2 text-sm not-italic lg:invisible lg:opacity-0';
    return (
       <div className='domain_kewywords_head flex w-full justify-between'>
          <div>
@@ -45,26 +46,23 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
             lg:z-auto lg:relative lg:mt-0 lg:border-0 lg:w-auto lg:bg-transparent`}
             style={{ display: showOptions ? 'block' : undefined }}>
                <button
-               className={`${buttonStyle}`}
+               className={`domheader_action_button relative ${buttonStyle}`}
                aria-pressed="false"
-               title='Export as CSV'
                onClick={() => exportCsv()}>
-                  <Icon type='download' size={20} /><i className='ml-2 text-sm not-italic lg:hidden'>Export as csv</i>
+                  <Icon type='download' size={20} /><i className={`${buttonLabelStyle}`}>Export as csv</i>
                </button>
                <button
-               className={`${buttonStyle} lg:ml-3`}
+               className={`domheader_action_button relative ${buttonStyle} lg:ml-3`}
                aria-pressed="false"
-               title='Refresh All Keyword Positions'
                onClick={() => refreshMutate({ ids: [], domain: domain.domain })}>
-                  <Icon type='reload' size={14} /><i className='ml-2 text-sm not-italic lg:hidden'>Reload All Serps</i>
+                  <Icon type='reload' size={14} /><i className={`${buttonLabelStyle}`}>Reload All Serps</i>
                </button>
                <button
                data-testid="show_domain_settings"
-               className={`${buttonStyle} lg:ml-3`}
+               className={`domheader_action_button relative ${buttonStyle} lg:ml-3`}
                aria-pressed="false"
-               title='Domain Settings'
                onClick={() => showSettingsModal(true)}><Icon type='settings' size={20} />
-               <i className='ml-2 text-sm not-italic lg:hidden'>Domain Settings</i></button>
+               <i className={`${buttonLabelStyle}`}>Domain Settings</i></button>
             </div>
             <button
             data-testid="add_keyword"

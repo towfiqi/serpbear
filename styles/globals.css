@@ -170,3 +170,38 @@ body {
    transform: translateX(400px);
    transition: all 300ms;
 }
+
+
+@media (min-width: 1024px) {
+   /* Domain Header Button Tooltips */
+   .domheader_action_button:hover i{
+      visibility: visible;
+      opacity: 1;
+   }
+   .domheader_action_button i{
+      display: block;
+      position: absolute;
+      width: 100px;
+      left: -40px;
+      top: -22px;
+      background: #222;
+      border-radius: 3px;
+      color: #fff;
+      font-size: 12px;
+      padding-bottom: 3px;
+      transition: all 0.2s linear;
+   }
+   .domheader_action_button i:after{
+      content: "";
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 5px 5px 0 5px;
+      border-color: #222 transparent transparent transparent;
+      bottom: -5px;
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+   }
+}
