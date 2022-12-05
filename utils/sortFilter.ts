@@ -6,6 +6,7 @@
  */
 export const sortKeywords = (theKeywords:KeywordType[], sortBy:string) : KeywordType[] => {
    let sortedItems = [];
+   const keywords = theKeywords.map((k) => ({ ...k, position: k.position === 0 ? 111 : k.position }));
    switch (sortBy) {
       case 'date_asc':
             sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => new Date(b.added).getTime() - new Date(a.added).getTime());
@@ -14,10 +15,12 @@ export const sortKeywords = (theKeywords:KeywordType[], sortBy:string) : Keyword
             sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => new Date(a.added).getTime() - new Date(b.added).getTime());
             break;
       case 'pos_asc':
-            sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => (b.position > a.position ? 1 : -1));
+            sortedItems = keywords.sort((a: KeywordType, b: KeywordType) => (b.position > a.position ? 1 : -1));
+            sortedItems = sortedItems.map((k) => ({ ...k, position: k.position === 111 ? 0 : k.position }));
             break;
       case 'pos_desc':
-            sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => (a.position > b.position ? 1 : -1));
+            sortedItems = keywords.sort((a: KeywordType, b: KeywordType) => (a.position > b.position ? 1 : -1));
+            sortedItems = sortedItems.map((k) => ({ ...k, position: k.position === 111 ? 0 : k.position }));
             break;
       case 'alpha_asc':
             sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => (b.keyword > a.keyword ? 1 : -1));
