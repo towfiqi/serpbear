@@ -1,16 +1,16 @@
-
-.fflag { 
-   background-image: url('../public/flagSprite42.png');
+.fflag {
+   background-image: url("../public/flagSprite42.png");
    background-repeat: no-repeat;
-   background-size:  100% 49494%;
-   display:  inline-block;
-   overflow:  hidden;
-   position:  relative;
-   vertical-align:  middle;
-   box-sizing:  content-box;
- }
+   background-size: 100% 49494%;
+   display: inline-block;
+   overflow: hidden;
+   position: relative;
+   vertical-align: middle;
+   box-sizing: content-box;
+}
+
 .fflag-CH,
-.fflag-NP { box-shadow:  none!important }
+.fflag-NP { box-shadow: none !important }
 .fflag-DZ { background-position: center 0.2287%; }
 .fflag-AO { background-position: center 0.4524%; }
 .fflag-BJ { background-position: center 0.6721%; }
@@ -31,7 +31,7 @@
 .fflag-GM { background-position: center 4.0015%; }
 .fflag-GH { background-position: center 4.2229%; }
 .fflag-GN { background-position: center 4.441%; }
-.fflag-GW { background-position: left 4.66663%; }
+.fflag-GW { background-position: left 4.6666%; }
 .fflag-CI { background-position: center 4.8844%; }
 .fflag-KE { background-position: center 5.1061%; }
 .fflag-LS { background-position: center 5.3298%; }
@@ -46,13 +46,13 @@
 .fflag-MA { background-position: center 7.3231%; }
 .fflag-MZ { background-position: left 7.5448%; }
 .fflag-NA { background-position: left 7.7661%; }
-.fflag-NE { background-position: center 7.98937%; }
+.fflag-NE { background-position: center 7.9894%; }
 .fflag-NG { background-position: center 8.2099%; }
 .fflag-CG { background-position: center 8.4316%; }
 .fflag-RE { background-position: center 8.6533%; }
 .fflag-RW { background-position: right 8.875%; }
 .fflag-SH { background-position: center 9.0967%; }
-.fflag-ST { background-position: center 9.32237%; }
+.fflag-ST { background-position: center 9.3224%; }
 .fflag-SN { background-position: center 9.5426%; }
 .fflag-SC { background-position: left 9.7628%; }
 .fflag-SL { background-position: center 9.9845%; }
@@ -160,7 +160,7 @@
 .fflag-TM { background-position: center 32.5969%; }
 .fflag-VN { background-position: center 32.8186%; }
 .fflag-AL { background-position: center 33.0403%; }
-.fflag-AD { background-position: center 33.25975%; }
+.fflag-AD { background-position: center 33.2597%; }
 .fflag-AM { background-position: center 33.4837%; }
 .fflag-AT { background-position: center 33.7054%; }
 .fflag-BY { background-position: left 33.9271%; }
@@ -251,6 +251,7 @@
 .fflag-TV { background-position: center 52.7716%; }
 .fflag-VU { background-position: left 52.9933%; }
 .fflag-WF { background-position: center 53.215%; }
+
 .fflag-TD.ff-round,
 .fflag-GN.ff-round,
 .fflag-CI.ff-round,
@@ -262,17 +263,17 @@
 .fflag-IT.ff-round,
 .fflag-RO.ff-round { background-size: 100%  50000%; }
 
-.fflag.ff-sm { width: 18px;height: 11px }
-.fflag.ff-md { width: 27px;height: 17px }
-.fflag.ff-lg { width: 42px;height: 27px }
-.fflag.ff-xl { width: 60px;height: 37px }
+.fflag.ff-sm { width: 18px; height: 11px }
+.fflag.ff-md { width: 27px; height: 17px }
+.fflag.ff-lg { width: 42px; height: 27px }
+.fflag.ff-xl { width: 60px; height: 37px }
 
 /* ff-round = circular icons */
-.ff-round { 
-  background-size:  160%;
-  background-clip:  content-box;
-  border-radius:  50%;
- }
+.ff-round {
+   background-size: 160%;
+   background-clip: content-box;
+   border-radius: 50%;
+}
 
 .ff-round.ff-sm { width: 12px; height: 12px }
 .ff-round.ff-md { width: 18px; height: 18px }
