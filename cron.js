@@ -35,8 +35,7 @@ const getAppSettings = async () => {
       }
       return decryptedSettings;
    } catch (error) {
-      console.log(error);
-
+      // console.log('CRON ERROR: Reading Settings File. ', error);
       await promises.writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(defaultSettings), { encoding: 'utf-8' });
       return defaultSettings;
    }
@@ -73,7 +72,7 @@ const runAppCronJobs = () => {
       .then((res) => res.json())
       .then((data) => console.log(data))
       .catch((err) => {
-         console.log('ERROR Making Cron Request..');
+         console.log('ERROR Making Daily Scraper Cron Request..');
          console.log(err);
       });
    }, { scheduled: true });
@@ -92,7 +91,7 @@ const runAppCronJobs = () => {
                .then((res) => res.json())
                .then((refreshedData) => console.log(refreshedData))
                .catch((fetchErr) => {
-                  console.log('ERROR Making Cron Request..');
+                  console.log('ERROR Making failed_queue Cron Request..');
                   console.log(fetchErr);
                });
             }
@@ -115,7 +114,7 @@ const runAppCronJobs = () => {
                .then((res) => res.json())
                .then((data) => console.log(data))
                .catch((err) => {
-                  console.log('ERROR Making Cron Request..');
+                  console.log('ERROR Making Cron Email Notification Request..');
                   console.log(err);
                });
             }, { scheduled: true });
