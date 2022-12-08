@@ -24,12 +24,12 @@ const timeSince = (date:number) : string => {
    if (interval >= 1) return `${interval} days ago`;
 
    interval = Math.floor(seconds / 3600);
-   if (interval >= 1) return `${interval} hours ago`;
+   if (interval >= 1) return `${interval} hrs ago`;
 
    interval = Math.floor(seconds / 60);
-   if (interval > 1) return `${interval} minutes ago`;
+   if (interval > 1) return `${interval} mins ago`;
 
-   return `${Math.floor(seconds)} seconds ago`;
+   return `${Math.floor(seconds)} secs ago`;
 };
 
 /**
