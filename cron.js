@@ -50,7 +50,7 @@ const generateCronTime = (interval) => {
       cronTime = '0 0 0 * * *';
    }
    if (interval === 'daily_morning') {
-      cronTime = '0 0 0 7 * *';
+      cronTime = '0 0 0 3 * *';
    }
    if (interval === 'weekly') {
       cronTime = '0 0 0 */7 * *';
