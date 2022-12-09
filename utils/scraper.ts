@@ -32,6 +32,12 @@ interface SerplyResult {
    realPosition: number,
 }
 
+interface SerpApiResult {
+   title: string,
+   link: string,
+   position: number,
+}
+
 /**
  * Creates a SERP Scraper client promise based on the app settings.
  * @param {KeywordType} keyword - the keyword to get the SERP for.
@@ -77,6 +83,11 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
       headers['X-Proxy-Location'] = country;
       headers['X-Api-Key'] = settings.scaping_api;
       apiURL = `https://api.serply.io/v1/search/q=${encodeURI(keyword.keyword)}&num=100&hl=${country}`;
+   }
+
+   // SerpApi docs: https://serpapi.com
+   if (settings && settings.scraper_type === 'serpapi' && settings.scaping_api) {
+      apiURL = `https://serpapi.com/search?q=${encodeURI(keyword.keyword)}&num=100&gl=${keyword.country}&device=${keyword.device}&api_key=${settings.scaping_api}`;
    }
 
    if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
@@ -128,8 +139,8 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          res = await scraperClient.then((result:any) => result.json());
       }
 
-      if (res && (res.data || res.html || res.result || res.results)) {
-         const extracted = extractScrapedResult(res.data || res.html || res.result || res.results, settings.scraper_type);
+      if (res && (res.data || res.html || res.result || res.results || res.organic_results)) {
+         const extracted = extractScrapedResult(res.data || res.html || res.result || res.results || res.organic_results, settings.scraper_type);
          // await writeFile('result.txt', JSON.stringify(extracted), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
@@ -182,6 +193,19 @@ export const extractScrapedResult = (content: string, scraper_type:string): Sear
                title: result.title,
                url: result.link,
                position: result.realPosition,
+            });
+         }
+      }
+   } else if (scraper_type === 'serpapi') {
+      // results already in json
+      const results: SerpApiResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerpApiResult[];
+
+      for (const { link, title, position } of results) {
+         if (title && link) {
+            extractedResult.push({
+               title: title,
+               url: link,
+               position: position,
             });
          }
       }

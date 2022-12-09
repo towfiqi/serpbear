@@ -3,7 +3,7 @@ import { RefreshResult, scrapeKeywordFromGoogle } from './scraper';
 
 /**
  * Refreshes the Keywords position by Scraping Google Search Result by
- * Determining whether the keywords should be scraped in Parallal or not
+ * Determining whether the keywords should be scraped in Parallel or not
  * @param {KeywordType[]} keywords - Keywords to scrape
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
  * @returns {Promise}
@@ -14,8 +14,8 @@ const refreshKeywords = async (keywords:KeywordType[], settings:SettingsType): P
 
    let refreshedResults: RefreshResult[] = [];
 
-   if (settings.scraper_type === 'scrapingant') {
-      refreshedResults = await refreshParallal(keywords, settings);
+   if (['scrapingant', 'serpapi'].includes(settings.scraper_type)) {
+      refreshedResults = await refreshParallel(keywords, settings);
    } else {
       for (const keyword of keywords) {
          console.log('START SCRAPE: ', keyword.keyword);
@@ -30,12 +30,12 @@ const refreshKeywords = async (keywords:KeywordType[], settings:SettingsType): P
 };
 
 /**
- * Scrape Google Keyword Search Result in Prallal.
+ * Scrape Google Keyword Search Result in Parallel.
  * @param {KeywordType[]} keywords - Keywords to scrape
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
  * @returns {Promise}
  */
-const refreshParallal = async (keywords:KeywordType[], settings:SettingsType) : Promise<RefreshResult[]> => {
+const refreshParallel = async (keywords:KeywordType[], settings:SettingsType) : Promise<RefreshResult[]> => {
    const promises: Promise<RefreshResult>[] = keywords.map((keyword) => {
       return scrapeKeywordFromGoogle(keyword, settings);
    });
