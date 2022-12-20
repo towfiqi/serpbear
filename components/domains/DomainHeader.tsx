@@ -81,12 +81,14 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
             className={`hidden w-40 ml-[-70px] lg:block absolute mt-10 bg-white border border-gray-100 z-40 rounded 
             lg:z-auto lg:relative lg:mt-0 lg:border-0 lg:w-auto lg:bg-transparent`}
             style={{ display: showOptions ? 'block' : undefined }}>
-               <button
-               className={`domheader_action_button relative ${buttonStyle}`}
-               aria-pressed="false"
-               onClick={() => exportCsv()}>
-                  <Icon type='download' size={20} /><i className={`${buttonLabelStyle}`}>Export as csv</i>
-               </button>
+               {!isInsight && (
+                  <button
+                  className={`domheader_action_button relative ${buttonStyle}`}
+                  aria-pressed="false"
+                  onClick={() => exportCsv()}>
+                     <Icon type='download' size={20} /><i className={`${buttonLabelStyle}`}>Export as csv</i>
+                  </button>
+               )}
                {!isConsole && !isInsight && (
                   <button
                   className={`domheader_action_button relative ${buttonStyle} lg:ml-3`}

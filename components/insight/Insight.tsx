@@ -82,14 +82,15 @@ const SCInsight = ({ insight, isLoading = true, isConsoleIntegrated = true }: SC
                      />
                   </div>
                </div>
-               <div className='py-2 text-xs text-center mt-2 lg:text-sm lg:mt-0'>
+               {isConsoleIntegrated && (<div className='py-2 text-xs text-center mt-2 lg:text-sm lg:mt-0'>
                   {startDate && new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(startDate))}
                   <span className='px-2 inline-block'>-</span>
                   {endDate && new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(endDate))}
                   <span className='ml-2'>(Last 30 Days)</span>
                </div>
+               )}
             </div>
-            {activeTab === 'stats' && (
+            {isConsoleIntegrated && activeTab === 'stats' && (
                <InsightStats
                stats={insight?.stats ? insight.stats : []}
                totalKeywords={insight?.keywords?.length || 0}
@@ -116,7 +117,7 @@ const SCInsight = ({ insight, isLoading = true, isConsoleIntegrated = true }: SC
                      )}
                      {!isConsoleIntegrated && (
                         <p className=' p-9 pt-[10%] text-center text-gray-500'>
-                        Goolge Search has not been Integrated yet. Please See the Docs to Learn how to integrate Google Search Data for this Domain.
+                        Goolge Search has not been Integrated yet. Please follow <a className='text-indigo-600 underline' href='https://docs.serpbear.com/miscellaneous/integrate-google-search-console' target="_blank" rel='noreferrer'>These Steps</a> integrate Google Search Data for this Domain.
                         </p>
                      )}
                   </div>

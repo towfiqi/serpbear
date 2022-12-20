@@ -177,10 +177,10 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                                                       scDataType={scDataType}
                                                       />)}
                      {!isLoading && processedKeywords[device].length === 0 && (
-                        <p className=' p-9 mt-[10%] text-center text-gray-500'>No Keywords Added for this Device Type.</p>
+                        <p className=' p-9 pt-[10%] text-center text-gray-500'>No Keywords Added for this Device Type.</p>
                      )}
                      {isLoading && (
-                        <p className=' p-9 mt-[10%] text-center text-gray-500'>Loading Keywords...</p>
+                        <p className=' p-9 pt-[10%] text-center text-gray-500'>Loading Keywords...</p>
                      )}
                   </div>
                </div>
