@@ -9,7 +9,7 @@ body {
 }
 
 .domKeywords {
-   min-height: 70vh;
+   /* min-height: 70vh; */
    border-color: #e9ebff;
    box-shadow: 0 0 20px rgb(20 34 71 / 5%);
 }
@@ -83,21 +83,31 @@ body {
 }
 
 .domKeywords_head--alpha_desc .domKeywords_head_keyword::after,
-.domKeywords_head--pos_desc .domKeywords_head_position::after {
+.domKeywords_head--pos_desc .domKeywords_head_position::after,
+.domKeywords_head--imp_desc .domKeywords_head_imp::after,
+.domKeywords_head--visits_desc .domKeywords_head_visits::after,
+.domKeywords_head--ctr_desc .domKeywords_head_ctr::after {
    content: "↓";
    display: inline-block;
-   margin-left: 2px;
+   margin-left: 4px;
    font-size: 14px;
    opacity: 0.8;
+   font-family: sans-serif;
+   font-weight: bold;
 }
 
 .domKeywords_head--alpha_asc .domKeywords_head_keyword::after,
-.domKeywords_head--pos_asc .domKeywords_head_position::after {
+.domKeywords_head--pos_asc .domKeywords_head_position::after,
+.domKeywords_head--imp_asc .domKeywords_head_imp::after,
+.domKeywords_head--visits_asc .domKeywords_head_visits::after,
+.domKeywords_head--ctr_asc .domKeywords_head_ctr::after {
    content: "↑";
    display: inline-block;
-   margin-left: 2px;
+   margin-left: 4px;
    font-size: 14px;
    opacity: 0.8;
+   font-family: sans-serif;
+   font-weight: bold;
 }
 
 .keywordDetails__section__results {
@@ -168,6 +178,64 @@ body {
    transition: all 300ms;
 }
 
+.domItem {
+   transition: all 0.15s linear;
+   border-color: #e9ebff;
+   box-shadow: 0 0 20px rgb(20 34 71 / 5%);
+}
+
+.domItem:hover h3 {
+   color: #364aff
+}
+
+.noDomains {
+   border-color: #e9ebff;
+   box-shadow: 0 0 20px rgb(20 34 71 / 5%);
+}
+
+.domItem:hover {
+   border-color: #9499d8;
+   box-shadow: 0 0 20px rgb(30 65 161 / 25%);
+}
+
+.domain_selector .selected,
+.insight_selector .selected {
+   width: 100%;
+}
+
+.domain_selector .select,
+.insight_selector .select {
+   position: relative;
+}
+
+.domain_selector .select_list,
+.insight_selector .select_list {
+   width: 100%;
+}
+
+.domain_selector .selected > span:nth-child(1),
+.insight_selector .selected > span:nth-child(1) {
+   width: 100% !important;
+}
+
+.dom_sc_stats > div::after,
+.dom_stats > div::after {
+   content: "";
+   width: 1px;
+   height: 35px;
+   background: #eee;
+   position: absolute;
+   right: 0;
+}
+
+.dom_sc_stats > div:nth-child(3)::after {
+   display: none;
+}
+
+.dom_stats > div:nth-child(2)::after {
+   display: none;
+}
+
 @media (min-width: 1024px) {
    /* Domain Header Button Tooltips */
    .domheader_action_button:hover i {
@@ -178,15 +246,16 @@ body {
    .domheader_action_button i {
       display: block;
       position: absolute;
-      width: 100px;
       left: -40px;
       top: -22px;
       background: #222;
       border-radius: 3px;
       color: #fff;
       font-size: 12px;
+      padding: 0 10px;
       padding-bottom: 3px;
       transition: all 0.2s linear;
+      width: max-content;
    }
 
    .domheader_action_button i::after {
@@ -201,5 +270,15 @@ body {
       left: 0;
       right: 0;
       margin: 0 auto;
+   }
+
+   .domkeywordsTable--keywords.domkeywordsTable--hasSC .domKeywords_keywords::before {
+      content: "";
+      position: absolute;
+      width: 1px;
+      height: 100%;
+      background: #eff0f1;
+      top: 0;
+      right: 240px;
    }
 }

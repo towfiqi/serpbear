@@ -186,6 +186,65 @@ const Icon = ({ type, color = 'currentColor', size = 16, title = '', classes = '
                <path d="M5.5 5h13a1 1 0 0 1 .5 1.5L14 12v7l-4-3v-4L5 6.5A1 1 0 0 1 5.5 5" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
          }
+         {type === 'idea'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <g fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                     <path d="M3 12h1m8-9v1m8 8h1M5.6 5.6l.7.7m12.1-.7l-.7.7"/>
+                     <path d="M9 16a5 5 0 1 1 6 0a3.5 3.5 0 0 0-1 3a2 2 0 0 1-4 0a3.5 3.5 0 0 0-1-3"/>
+                     <path d="M9.7 17h4.6"/>
+                  </g>
+               </svg>
+         }
+         {type === 'tracking'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <path fill={color} d="M21 7a.78.78 0 0 0 0-.21a.64.64 0 0 0-.05-.17a1.1 1.1 0 0 0-.09-.14a.75.75 0 0 0-.14-.17l-.12-.07a.69.69 0 0 0-.19-.1h-.2A.7.7 0 0 0 20 6h-5a1 1 0 0 0 0 2h2.83l-4 4.71l-4.32-2.57a1 1 0 0 0-1.28.22l-5 6a1 1 0 0 0 .13 1.41A1 1 0 0 0 4 18a1 1 0 0 0 .77-.36l4.45-5.34l4.27 2.56a1 1 0 0 0 1.27-.21L19 9.7V12a1 1 0 0 0 2 0V7z"/>
+               </svg>
+         }
+         {type === 'google'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 256 262">
+                  <path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4"/>
+                  <path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853"/>
+                  <path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#FBBC05"/>
+                  <path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335" />
+               </svg>
+         }
+         {type === 'cursor'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <path fill="none" stroke={color} strokeWidth="2" d="M6 3l12 11l-5 1l3 5.5l-3 1.5l-3-6l-4 3z"/>
+               </svg>
+         }
+         {type === 'eye'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <g fill="none">
+                     <path d="M21.257 10.962c.474.62.474 1.457 0 2.076C19.764 14.987 16.182 19 12 19c-4.182 0-7.764-4.013-9.257-5.962a1.692 1.692 0 0 1 0-2.076C4.236 9.013 7.818 5 12 5c4.182 0 7.764 4.013 9.257 5.962z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                     <circle cx="12" cy="12" r="3" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </g>
+               </svg>
+         }
+         {type === 'target'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <path d="M19.938 13A8.004 8.004 0 0 1 13 19.938V22h-2v-2.062A8.004 8.004 0 0 1 4.062 13H2v-2h2.062A8.004 8.004 0 0 1 11 4.062V2h2v2.062A8.004 8.004 0 0 1 19.938 11H22v2h-2.062zM12 18a6 6 0 1 0 0-12a6 6 0 0 0 0 12zm0-3a3 3 0 1 0 0-6a3 3 0 0 0 0 6z" fill={color} fillRule="nonzero"/>
+               </svg>
+         }
+         {type === 'help'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <path d="M12 4c4.411 0 8 3.589 8 8s-3.589 8-8 8s-8-3.589-8-8s3.589-8 8-8m0-2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2zm4 8a4 4 0 0 0-8 0h2c0-1.103.897-2 2-2s2 .897 2 2s-.897 2-2 2a1 1 0 0 0-1 1v2h2v-1.141A3.991 3.991 0 0 0 16 10zm-3 6h-2v2h2v-2z" fill={color} />
+               </svg>
+         }
+         {type === 'date'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <path d="M22 2.25h-3.25V.75a.75.75 0 0 0-1.5-.001V2.25h-4.5V.75a.75.75 0 0 0-1.5-.001V2.25h-4.5V.75a.75.75 0 0 0-1.5-.001V2.25H2a2 2 0 0 0-2 1.999v17.75a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V4.249a2 2 0 0 0-2-1.999zM22.5 22a.5.5 0 0 1-.499.5H2a.5.5 0 0 1-.5-.5V4.25a.5.5 0 0 1 .5-.499h3.25v1.5a.75.75 0 0 0 1.5.001V3.751h4.5v1.5a.75.75 0 0 0 1.5.001V3.751h4.5v1.5a.75.75 0 0 0 1.5.001V3.751H22a.5.5 0 0 1 .499.499z" fill={color} />
+                  <path d="M5.25 9h3v2.25h-3z" fill={color} />
+                  <path d="M5.25 12.75h3V15h-3z" fill={color} />
+                  <path d="M5.25 16.5h3v2.25h-3z" fill={color} />
+                  <path d="M10.5 16.5h3v2.25h-3z" fill={color} />
+                  <path d="M10.5 12.75h3V15h-3z" fill={color} />
+                  <path d="M10.5 9h3v2.25h-3z" fill={color} />
+                  <path d="M15.75 16.5h3v2.25h-3z" fill={color} />
+                  <path d="M15.75 12.75h3V15h-3z" fill={color} />
+                  <path d="M15.75 9h3v2.25h-3z" fill={color} />
+               </svg>
+         }
        </span>
    );
  };

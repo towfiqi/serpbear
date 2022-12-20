@@ -259,12 +259,25 @@
          color: #fff;
          border-radius: 4px 4px 0 0;
       }
-      .mainhead td {
+      .mainhead td, .subhead td {
          padding: 15px;
       }
       .mainhead a{
          color: white; 
          text-decoration: none;
+      }
+      .subhead {
+         background: #dee3ff;
+         color: #344dd7;
+         border-radius: 4px 4px 0 0;
+      }
+      .subhead a {
+         color: #344dd7;
+         text-decoration: none;
+      }
+      .console_table{
+         margin-top: 40px;
+         margin-bottom: 20px;
       }
       .keyword_table td {
          padding: 10px 0;
@@ -277,12 +290,15 @@
       .keyword td:nth-child(1){
          font-weight: bold;
       }
-      .keyword_table th:nth-child(2), .keyword_table th:nth-child(3), .keyword td:nth-child(2), .keyword td:nth-child(3){
+      .keyword_table th:nth-child(2), .keyword_table th:nth-child(3), .keyword td:nth-child(2), .keyword td:nth-child(3), .keyword_table--sc th:nth-child(4), .keyword_table--sc td:nth-child(4){
          text-align: center;
       }
       .keyword td:nth-child(3){
          font-size: 12px;
          color: #888;
+      }
+      .keyword_table--sc td:nth-child(3){
+         color:inherit;
       }
       .keyword svg {
          width: 15px;
@@ -303,6 +319,9 @@
          position: relative;
          vertical-align: middle;
          opacity: 0.6;
+      }
+      .google_icon{
+         max-width: 13px;
       }
       /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
@@ -437,6 +456,9 @@
 
             <!-- END MAIN CONTENT AREA -->
             </table>
+
+            {{SCStatsTable}}
+
             <!-- END CENTERED WHITE CONTAINER -->
 
             <!-- START FOOTER -->

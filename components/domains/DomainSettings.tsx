@@ -5,8 +5,7 @@ import Modal from '../common/Modal';
 import { useDeleteDomain, useUpdateDomain } from '../../services/domains';
 
 type DomainSettingsProps = {
-   domain:Domain|false,
-   domains: Domain[],
+   domain:DomainType|false,
    closeModal: Function
 }
 
@@ -15,7 +14,7 @@ type DomainSettingsError = {
    msg: string,
 }
 
-const DomainSettings = ({ domain, domains, closeModal }: DomainSettingsProps) => {
+const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
    const router = useRouter();
    const [showRemoveDomain, setShowRemoveDomain] = useState<boolean>(false);
    const [settingsError, setSettingsError] = useState<DomainSettingsError>({ type: '', msg: '' });
@@ -24,10 +23,7 @@ const DomainSettings = ({ domain, domains, closeModal }: DomainSettingsProps) =>
    const { mutate: updateMutate } = useUpdateDomain(() => closeModal(false));
    const { mutate: deleteMutate } = useDeleteDomain(() => {
       closeModal(false);
-      const fitleredDomains = domain && domains.filter((d:Domain) => d.domain !== domain.domain);
-      if (fitleredDomains && fitleredDomains[0] && fitleredDomains[0].slug) {
-         router.push(`/domain/${fitleredDomains[0].slug}`);
-      }
+      router.push('/domains');
    });
 
    useEffect(() => {

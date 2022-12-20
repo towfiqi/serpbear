@@ -13,7 +13,17 @@ const verifyUser = (req: NextApiRequest, res: NextApiResponse): string => {
    const cookies = new Cookies(req, res);
    const token = cookies && cookies.get('token');
 
-   const allowedApiRoutes = ['GET:/api/keyword', 'GET:/api/keywords', 'GET:/api/domains', 'POST:/api/refresh', 'POST:/api/cron', 'POST:/api/notify'];
+   const allowedApiRoutes = [
+      'GET:/api/keyword',
+      'GET:/api/keywords',
+      'GET:/api/domains',
+      'POST:/api/refresh',
+      'POST:/api/cron',
+      'POST:/api/notify',
+      'POST:/api/searchconsole',
+      'GET:/api/searchconsole',
+      'GET:/api/insight',
+   ];
    const verifiedAPI = req.headers.authorization ? req.headers.authorization.substring('Bearer '.length) === process.env.APIKEY : false;
    const accessingAllowedRoute = req.url && req.method && allowedApiRoutes.includes(`${req.method}:${req.url.replace(/\?(.*)/, '')}`);
    console.log(req.method, req.url);

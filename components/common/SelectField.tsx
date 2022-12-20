@@ -71,7 +71,7 @@ const SelectField = (props: SelectFieldProps) => {
          className={`selected flex border ${rounded} p-1.5 px-4 cursor-pointer select-none w-[180px] min-w-[${minWidth}px] 
          ${showOptions ? 'border-indigo-200' : ''}`}
          onClick={() => setShowOptions(!showOptions)}>
-            <span className={`w-[${minWidth - 30}px] inline-block truncate mr-2`}>
+            <span className={`w-[${minWidth - 30}px] inline-block truncate mr-2 capitalize`}>
                {selected.length > 0 ? (selectedLabels.slice(0, 2).join(', ')) : defaultLabel}
             </span>
             {multiple && selected.length > 2
@@ -99,7 +99,7 @@ const SelectField = (props: SelectFieldProps) => {
                      return (
                         <li
                         key={opt.value}
-                        className={`select-none cursor-pointer px-3 py-2 hover:bg-[#FCFCFF] 
+                        className={`select-none cursor-pointer px-3 py-2 hover:bg-[#FCFCFF] capitalize
                         ${itemActive ? ' bg-indigo-50 text-indigo-600 hover:bg-indigo-50' : ''} `}
                         onClick={() => selectItem(opt)}
                         >

@@ -60,7 +60,12 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          const cryptr = new Cryptr(process.env.SECRET as string);
          const scaping_api = settings.scaping_api ? cryptr.decrypt(settings.scaping_api) : '';
          const smtp_password = settings.smtp_password ? cryptr.decrypt(settings.smtp_password) : '';
-         decryptedSettings = { ...settings, scaping_api, smtp_password };
+         decryptedSettings = {
+            ...settings,
+            scaping_api,
+            smtp_password,
+            search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL),
+         };
       } catch (error) {
          console.log('Error Decrypting Settings API Keys!');
       }

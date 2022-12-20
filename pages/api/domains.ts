@@ -2,10 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../database/database';
 import Domain from '../../database/models/domain';
 import Keyword from '../../database/models/keyword';
+import getdomainStats from '../../utils/domains';
 import verifyUser from '../../utils/verifyUser';
 
 type DomainsGetRes = {
-   domains: Domain[]
+   domains: DomainType[]
    error?: string|null,
 }
 
@@ -47,9 +48,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 export const getDomains = async (req: NextApiRequest, res: NextApiResponse<DomainsGetRes>) => {
+   const withStats = !!req?.query?.withstats;
    try {
       const allDomains: Domain[] = await Domain.findAll();
-      return res.status(200).json({ domains: allDomains });
+      const formattedDomains: DomainType[] = allDomains.map((el) => el.get({ plain: true }));
+      const theDomains: DomainType[] = withStats ? await getdomainStats(formattedDomains) : allDomains;
+      return res.status(200).json({ domains: theDomains });
    } catch (error) {
       return res.status(400).json({ domains: [], error: 'Error Getting Domains.' });
    }

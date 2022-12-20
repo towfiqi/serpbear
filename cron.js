@@ -101,6 +101,21 @@ const runAppCronJobs = () => {
       });
    }, { scheduled: true });
 
+   // Run Google Search Console Scraper Daily
+   if (process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL) {
+      const searchConsoleCRONTime = generateCronTime('daily');
+      cron.schedule(searchConsoleCRONTime, () => {
+         const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
+         fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/searchconsole`, fetchOpts)
+         .then((res) => res.json())
+         .then((data) => console.log(data))
+         .catch((err) => {
+            console.log('ERROR Making Google Search Console Scraper Cron Request..');
+            console.log(err);
+         });
+      }, { scheduled: true });
+   }
+
    // RUN Email Notification CRON
    getAppSettings().then((settings) => {
       const notif_interval = (!settings.notification_interval || settings.notification_interval === 'never') ? false : settings.notification_interval;
