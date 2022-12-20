@@ -2,14 +2,6 @@ import toast from 'react-hot-toast';
 import { NextRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-type KeywordsInput = {
-   keywords: string,
-   device: string,
-   country: string,
-   domain: string,
-   tags: string,
-}
-
 export const fetchKeywords = async (router: NextRouter) => {
    if (!router.query.slug) { return []; }
    const res = await fetch(`${window.location.origin}/api/keywords?domain=${router.query.slug}`, { method: 'GET' });
@@ -44,9 +36,9 @@ export function useFetchKeywords(router: NextRouter, setKeywordSPollInterval:Fun
 
 export function useAddKeywords(onSuccess:Function) {
    const queryClient = useQueryClient();
-   return useMutation(async (newKeywords:KeywordsInput) => {
+   return useMutation(async (keywords:KeywordAddPayload[]) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
-      const fetchOpts = { method: 'POST', headers, body: JSON.stringify(newKeywords) };
+      const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ keywords }) };
       const res = await fetch(`${window.location.origin}/api/keywords`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');

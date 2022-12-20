@@ -6,6 +6,7 @@ import { refreshAndUpdateKeywords } from './refresh';
 import { getAppSettings } from './settings';
 import verifyUser from '../../utils/verifyUser';
 import parseKeywords from '../../utils/parseKeywords';
+import { integrateKeywordSCData, readLocalSCData } from '../../utils/searchConsole';
 
 type KeywordsGetResponse = {
    keywords?: KeywordType[],
@@ -45,11 +46,13 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
       return res.status(400).json({ error: 'Domain is Required!' });
    }
    const domain = (req.query.domain as string).replaceAll('-', '.').replaceAll('_', '-');
+   const integratedSC = process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL;
+   const domainSCData = integratedSC ? await readLocalSCData(domain) : false;
 
    try {
       const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain } });
       const keywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
-      const slimKeywords = keywords.map((keyword) => {
+      const processedKeywords = keywords.map((keyword) => {
          const historyArray = Object.keys(keyword.history).map((dateKey:string) => ({
             date: new Date(dateKey).getTime(),
             dateRaw: dateKey,
@@ -58,10 +61,12 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
          const historySorted = historyArray.sort((a, b) => a.date - b.date);
          const lastWeekHistory :KeywordHistory = {};
          historySorted.slice(-7).forEach((x:any) => { lastWeekHistory[x.dateRaw] = x.position; });
-         return { ...keyword, lastResult: [], history: lastWeekHistory };
+         const keywordWithSlimHistory = { ...keyword, lastResult: [], history: lastWeekHistory };
+         const finalKeyword = domainSCData ? integrateKeywordSCData(keyword, domainSCData) : keywordWithSlimHistory;
+         return finalKeyword;
       });
       console.log('getKeywords: ', keywords.length);
-      return res.status(200).json({ keywords: slimKeywords });
+      return res.status(200).json({ keywords: processedKeywords });
    } catch (error) {
       console.log(error);
       return res.status(400).json({ error: 'Error Loading Keywords for this Domain.' });
@@ -69,13 +74,14 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
 };
 
 const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGetResponse>) => {
-   const { keywords, device, country, domain, tags } = req.body;
-   if (keywords && device && country) {
-      const keywordsArray = keywords.replaceAll('\n', ',').split(',').map((item:string) => item.trim());
-      const tagsArray = tags ? tags.split(',').map((item:string) => item.trim()) : [];
+   const { keywords } = req.body;
+   if (keywords && Array.isArray(keywords) && keywords.length > 0) {
+      // const keywordsArray = keywords.replaceAll('\n', ',').split(',').map((item:string) => item.trim());
       const keywordsToAdd: any = []; // QuickFIX for bug: https://github.com/sequelize/sequelize-typescript/issues/936
 
-      keywordsArray.forEach((keyword: string) => {
+      keywords.forEach((kwrd: KeywordAddPayload) => {
+         const { keyword, device, country, domain, tags } = kwrd;
+         const tagsArray = tags ? tags.split(',').map((item:string) => item.trim()) : [];
          const newKeyword = {
             keyword,
             device,

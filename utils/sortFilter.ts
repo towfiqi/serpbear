@@ -4,8 +4,8 @@
  * @param {string} sortBy - The sort method.
  * @returns {KeywordType[]}
  */
-export const sortKeywords = (theKeywords:KeywordType[], sortBy:string) : KeywordType[] => {
-   let sortedItems = [];
+export const sortKeywords = (theKeywords:KeywordType[], sortBy:string, scDataType?: string) : KeywordType[] => {
+   let sortedItems: KeywordType[] = [];
    const keywords = theKeywords.map((k) => ({ ...k, position: k.position === 0 ? 111 : k.position }));
    switch (sortBy) {
       case 'date_asc':
@@ -28,6 +28,42 @@ export const sortKeywords = (theKeywords:KeywordType[], sortBy:string) : Keyword
       case 'alpha_desc':
             sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => (a.keyword > b.keyword ? 1 : -1));
          break;
+      case 'imp_asc':
+            if (scDataType) {
+                  sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => {
+                  const bImpressionData = b.scData?.impressions[scDataType as keyof KeywordSCDataChild] || 0;
+                  const aImpressionData = a.scData?.impressions[scDataType as keyof KeywordSCDataChild] || 0;
+                  return aImpressionData > bImpressionData ? 1 : -1;
+               });
+            }
+            break;
+      case 'imp_desc':
+            if (scDataType) {
+                  sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => {
+                  const bImpressionData = b.scData?.impressions[scDataType as keyof KeywordSCDataChild] || 0;
+                  const aImpressionData = a.scData?.impressions[scDataType as keyof KeywordSCDataChild] || 0;
+                  return bImpressionData > aImpressionData ? 1 : -1;
+               });
+            }
+         break;
+      case 'visits_asc':
+            if (scDataType) {
+                  sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => {
+                  const bImpressionData = b.scData?.visits[scDataType as keyof KeywordSCDataChild] || 0;
+                  const aImpressionData = a.scData?.visits[scDataType as keyof KeywordSCDataChild] || 0;
+                  return aImpressionData > bImpressionData ? 1 : -1;
+               });
+            }
+            break;
+      case 'visits_desc':
+            if (scDataType) {
+                  sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => {
+                  const bImpressionData = b.scData?.visits[scDataType as keyof KeywordSCDataChild] || 0;
+                  const aImpressionData = a.scData?.visits[scDataType as keyof KeywordSCDataChild] || 0;
+                  return bImpressionData > aImpressionData ? 1 : -1;
+               });
+            }
+            break;
       default:
             return theKeywords;
    }

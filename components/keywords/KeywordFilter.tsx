@@ -9,9 +9,12 @@ type KeywordFilterProps = {
    setDevice: Function,
    filterParams: KeywordFilters,
    filterKeywords: Function,
-   keywords: KeywordType[],
+   keywords: KeywordType[] | SearchAnalyticsItem[],
    updateSort: Function,
-   sortBy: string
+   sortBy: string,
+   integratedConsole?: boolean,
+   isConsole?: boolean,
+   SCcountries?: string[];
 }
 
 type KeywordCountState = {
@@ -28,7 +31,11 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       keywords,
       updateSort,
       sortBy,
-      filterParams } = props;
+      filterParams,
+      isConsole = false,
+      integratedConsole = false,
+      SCcountries = [],
+    } = props;
    const [keywordCounts, setKeywordCounts] = useState<KeywordCountState>({ desktop: 0, mobile: 0 });
    const [sortOptions, showSortOptions] = useState(false);
    const [filterOptions, showFilterOptions] = useState(false);
@@ -55,12 +62,16 @@ const KeywordFilters = (props: KeywordFilterProps) => {
    };
 
    const countryOptions = useMemo(() => {
-      const optionObject = Object.keys(countries).map((countryISO:string) => ({
-         label: countries[countryISO][0],
-         value: countryISO,
-      }));
+      const optionObject:{label:string, value:string}[] = [];
+
+      Object.keys(countries).forEach((countryISO:string) => {
+         if (!isConsole || (isConsole && SCcountries.includes(countryISO))) {
+            optionObject.push({ label: countries[countryISO][0], value: countryISO });
+         }
+      });
+
       return optionObject;
-   }, []);
+   }, [SCcountries, isConsole]);
 
    const sortOptionChoices: SelectionOption[] = [
       { value: 'pos_asc', label: 'Top Position' },
@@ -70,6 +81,17 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       { value: 'alpha_asc', label: 'Alphabetically(A-Z)' },
       { value: 'alpha_desc', label: 'Alphabetically(Z-A)' },
    ];
+   if (integratedConsole) {
+      sortOptionChoices.push({ value: 'imp_asc', label: `Most Viewed${isConsole ? ' (Default)' : ''}` });
+      sortOptionChoices.push({ value: 'imp_desc', label: 'Least Viewed' });
+      sortOptionChoices.push({ value: 'visits_asc', label: 'Most Visited' });
+      sortOptionChoices.push({ value: 'visits_desc', label: 'Least Visited' });
+   }
+   if (isConsole) {
+      sortOptionChoices.splice(2, 2);
+      sortOptionChoices.push({ value: 'ctr_asc', label: 'Highest CTR' });
+      sortOptionChoices.push({ value: 'ctr_desc', label: 'Lowest CTR' });
+   }
    const sortItemStyle = (sortType:string) => {
       return `cursor-pointer py-2 px-3 hover:bg-[#FCFCFF] ${sortBy === sortType ? 'bg-indigo-50 text-indigo-600 hover:bg-indigo-50' : ''}`;
    };
@@ -119,15 +141,17 @@ const KeywordFilters = (props: KeywordFilterProps) => {
                      flags={true}
                   />
                </div>
-               <div className={'tags_filter mb-2 lg:mb-0'}>
-                  <SelectField
-                     selected={filterParams.tags}
-                     options={allTags.map((tag:string) => ({ label: tag, value: tag }))}
-                     defaultLabel='All Tags'
-                     updateField={(updated:string[]) => filterTags(updated)}
-                     emptyMsg="No Tags Found for this Domain"
-                  />
-               </div>
+               {!isConsole && (
+                  <div className={'tags_filter mb-2 lg:mb-0'}>
+                     <SelectField
+                        selected={filterParams.tags}
+                        options={allTags.map((tag:string) => ({ label: tag, value: tag }))}
+                        defaultLabel='All Tags'
+                        updateField={(updated:string[]) => filterTags(updated)}
+                        emptyMsg="No Tags Found for this Domain"
+                     />
+                  </div>
+               )}
                <div className={'mb-2 lg:mb-0'}>
                   <input
                      data-testid="filter_input"
@@ -150,7 +174,8 @@ const KeywordFilters = (props: KeywordFilterProps) => {
                   {sortOptions && (
                      <ul
                      data-testid="sort_options"
-                     className='sort_options mt-2 border absolute min-w-[0] right-0 rounded-lg max-h-96 bg-white z-50 w-44'>
+                     className='sort_options mt-2 border absolute min-w-[0] right-0 rounded-lg
+                     max-h-96 bg-white z-[9999] w-44 overflow-y-auto styled-scrollbar'>
                         {sortOptionChoices.map((sortOption) => {
                            return <li
                                     key={sortOption.value}

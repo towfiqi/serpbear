@@ -6,19 +6,20 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 type ChartProps ={
    labels: string[],
-   sreies: number[]
+   sreies: number[],
+   reverse? : boolean,
 }
 
-const Chart = ({ labels, sreies }:ChartProps) => {
+const Chart = ({ labels, sreies, reverse = true }:ChartProps) => {
    const options = {
       responsive: true,
       maintainAspectRatio: false,
       animation: false as const,
       scales: {
          y: {
-            reverse: true,
+            reverse,
             min: 1,
-            max: 100,
+            max: reverse ? 100 : undefined,
          },
       },
       plugins: {

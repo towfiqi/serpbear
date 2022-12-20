@@ -1,36 +1,34 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 // import { useQuery } from 'react-query';
 // import toast from 'react-hot-toast';
 import { CSSTransition } from 'react-transition-group';
-import Sidebar from '../../../components/common/Sidebar';
-import TopBar from '../../../components/common/TopBar';
-import DomainHeader from '../../../components/domains/DomainHeader';
-import KeywordsTable from '../../../components/keywords/KeywordsTable';
-import AddDomain from '../../../components/domains/AddDomain';
-import DomainSettings from '../../../components/domains/DomainSettings';
-import exportCSV from '../../../utils/exportcsv';
-import Settings from '../../../components/settings/Settings';
-import { useFetchDomains } from '../../../services/domains';
-import { useFetchKeywords } from '../../../services/keywords';
-import { useFetchSettings } from '../../../services/settings';
+import Sidebar from '../../../../components/common/Sidebar';
+import TopBar from '../../../../components/common/TopBar';
+import DomainHeader from '../../../../components/domains/DomainHeader';
+import AddDomain from '../../../../components/domains/AddDomain';
+import DomainSettings from '../../../../components/domains/DomainSettings';
+import exportCSV from '../../../../utils/exportcsv';
+import Settings from '../../../../components/settings/Settings';
+import { useFetchDomains } from '../../../../services/domains';
+import { useFetchSCInsight } from '../../../../services/searchConsole';
+import SCInsight from '../../../../components/insight/Insight';
+import { useFetchSettings } from '../../../../services/settings';
 
-const SingleDomain: NextPage = () => {
+const InsightPage: NextPage = () => {
    const router = useRouter();
-   const [noScrapprtError, setNoScrapprtError] = useState(false);
-   const [showAddKeywords, setShowAddKeywords] = useState(false);
-   const [showAddDomain, setShowAddDomain] = useState(false);
    const [showDomainSettings, setShowDomainSettings] = useState(false);
    const [showSettings, setShowSettings] = useState(false);
-   const [keywordSPollInterval, setKeywordSPollInterval] = useState<undefined|number>(undefined);
+   const [showAddDomain, setShowAddDomain] = useState(false);
+   const [scDateFilter, setSCDateFilter] = useState('thirtyDays');
    const { data: appSettings } = useFetchSettings();
    const { data: domainsData } = useFetchDomains(router);
-   const { keywordsData, keywordsLoading } = useFetchKeywords(router, setKeywordSPollInterval, keywordSPollInterval);
+   const { data: insightData } = useFetchSCInsight(router, !!(domainsData?.domains?.length));
 
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
-   const theKeywords: KeywordType[] = keywordsData && keywordsData.keywords;
+   const theInsight: InsightDataType = insightData && insightData.data ? insightData.data : {};
 
    const activDomain: DomainType|null = useMemo(() => {
       let active:DomainType|null = null;
@@ -40,22 +38,8 @@ const SingleDomain: NextPage = () => {
       return active;
    }, [router.query.slug, domainsData]);
 
-   useEffect(() => {
-      // console.log('appSettings.settings: ', appSettings && appSettings.settings);
-      if (appSettings && appSettings.settings && (!appSettings.settings.scraper_type || (appSettings.settings.scraper_type === 'none'))) {
-         setNoScrapprtError(true);
-      }
-   }, [appSettings]);
-
-   // console.log('Domains Data:', router, activDomain, theKeywords);
-
    return (
       <div className="Domain ">
-         {noScrapprtError && (
-               <div className=' p-3 bg-red-600 text-white text-sm text-center'>
-                  A Scrapper/Proxy has not been set up Yet. Open Settings to set it up and start using the app.
-               </div>
-         )}
          {activDomain && activDomain.domain
          && <Head>
                <title>{`${activDomain.domain} - SerpBear` } </title>
@@ -69,17 +53,17 @@ const SingleDomain: NextPage = () => {
                && <DomainHeader
                   domain={activDomain}
                   domains={theDomains}
-                  showAddModal={setShowAddKeywords}
+                  showAddModal={() => console.log('XXXXX')}
                   showSettingsModal={setShowDomainSettings}
-                  exportCsv={() => exportCSV(theKeywords, activDomain.domain)}
+                  exportCsv={() => exportCSV([], activDomain.domain, scDateFilter)}
+                  scFilter={scDateFilter}
+                  setScFilter={(item:string) => setSCDateFilter(item)}
                   />
                }
-               <KeywordsTable
-               isLoading={keywordsLoading}
+               <SCInsight
+               isLoading={false}
                domain={activDomain}
-               keywords={theKeywords}
-               showAddModal={showAddKeywords}
-               setShowAddModal={setShowAddKeywords}
+               insight={theInsight}
                isConsoleIntegrated={!!(appSettings && appSettings?.settings?.search_console_integrated) }
                />
             </div>
@@ -102,4 +86,4 @@ const SingleDomain: NextPage = () => {
    );
 };
 
-export default SingleDomain;
+export default InsightPage;

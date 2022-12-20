@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Icon from './Icon';
 
 type SidebarProps = {
-   domains: Domain[],
+   domains: DomainType[],
    showAddModal: Function
 }
 
@@ -23,8 +23,9 @@ const Sidebar = ({ domains, showAddModal } : SidebarProps) => {
                                  className={'my-2.5 leading-10'}>
                                     <Link href={`/domain/${d.slug}`} passHref={true}>
                                        <a className={`block cursor-pointer px-4 text-ellipsis max-w-[215px] overflow-hidden whitespace-nowrap rounded
-                                        rounded-r-none 
-                                        ${(`/domain/${d.slug}` === router.asPath ? 'bg-white text-zinc-800 border border-r-0' : 'text-zinc-500')}`}>
+                                        rounded-r-none ${((`/domain/${d.slug}` === router.asPath || `/domain/console/${d.slug}` === router.asPath
+                                        || `/domain/insight/${d.slug}` === router.asPath)
+                                        ? 'bg-white text-zinc-800 border border-r-0' : 'text-zinc-500')}`}>
                                           <i className={'text-center leading-4 mr-2 inline-block rounded-full w-5 h-5 bg-orange-200 not-italic'}>
                                              {d.domain.charAt(0)}
                                           </i>

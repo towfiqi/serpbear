@@ -12,14 +12,17 @@ import { useDeleteKeywords, useFavKeywords, useRefreshKeywords } from '../../ser
 import KeywordTagManager from './KeywordTagManager';
 
 type KeywordsTableProps = {
-   domain: Domain | null,
+   domain: DomainType | null,
    keywords: KeywordType[],
    isLoading: boolean,
    showAddModal: boolean,
-   setShowAddModal: Function
+   setShowAddModal: Function,
+   isConsoleIntegrated: boolean,
 }
 
-const KeywordsTable = ({ domain, keywords = [], isLoading = true, showAddModal = false, setShowAddModal }: KeywordsTableProps) => {
+const KeywordsTable = (props: KeywordsTableProps) => {
+   const { domain, keywords = [], isLoading = true, showAddModal = false, setShowAddModal, isConsoleIntegrated = false } = props;
+   const showSCData = isConsoleIntegrated;
    const [device, setDevice] = useState<string>('desktop');
    const [selectedKeywords, setSelectedKeywords] = useState<number[]>([]);
    const [showKeyDetails, setShowKeyDetails] = useState<KeywordType|null>(null);
@@ -27,16 +30,27 @@ const KeywordsTable = ({ domain, keywords = [], isLoading = true, showAddModal =
    const [showTagManager, setShowTagManager] = useState<null|number>(null);
    const [filterParams, setFilterParams] = useState<KeywordFilters>({ countries: [], tags: [], search: '' });
    const [sortBy, setSortBy] = useState<string>('date_asc');
+   const [scDataType, setScDataType] = useState<string>('threeDays');
+   const [showScDataTypes, setShowScDataTypes] = useState<boolean>(false);
    const { mutate: deleteMutate } = useDeleteKeywords(() => {});
    const { mutate: favoriteMutate } = useFavKeywords(() => {});
    const { mutate: refreshMutate } = useRefreshKeywords(() => {});
 
+   const scDataObject:{ [k:string] : string} = {
+      threeDays: 'Last Three Days',
+      sevenDays: 'Last Seven Days',
+      thirtyDays: 'Last Thirty Days',
+      avgSevenDays: 'Last Three Days Avg',
+      avgThreeDays: 'Last Seven Days Avg',
+      avgThirtyDays: 'Last Thirty Days Avg',
+   };
+
    const processedKeywords: {[key:string] : KeywordType[]} = useMemo(() => {
       const procKeywords = keywords.filter((x) => x.device === device);
       const filteredKeywords = filterKeywords(procKeywords, filterParams);
-      const sortedKeywords = sortKeywords(filteredKeywords, sortBy);
+      const sortedKeywords = sortKeywords(filteredKeywords, sortBy, scDataType);
       return keywordsByDevice(sortedKeywords, device);
-   }, [keywords, device, sortBy, filterParams]);
+   }, [keywords, device, sortBy, filterParams, scDataType]);
 
    const allDomainTags: string[] = useMemo(() => {
       const allTags = keywords.reduce((acc: string[], keyword) => [...acc, ...keyword.tags], []);
@@ -56,7 +70,7 @@ const KeywordsTable = ({ domain, keywords = [], isLoading = true, showAddModal =
 
    return (
       <div>
-         <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border'>
+         <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-8'>
             {selectedKeywords.length > 0 && (
                <div className='font-semibold text-sm py-4 px-8 text-gray-500 '>
                   <ul className=''>
@@ -88,9 +102,11 @@ const KeywordsTable = ({ domain, keywords = [], isLoading = true, showAddModal =
                   keywords={keywords}
                   device={device}
                   setDevice={setDevice}
+                  integratedConsole={isConsoleIntegrated}
                />
             )}
-            <div className='styled-scrollbar w-full overflow-auto min-h-[60vh] '>
+            <div className={`domkeywordsTable domkeywordsTable--keywords ${showSCData ? 'domkeywordsTable--hasSC' : ''} 
+               styled-scrollbar w-full overflow-auto min-h-[60vh]`}>
                <div className=' lg:min-w-[800px]'>
                   <div className={`domKeywords_head domKeywords_head--${sortBy} hidden lg:flex p-3 px-6 bg-[#FCFCFF]
                    text-gray-600 justify-between items-center font-semibold border-y`}>
@@ -110,8 +126,41 @@ const KeywordsTable = ({ domain, keywords = [], isLoading = true, showAddModal =
                      <span className='domKeywords_head_history flex-1'>History (7d)</span>
                      <span className='domKeywords_head_url flex-1'>URL</span>
                      <span className='domKeywords_head_updated flex-1'>Updated</span>
+                     {showSCData && (
+                        <div className='domKeywords_head_sc flex-1 min-w-[170px] mr-7 text-center'>
+                           {/* Search Console */}
+                           <div>
+                              <div
+                              className=' w-48 select-none cursor-pointer absolute bg-white rounded-full
+                              px-2 py-[2px] mt-[-22px] ml-3 border border-gray-200 z-50'
+                              onClick={() => setShowScDataTypes(!showScDataTypes)}>
+                                 <Icon type="google" size={13} /> {scDataObject[scDataType]}
+                                 <Icon classes="ml-2" type={showScDataTypes ? 'caret-up' : 'caret-down'} size={10} />
+                              </div>
+                              {showScDataTypes && (
+                                 <div className='absolute bg-white border border-gray-200 z-50 w-44 rounded mt-2 ml-5 text-gray-500'>
+                                    {Object.keys(scDataObject).map((itemKey) => {
+                                       return <span
+                                                className={`block p-2 cursor-pointer hover:bg-indigo-50 hover:text-indigo-600
+                                                 ${scDataType === itemKey ? 'bg-indigo-100 text-indigo-600' : ''}`}
+                                                key={itemKey}
+                                                onClick={() => { setScDataType(itemKey); setShowScDataTypes(false); }}>
+                                                   {scDataObject[itemKey]}
+                                                </span>;
+                                    })}
+                                 </div>
+                              )}
+                           </div>
+                           <div className='relative top-2 flex justify-between'>
+                              <span className='min-w-[40px]'>Pos</span>
+                              <span className='min-w-[40px]'>Imp</span>
+                              <span className='min-w-[40px]'>Visits</span>
+                              {/* <span>CTR</span> */}
+                           </div>
+                        </div>
+                     )}
                   </div>
-                  <div className='domKeywords_keywords border-gray-200'>
+                  <div className='domKeywords_keywords border-gray-200 min-h-[55vh] relative'>
                      {processedKeywords[device] && processedKeywords[device].length > 0
                         && processedKeywords[device].map((keyword, index) => <Keyword
                                                       key={keyword.ID}
@@ -124,6 +173,8 @@ const KeywordsTable = ({ domain, keywords = [], isLoading = true, showAddModal =
                                                       removeKeyword={() => { setSelectedKeywords([keyword.ID]); setShowRemoveModal(true); }}
                                                       showKeywordDetails={() => setShowKeyDetails(keyword)}
                                                       lastItem={index === (processedKeywords[device].length - 1)}
+                                                      showSCData={showSCData}
+                                                      scDataType={scDataType}
                                                       />)}
                      {!isLoading && processedKeywords[device].length === 0 && (
                         <p className=' p-9 mt-[10%] text-center text-gray-500'>No Keywords Added for this Device Type.</p>

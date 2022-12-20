@@ -4,11 +4,11 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 type UpdatePayload = {
    domainSettings: DomainSettings,
-   domain: Domain
+   domain: DomainType
 }
 
-export async function fetchDomains(router: NextRouter) {
-   const res = await fetch(`${window.location.origin}/api/domains`, { method: 'GET' });
+export async function fetchDomains(router: NextRouter, withStats:boolean) {
+   const res = await fetch(`${window.location.origin}/api/domains${withStats ? '?withstats=true' : ''}`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
          console.log('Unauthorized!!');
@@ -19,8 +19,8 @@ export async function fetchDomains(router: NextRouter) {
    return res.json();
 }
 
-export function useFetchDomains(router: NextRouter) {
-   return useQuery('domains', () => fetchDomains(router));
+export function useFetchDomains(router: NextRouter, withStats:boolean = false) {
+   return useQuery('domains', () => fetchDomains(router, withStats));
 }
 
 export function useAddDomain(onSuccess:Function) {
@@ -37,7 +37,7 @@ export function useAddDomain(onSuccess:Function) {
    }, {
       onSuccess: async (data) => {
          console.log('Domain Added!!!', data);
-         const newDomain:Domain = data.domain;
+         const newDomain:DomainType = data.domain;
          toast(`${newDomain.domain} Added Successfully!`, { icon: '✔️' });
          onSuccess(false);
          if (newDomain && newDomain.slug) {
@@ -78,7 +78,7 @@ export function useUpdateDomain(onSuccess:Function) {
 
 export function useDeleteDomain(onSuccess:Function) {
    const queryClient = useQueryClient();
-   return useMutation(async (domain:Domain) => {
+   return useMutation(async (domain:DomainType) => {
       const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, { method: 'DELETE' });
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');

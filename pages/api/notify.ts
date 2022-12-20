@@ -21,44 +21,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const notify = async (req: NextApiRequest, res: NextApiResponse<NotifyResponse>) => {
+   const reqDomain = req?.query?.domain as string || '';
    try {
       const settings = await getAppSettings();
-      const {
-          smtp_server = '',
-          smtp_port = '',
-          smtp_username = '',
-          smtp_password = '',
-          notification_email = '',
-          notification_email_from = '',
-         } = settings;
+      const { smtp_server = '', smtp_port = '', smtp_username = '', smtp_password = '', notification_email = '' } = settings;
 
       if (!smtp_server || !smtp_port || !smtp_username || !smtp_password || !notification_email) {
          return res.status(401).json({ success: false, error: 'SMTP has not been setup properly!' });
       }
-      const fromEmail = `SerpBear <${notification_email_from || 'no-reply@serpbear.com'}>`;
-      const transporter = nodeMailer.createTransport({
-         host: smtp_server,
-         port: parseInt(smtp_port, 10),
-         auth: { user: smtp_username, pass: smtp_password },
-      });
 
-      const allDomains: Domain[] = await Domain.findAll();
-
-      if (allDomains && allDomains.length > 0) {
-         const domains = allDomains.map((el) => el.get({ plain: true }));
-         for (const domain of domains) {
-            if (domain.notification !== false) {
-               const query = { where: { domain: domain.domain } };
-               const domainKeywords:Keyword[] = await Keyword.findAll(query);
-               const keywordsArray = domainKeywords.map((el) => el.get({ plain: true }));
-               const keywords: KeywordType[] = parseKeywords(keywordsArray);
-               await transporter.sendMail({
-                  from: fromEmail,
-                  to: domain.notification_emails || notification_email,
-                  subject: `[${domain.domain}] Keyword Positions Update`,
-                  html: await generateEmail(domain.domain, keywords),
-              });
-              // console.log(JSON.stringify(result, null, 4));
+      if (reqDomain) {
+         const theDomain = await Domain.findOne({ where: { domain: reqDomain } });
+         if (theDomain) {
+            await sendNotificationEmail(theDomain, settings);
+         }
+      } else {
+         const allDomains: Domain[] = await Domain.findAll();
+         if (allDomains && allDomains.length > 0) {
+            const domains = allDomains.map((el) => el.get({ plain: true }));
+            for (const domain of domains) {
+               if (domain.notification !== false) {
+                  await sendNotificationEmail(domain, settings);
+               }
             }
          }
       }
@@ -68,4 +52,34 @@ const notify = async (req: NextApiRequest, res: NextApiResponse<NotifyResponse>)
       console.log(error);
       return res.status(401).json({ success: false, error: 'Error Sending Notification Email.' });
    }
+};
+
+const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => {
+   const {
+      smtp_server = '',
+      smtp_port = '',
+      smtp_username = '',
+      smtp_password = '',
+      notification_email = '',
+      notification_email_from = '',
+     } = settings;
+
+   const fromEmail = `SerpBear <${notification_email_from || 'no-reply@serpbear.com'}>`;
+   const transporter = nodeMailer.createTransport({
+      host: smtp_server,
+      port: parseInt(smtp_port, 10),
+      auth: { user: smtp_username, pass: smtp_password },
+   });
+   const domainName = domain.domain;
+   const query = { where: { domain: domainName } };
+   const domainKeywords:Keyword[] = await Keyword.findAll(query);
+   const keywordsArray = domainKeywords.map((el) => el.get({ plain: true }));
+   const keywords: KeywordType[] = parseKeywords(keywordsArray);
+   const emailHTML = await generateEmail(domainName, keywords);
+   await transporter.sendMail({
+      from: fromEmail,
+      to: domain.notification_emails || notification_email,
+      subject: `[${domainName}] Keyword Positions Update`,
+      html: emailHTML,
+   });
 };

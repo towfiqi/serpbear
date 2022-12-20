@@ -34,7 +34,9 @@ const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
             setError(`Keywords ${keywordExist.join(',')} already Exist`);
             setTimeout(() => { setError(''); }, 3000);
          } else {
-            addMutate({ ...newKeywordsData, keywords: keywordsArray.join('\n') });
+            const { device, country, domain: kDomain, tags } = newKeywordsData;
+            const newKeywordsArray = keywordsArray.map((nItem) => ({ keyword: nItem, device, country, domain: kDomain, tags }));
+            addMutate(newKeywordsArray);
          }
       } else {
          setError('Please Insert a Keyword');
