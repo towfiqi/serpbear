@@ -215,7 +215,7 @@ body {
 
 .domain_selector .selected > span:nth-child(1),
 .insight_selector .selected > span:nth-child(1) {
-   width: 100% !important;
+   width: 100%;
 }
 
 .dom_sc_stats > div::after,

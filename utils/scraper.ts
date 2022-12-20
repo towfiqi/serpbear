@@ -203,9 +203,9 @@ export const extractScrapedResult = (content: string, scraper_type:string): Sear
       for (const { link, title, position } of results) {
          if (title && link) {
             extractedResult.push({
-               title: title,
+               title,
                url: link,
-               position: position,
+               position,
             });
          }
       }
