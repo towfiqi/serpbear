@@ -145,9 +145,8 @@ export const readLocalSCData = async (domain:string): Promise<SCDomainDataType> 
 
 export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDataType): Promise<SCDomainDataType|false> => {
    const filePath = `${process.cwd()}/data/SC_${domain}.json`;
-   const fileData = JSON.stringify(scDomainData);
    const emptyData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '' };
-   await writeFile(filePath, fileData, { encoding: 'utf-8' }).catch((err) => { console.log(err); return JSON.stringify(emptyData); });
+   await writeFile(filePath, JSON.stringify(scDomainData || emptyData), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
    return scDomainData || emptyData;
 };
 
