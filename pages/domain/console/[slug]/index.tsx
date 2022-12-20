@@ -25,7 +25,8 @@ const DiscoverPage: NextPage = () => {
    const [scDateFilter, setSCDateFilter] = useState('thirtyDays');
    const { data: appSettings } = useFetchSettings();
    const { data: domainsData } = useFetchDomains(router);
-   const { data: keywordsData, isLoading: keywordsLoading, isFetching } = useFetchSCKeywords(router, !!(domainsData?.domains?.length));
+   const scConnected = !!(appSettings && appSettings?.settings?.search_console_integrated);
+   const { data: keywordsData, isLoading: keywordsLoading, isFetching } = useFetchSCKeywords(router, !!(domainsData?.domains?.length) && scConnected);
 
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
    const theKeywords: SearchAnalyticsItem[] = keywordsData?.data && keywordsData.data[scDateFilter] ? keywordsData.data[scDateFilter] : [];
@@ -64,7 +65,7 @@ const DiscoverPage: NextPage = () => {
                isLoading={keywordsLoading || isFetching}
                domain={activDomain}
                keywords={theKeywords}
-               isConsoleIntegrated={!!(appSettings && appSettings?.settings?.search_console_integrated) }
+               isConsoleIntegrated={scConnected}
                />
             </div>
          </div>
