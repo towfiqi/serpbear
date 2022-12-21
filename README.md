@@ -7,7 +7,7 @@
 
 SerpBear is an Open Source Search Engine Position Tracking App. It allows you to track your website's keyword positions in Google and get notified of their positions.
 
-![Easy to Use Search Engine Rank Tracker](https://i.imgur.com/bRzpmCK.gif)
+![Easy to Use Search Engine Rank Tracker](https://erevanto.sirv.com/Images/serpbear/serpbear_readme_v2.gif)
 
 #### Features
 -   **Unlimited Keywords:** Add unlimited domains and unlimited keywords to track their SERP.
@@ -18,7 +18,7 @@ SerpBear is an Open Source Search Engine Position Tracking App. It allows you to
 -   **Zero Cost to RUN:** Run the App on mogenius.com or Fly.io for free.
 
 #### How it Works
-The App uses third party website scrapers like ScrapingAnt, ScrapingRobot or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword. Also, When you connect your Googel Search Console account, the app shows actual search visits for each tracked keywords. You can also discover new keywords, and find the most performing keywords, countries, pages.
+The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SerpApi or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword. Also, When you connect your Googel Search Console account, the app shows actual search visits for each tracked keywords. You can also discover new keywords, and find the most performing keywords, countries, pages.
 
 #### Getting Started
 -   **Step 1:** Deploy & Run the App.
