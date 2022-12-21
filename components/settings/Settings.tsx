@@ -68,11 +68,9 @@ const Settings = ({ closeSettings }:SettingsProps) => {
             error = { type: 'no_email', msg: 'Insert a Valid Email address' };
          }
          if (settings.notification_email
-            && (!settings.smtp_username || !settings.smtp_password || !settings.smtp_port || !settings.smtp_server
+            && (!settings.smtp_port || !settings.smtp_server
                || !settings.notification_email_from)) {
                let type = 'no_smtp_from';
-               if (!settings.smtp_password) { type = 'no_smtp_pass'; }
-               if (!settings.smtp_username) { type = 'no_smtp_user'; }
                if (!settings.smtp_port) { type = 'no_smtp_port'; }
                if (!settings.smtp_server) { type = 'no_smtp_server'; }
                error = { type, msg: 'Insert SMTP Server details that will be used to send the emails.' };
@@ -234,8 +232,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                            <div className="settings__section__input mb-5">
                               <label className={labelStyle}>SMTP Username</label>
                               <input
-                                 className={`w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200 
-                                 ${settingsError && settingsError.type === 'no_smtp_user' ? ' border-red-400 focus:border-red-400' : ''} `}
+                                 className={'w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200'}
                                  type="text"
                                  value={settings?.smtp_username || ''}
                                  onChange={(event) => updateSettings('smtp_username', event.target.value)}
@@ -244,8 +241,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                            <div className="settings__section__input mb-5">
                               <label className={labelStyle}>SMTP Password</label>
                               <input
-                                 className={`w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200 
-                                 ${settingsError && settingsError.type === 'no_smtp_pass' ? ' border-red-400 focus:border-red-400' : ''} `}
+                                 className={'w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200'}
                                  type="text"
                                  value={settings?.smtp_password || ''}
                                  onChange={(event) => updateSettings('smtp_password', event.target.value)}

@@ -75,8 +75,8 @@ type SettingsType = {
    notification_email_from: string,
    smtp_server: string,
    smtp_port: string,
-   smtp_username: string,
-   smtp_password: string,
+   smtp_username?: string,
+   smtp_password?: string,
    search_console_integrated?: boolean,
 }
 

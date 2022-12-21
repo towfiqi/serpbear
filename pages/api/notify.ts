@@ -24,9 +24,9 @@ const notify = async (req: NextApiRequest, res: NextApiResponse<NotifyResponse>)
    const reqDomain = req?.query?.domain as string || '';
    try {
       const settings = await getAppSettings();
-      const { smtp_server = '', smtp_port = '', smtp_username = '', smtp_password = '', notification_email = '' } = settings;
+      const { smtp_server = '', smtp_port = '', notification_email = '' } = settings;
 
-      if (!smtp_server || !smtp_port || !smtp_username || !smtp_password || !notification_email) {
+      if (!smtp_server || !smtp_port || !notification_email) {
          return res.status(401).json({ success: false, error: 'SMTP has not been setup properly!' });
       }
 
@@ -65,11 +65,13 @@ const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => 
      } = settings;
 
    const fromEmail = `SerpBear <${notification_email_from || 'no-reply@serpbear.com'}>`;
-   const transporter = nodeMailer.createTransport({
-      host: smtp_server,
-      port: parseInt(smtp_port, 10),
-      auth: { user: smtp_username, pass: smtp_password },
-   });
+   const mailerSettings:any = { host: smtp_server, port: parseInt(smtp_port, 10) };
+   if (smtp_username || smtp_password) {
+      mailerSettings.auth = {};
+      if (smtp_username) mailerSettings.auth.user = smtp_username;
+      if (smtp_password) mailerSettings.auth.pass = smtp_password;
+   }
+   const transporter = nodeMailer.createTransport(mailerSettings);
    const domainName = domain.domain;
    const query = { where: { domain: domainName } };
    const domainKeywords:Keyword[] = await Keyword.findAll(query);
