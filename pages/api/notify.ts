@@ -81,5 +81,5 @@ const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => 
       to: domain.notification_emails || notification_email,
       subject: `[${domainName}] Keyword Positions Update`,
       html: emailHTML,
-   });
+   }).catch((err:any) => console.log('[ERROR] Sending Notification Email for', domainName, err?.response || err));
 };

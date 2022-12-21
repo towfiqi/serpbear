@@ -92,7 +92,7 @@ export const deleteDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
             keywordsRemoved: removedKeywordCount,
          });
    } catch (error) {
-      console.log('##### Delete Domain Error: ', error);
+      console.log('[ERROR] Deleting Domain: ', req.query.domain, error);
       return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, error: 'Error Deleting Domain' });
    }
 };
@@ -104,11 +104,15 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
    const { domain } = req.query || {};
    const { notification_interval, notification_emails } = req.body;
 
-   const domainToUpdate: Domain|null = await Domain.findOne({ where: { domain } });
-   if (domainToUpdate) {
-      domainToUpdate.set({ notification_interval, notification_emails });
-      await domainToUpdate.save();
+   try {
+      const domainToUpdate: Domain|null = await Domain.findOne({ where: { domain } });
+      if (domainToUpdate) {
+         domainToUpdate.set({ notification_interval, notification_emails });
+         await domainToUpdate.save();
+      }
+      return res.status(200).json({ domain: domainToUpdate });
+   } catch (error) {
+      console.log('[ERROR] Updating Domain: ', req.query.domain, error);
+      return res.status(400).json({ domain: null, error: 'Error Updating Domain' });
    }
-
-   return res.status(200).json({ domain: domainToUpdate });
 };

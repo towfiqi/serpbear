@@ -22,7 +22,6 @@ const getKeyword = async (req: NextApiRequest, res: NextApiResponse<KeywordGetRe
    if (!req.query.id && typeof req.query.id !== 'string') {
        return res.status(400).json({ error: 'Keyword ID is Required!' });
    }
-   console.log('KEYWORD: ', req.query.id);
 
    try {
       const query = { ID: parseInt((req.query.id as string), 10) };
@@ -31,7 +30,7 @@ const getKeyword = async (req: NextApiRequest, res: NextApiResponse<KeywordGetRe
       const keywords = pareseKeyword && pareseKeyword[0] ? pareseKeyword[0] : null;
       return res.status(200).json({ keyword: keywords });
    } catch (error) {
-      console.log(error);
+      console.log('[ERROR] Getting Keyword: ', error);
       return res.status(400).json({ error: 'Error Loading Keyword' });
    }
 };

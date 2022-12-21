@@ -45,7 +45,7 @@ const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiRespo
       const scData = await fetchDomainSCData(domainname);
       return res.status(200).json({ data: scData });
    } catch (error) {
-      console.log('ERROR getDomainSearchConsoleData: ', error);
+      console.log('[ERROR] Getting Search Console Data for: ', domainname, error);
       return res.status(400).json({ data: null, error: 'Error Fetching Data from Google Search Console.' });
    }
 };
@@ -59,7 +59,7 @@ const cronRefreshSearchConsoleData = async (req: NextApiRequest, res: NextApiRes
       }
       return res.status(200).json({ status: 'completed' });
    } catch (error) {
-      console.log('ERROR cronRefreshkeywords: ', error);
+      console.log('[ERROR] CRON Updating Search Console Data. ', error);
       return res.status(400).json({ status: 'failed', error: 'Error Fetching Data from Google Search Console.' });
    }
 };

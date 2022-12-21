@@ -35,7 +35,7 @@ const cronRefreshkeywords = async (req: NextApiRequest, res: NextApiResponse<CRO
 
       return res.status(200).json({ started: true });
    } catch (error) {
-      console.log('ERROR cronRefreshkeywords: ', error);
+      console.log('[ERROR] CRON Refreshing Keywords: ', error);
       return res.status(400).json({ started: false, error: 'CRON Error refreshing keywords!' });
    }
 };

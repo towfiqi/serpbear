@@ -45,7 +45,7 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(securedSettings), { encoding: 'utf-8' });
       return res.status(200).json({ settings });
    } catch (error) {
-      console.log('ERROR updateSettings: ', error);
+      console.log('[ERROR] Updating App Settings. ', error);
       return res.status(200).json({ error: 'Error Updating Settings!' });
    }
 };
@@ -72,7 +72,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
 
       return decryptedSettings;
    } catch (error) {
-      console.log(error);
+      console.log('[ERROR] Getting App Settings. ', error);
       const settings = {
          scraper_type: 'none',
          notification_interval: 'never',
