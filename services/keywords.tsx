@@ -8,7 +8,7 @@ export const fetchKeywords = async (router: NextRouter) => {
    return res.json();
 };
 
-export function useFetchKeywords(router: NextRouter, setKeywordSPollInterval:Function, keywordSPollInterval:undefined|number = undefined) {
+export function useFetchKeywords(router: NextRouter, setKeywordSPollInterval?:Function, keywordSPollInterval:undefined|number = undefined) {
    const { data: keywordsData, isLoading: keywordsLoading, isError } = useQuery(
       ['keywords', router.query.slug],
       () => fetchKeywords(router),

@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useState, useMemo, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
-import { useAddKeywords } from '../../services/keywords';
+import { useAddKeywords, useFetchKeywords } from '../../services/keywords';
 import { SCfilterKeywords, SCkeywordsByDevice, SCsortKeywords } from '../../utils/SCsortFilter';
 import Icon from '../common/Icon';
 import KeywordFilters from './KeywordFilter';
@@ -29,7 +29,8 @@ const SCKeywordsTable = ({ domain, keywords = [], isLoading = true, isConsoleInt
    const [sortBy, setSortBy] = useState<string>('imp_asc');
    const [isMobile, setIsMobile] = useState<boolean>(false);
    const [SCListHeight, setSCListHeight] = useState(500);
-
+   const { keywordsData } = useFetchKeywords(router);
+   const addedkeywords: string[] = keywordsData?.keywords?.map((key: KeywordType) => `${key.keyword}:${key.country}:${key.device}`) || [];
    const { mutate: addKeywords } = useAddKeywords(() => { if (domain && domain.slug) router.push(`/domain/${domain.slug}`); });
    const finalKeywords: {[key:string] : SCKeywordType[] } = useMemo(() => {
       const procKeywords = keywords.filter((x) => x.device === device);
@@ -112,6 +113,7 @@ const SCKeywordsTable = ({ domain, keywords = [], isLoading = true, isConsoleInt
          selected={selectedKeywords.includes(keyword.uid)}
          selectKeyword={selectKeyword}
          keywordData={keyword}
+         isTracked={addedkeywords.includes(`${keyword.keyword}:${keyword.country}:${keyword.device}`)}
          lastItem={index === (finalKeywords[device].length - 1)}
          />
    );

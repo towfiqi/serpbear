@@ -7,11 +7,12 @@ type SCKeywordProps = {
    selected: boolean,
    selectKeyword: Function,
    lastItem?:boolean,
+   isTracked: boolean,
    style: Object
 }
 
 const SCKeyword = (props: SCKeywordProps) => {
-   const { keywordData, selected, lastItem, selectKeyword, style } = props;
+   const { keywordData, selected, lastItem, selectKeyword, style, isTracked = false } = props;
    const { keyword, uid, position, country, impressions, ctr, clicks } = keywordData;
 
    const renderPosition = () => {
@@ -31,10 +32,11 @@ const SCKeyword = (props: SCKeywordProps) => {
          <div className=' w-3/4 lg:flex-1 lg:basis-20 lg:w-auto font-semibold cursor-pointer'>
             <button
                className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border 
-               ${selected ? ' bg-blue-700 border-blue-700 text-white' : 'text-transparent'}`}
-               onClick={() => selectKeyword(uid)}
+               ${isTracked || selected ? ' bg-blue-700 border-blue-700 text-white' : 'text-transparent'}
+               ${isTracked ? 'bg-gray-400 border-gray-400 cursor-default' : ''}`}
+               onClick={() => !isTracked && selectKeyword(uid)}
                >
-                  <Icon type="check" size={10} />
+                  <Icon type="check" size={10} title={isTracked ? 'Already in Tracker' : ''} />
             </button>
             <a className='py-2 hover:text-blue-600'>
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country] && countries[country][0]} />{keyword}
