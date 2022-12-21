@@ -62,7 +62,7 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
          const lastWeekHistory :KeywordHistory = {};
          historySorted.slice(-7).forEach((x:any) => { lastWeekHistory[x.dateRaw] = x.position; });
          const keywordWithSlimHistory = { ...keyword, lastResult: [], history: lastWeekHistory };
-         const finalKeyword = domainSCData ? integrateKeywordSCData(keyword, domainSCData) : keywordWithSlimHistory;
+         const finalKeyword = domainSCData ? integrateKeywordSCData(keywordWithSlimHistory, domainSCData) : keywordWithSlimHistory;
          return finalKeyword;
       });
       return res.status(200).json({ keywords: processedKeywords });
