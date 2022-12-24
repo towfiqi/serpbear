@@ -92,6 +92,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
 
    if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
       const axiosConfig: CreateAxiosDefaults = {};
+      headers.Accept = 'gzip,deflate,compress;';
       axiosConfig.headers = headers;
       const proxies = settings.proxy.split(/\r?\n|\r|\n/g);
       let proxyURL = '';
@@ -139,9 +140,10 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          res = await scraperClient.then((result:any) => result.json());
       }
 
-      if (res && (res.data || res.html || res.result || res.results || res.organic_results)) {
-         const extracted = extractScrapedResult(res.data || res.html || res.result || res.results || res.organic_results, settings.scraper_type);
-         // await writeFile('result.txt', JSON.stringify(extracted), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
+      const scrapeResult = (res.data || res.html || res.result || res.results || res.organic_results || '');
+      if (res && scrapeResult) {
+         const extracted = extractScrapedResult(scrapeResult, settings.scraper_type);
+         // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
          console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
@@ -150,8 +152,11 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          throw new Error(res);
       }
    } catch (error:any) {
-      console.log('#### SCRAPE ERROR: ', keyword.keyword, '. Error: ', scraperError);
+      console.log('[ERROR] Scraping Keyword : ', keyword.keyword, '. Error: ', error && error.response && error.response.statusText);
       refreshedResults.error = scraperError;
+      if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
+         refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
+      }
    }
 
    return refreshedResults;
@@ -178,7 +183,7 @@ export const extractScrapedResult = (content: string, scraper_type:string): Sear
       for (let index = 0; index < children.length; index += 1) {
          const title = $(children[index]).text();
          const url = $(children[index]).closest('a').attr('href');
-         const cleanedURL = url ? url.replace('/url?q=', '').replace(/&sa=.*/, '') : '';
+         const cleanedURL = url ? url.replaceAll(/^.+?(?=https:|$)/g, '').replaceAll(/(&).*/g, '') : '';
          if (title && url) {
             lastPosition += 1;
             extractedResult.push({ title, url: cleanedURL, position: lastPosition });
