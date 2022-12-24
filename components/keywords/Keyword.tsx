@@ -56,6 +56,9 @@ const Keyword = (props: KeywordProps) => {
          const historySorted = historyArray.sort((a, b) => a.date - b.date);
          const previousPos = historySorted[historySorted.length - 2].position;
          status = previousPos === 0 ? position : previousPos - position;
+         if (position === 0 && previousPos > 0) {
+            status = previousPos - 100;
+         }
       }
       return status;
    }, [history, position]);
