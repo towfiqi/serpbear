@@ -1,10 +1,9 @@
 import axios, { AxiosResponse, CreateAxiosDefaults } from 'axios';
-// import axiosRetry from 'axios-retry';
-// import path from 'path';
 import cheerio from 'cheerio';
 import { readFile, writeFile } from 'fs/promises';
 import HttpsProxyAgent from 'https-proxy-agent';
 import countries from './countries';
+import allScrapers from '../scrapers/index';
 
 type SearchResult = {
    title: string,
@@ -26,25 +25,13 @@ export type RefreshResult = false | {
    error?: boolean | string
 }
 
-interface SerplyResult {
-   title: string,
-   link: string,
-   realPosition: number,
-}
-
-interface SerpApiResult {
-   title: string,
-   link: string,
-   position: number,
-}
-
 /**
  * Creates a SERP Scraper client promise based on the app settings.
  * @param {KeywordType} keyword - the keyword to get the SERP for.
  * @param {SettingsType} settings - the App Settings that contains the scraper details
  * @returns {Promise}
  */
-export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Promise<AxiosResponse|Response> | false => {
+export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scraper?: ScraperSettings): Promise<AxiosResponse|Response> | false => {
    let apiURL = ''; let client: Promise<AxiosResponse|Response> | false = false;
    const headers: any = {
       'Content-Type': 'application/json',
@@ -58,36 +45,22 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType): Pr
       headers['User-Agent'] = mobileAgent;
    }
 
-   if (settings && settings.scraper_type === 'scrapingant' && settings.scaping_api) {
-      const scraperCountries = ['AE', 'BR', 'CN', 'DE', 'ES', 'FR', 'GB', 'HK', 'PL', 'IN', 'IT', 'IL', 'JP', 'NL', 'RU', 'SA', 'US', 'CZ'];
-      const country = scraperCountries.includes(keyword.country.toUpperCase()) ? keyword.country : 'US';
-      const lang = countries[country][2];
-      apiURL = `https://api.scrapingant.com/v2/extended?url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}&x-api-key=${settings.scaping_api}&proxy_country=${country}&browser=false`;
-   }
-
-   if (settings && settings.scraper_type === 'scrapingrobot' && settings.scaping_api) {
-      const country = keyword.country || 'US';
-      const lang = countries[country][2];
-      apiURL = `https://api.scrapingrobot.com/?token=${settings.scaping_api}&proxyCountry=${country}&render=false${keyword.device === 'mobile' ? '&mobile=true' : ''}&url=https%3A%2F%2Fwww.google.com%2Fsearch%3Fnum%3D100%26hl%3D${lang}%26q%3D${encodeURI(keyword.keyword)}`;
-   }
-
-    // Serply.io docs https://docs.serply.io/api
-   if (settings && settings.scraper_type === 'serply' && settings.scaping_api) {
-      const scraperCountries = ['US', 'CA', 'IE', 'GB', 'FR', 'DE', 'SE', 'IN', 'JP', 'KR', 'SG', 'AU', 'BR'];
-      const country = scraperCountries.includes(keyword.country.toUpperCase()) ? keyword.country : 'US';
-      if (keyword.device === 'mobile') {
-          headers['X-User-Agent'] = 'mobile';
-      } else {
-         headers['X-User-Agent'] = 'desktop';
+   if (scraper) {
+      // Set Scraper Header
+      const scrapeHeaders = scraper.headers ? scraper.headers(keyword, settings) : null;
+      const scraperAPIURL = scraper.scrapeURL ? scraper.scrapeURL(keyword, settings, countries) : null;
+      if (scrapeHeaders) {
+         Object.keys(scrapeHeaders).forEach((headerItemKey:string) => {
+            headers[headerItemKey] = scrapeHeaders[headerItemKey as keyof object];
+         });
       }
-      headers['X-Proxy-Location'] = country;
-      headers['X-Api-Key'] = settings.scaping_api;
-      apiURL = `https://api.serply.io/v1/search/q=${encodeURI(keyword.keyword)}&num=100&hl=${country}`;
-   }
-
-   // SerpApi docs: https://serpapi.com
-   if (settings && settings.scraper_type === 'serpapi' && settings.scaping_api) {
-      apiURL = `https://serpapi.com/search?q=${encodeURI(keyword.keyword)}&num=100&gl=${keyword.country}&device=${keyword.device}&api_key=${settings.scaping_api}`;
+      // Set Scraper API URL
+      // If not URL is generated, stop right here.
+      if (scraperAPIURL) {
+         apiURL = scraperAPIURL;
+      } else {
+         return false;
+      }
    }
 
    if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
@@ -129,33 +102,36 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       result: keyword.lastResult,
       error: true,
    };
-   const scraperClient = getScraperClient(keyword, settings);
+   const scraperType = settings?.scraper_type || '';
+   const scraperObj = allScrapers.find((scraper:ScraperSettings) => scraper.id === scraperType);
+   const scraperClient = getScraperClient(keyword, settings, scraperObj);
 
    if (!scraperClient) { return false; }
-   let res:any = null; let scraperError:any = null;
-   try {
-      if (settings && settings.scraper_type === 'proxy' && settings.proxy) {
-         res = await scraperClient;
-      } else {
-         res = await scraperClient.then((result:any) => result.json());
-      }
 
-      const scrapeResult = (res.data || res.html || res.result || res.results || res.organic_results || '');
+   let scraperError:any = null;
+   try {
+      const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((reslt:any) => reslt.json());
+      const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
+      const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
       if (res && scrapeResult) {
-         const extracted = extractScrapedResult(scrapeResult, settings.scraper_type);
+         const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult);
          // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
-         console.log('SERP: ', keyword.keyword, serp.postion, serp.url);
+         console.log('[SERP]: ', keyword.keyword, serp.postion, serp.url);
       } else {
          scraperError = res.detail || res.error || 'Unknown Error';
          throw new Error(res);
       }
    } catch (error:any) {
-      console.log('[ERROR] Scraping Keyword : ', keyword.keyword, '. Error: ', error && error.response && error.response.statusText);
       refreshedResults.error = scraperError;
       if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
          refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
+      }
+
+      console.log('[ERROR] Scraping Keyword : ', keyword.keyword, '. Error: ', error && error.response && error.response.statusText);
+      if (!(error && error.response && error.response.statusText)) {
+         console.log('[ERROR_MESSAGE]: ', error);
       }
    }
 
@@ -165,10 +141,9 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 /**
  * Extracts the Google Search result as object array from the Google Search's HTML content
  * @param {string} content - scraped google search page html data.
- * @param {string} scraper_type - the type of scraper (Proxy or Scraper)
  * @returns {SearchResult[]}
  */
-export const extractScrapedResult = (content: string, scraper_type:string): SearchResult[] => {
+export const extractScrapedResult = (content: string): SearchResult[] => {
    const extractedResult = [];
 
    const $ = cheerio.load(content);
@@ -176,57 +151,17 @@ export const extractScrapedResult = (content: string, scraper_type:string): Sear
    const searchResult = hasNumberofResult.children();
    let lastPosition = 0;
 
-   if (scraper_type === 'proxy') {
-      const mainContent = $('body').find('#main');
-      const children = $(mainContent).find('h3');
-
-      for (let index = 0; index < children.length; index += 1) {
-         const title = $(children[index]).text();
-         const url = $(children[index]).closest('a').attr('href');
-         const cleanedURL = url ? url.replaceAll(/^.+?(?=https:|$)/g, '').replaceAll(/(&).*/g, '') : '';
+   for (let i = 0; i < searchResult.length; i += 1) {
+      if (searchResult[i]) {
+         const title = $(searchResult[i]).find('h3').html();
+         const url = $(searchResult[i]).find('a').attr('href');
+         // console.log(i, url?.slice(0, 40), title?.slice(0, 40));
          if (title && url) {
             lastPosition += 1;
-            extractedResult.push({ title, url: cleanedURL, position: lastPosition });
+            extractedResult.push({ title, url, position: lastPosition });
          }
       }
-   } else if (scraper_type === 'serply') {
-      // results already in json
-      const results: SerplyResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerplyResult[];
-      for (const result of results) {
-         if (result.title && result.link) {
-            extractedResult.push({
-               title: result.title,
-               url: result.link,
-               position: result.realPosition,
-            });
-         }
-      }
-   } else if (scraper_type === 'serpapi') {
-      // results already in json
-      const results: SerpApiResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerpApiResult[];
-
-      for (const { link, title, position } of results) {
-         if (title && link) {
-            extractedResult.push({
-               title,
-               url: link,
-               position,
-            });
-         }
-      }
-   } else {
-      for (let i = 0; i < searchResult.length; i += 1) {
-         if (searchResult[i]) {
-            const title = $(searchResult[i]).find('h3').html();
-            const url = $(searchResult[i]).find('a').attr('href');
-            // console.log(i, url?.slice(0, 40), title?.slice(0, 40));
-            if (title && url) {
-               lastPosition += 1;
-               extractedResult.push({ title, url, position: lastPosition });
-            }
-         }
-     }
-   }
+  }
 
   return extractedResult;
 };

@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import Cryptr from 'cryptr';
 import { writeFile, readFile } from 'fs/promises';
 import verifyUser from '../../utils/verifyUser';
+import allScrapers from '../../scrapers/index';
 
 type SettingsGetResponse = {
    settings?: object | null,
@@ -65,6 +66,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             scaping_api,
             smtp_password,
             search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL),
+            available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
          };
       } catch (error) {
          console.log('Error Decrypting Settings API Keys!');

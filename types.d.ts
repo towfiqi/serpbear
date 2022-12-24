@@ -54,7 +54,7 @@ type KeywordFilters = {
 }
 
 type countryData = {
-   [ISO:string] : string[]
+   [ISO:string] : [countryName:string, cityName:string, language:string]
 }
 
 type countryCodeData = {
@@ -78,6 +78,7 @@ type SettingsType = {
    smtp_username?: string,
    smtp_password?: string,
    search_console_integrated?: boolean,
+   available_scapers?: Array
 }
 
 type KeywordSCDataChild = {
@@ -163,3 +164,18 @@ type SCDomainDataType = {
 }
 
 type SCKeywordType = SearchAnalyticsItem;
+
+type scraperExtractedItem = {
+   title: string,
+   url: string,
+   position: number,
+}
+interface ScraperSettings {
+   id:string,
+   name:string,
+   website:string,
+   resultObjectKey: string,
+   headers?(keyword:KeywordType, settings: SettingsType): Object,
+   scrapeURL?(keyword:KeywordType, settings:SettingsType, countries:countryData): string,
+   serpExtractor?(content:string): scraperExtractedItem[],
+}

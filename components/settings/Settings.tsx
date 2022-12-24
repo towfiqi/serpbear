@@ -77,7 +77,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
          }
       }
 
-      if (['scrapingant', 'scrapingrobot', 'serply', 'serpapi'].includes(settings.scraper_type) && !settings.scaping_api) {
+      if (settings?.scraper_type !== 'proxy' && settings?.scraper_type !== 'none') {
          error = { type: 'no_api_key', msg: 'Insert a Valid API Key or Token for the Scraper Service.' };
       }
 
@@ -98,14 +98,8 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       { label: 'Monthly', value: 'monthly' },
       { label: 'Never', value: 'never' },
    ];
-   const scraperOptions: SelectionOption[] = [
-      { label: 'None', value: 'none' },
-      { label: 'Proxy', value: 'proxy' },
-      { label: 'ScrapingAnt.com', value: 'scrapingant' },
-      { label: 'ScrapingRobot.com', value: 'scrapingrobot' },
-      { label: 'serply.io', value: 'serply' },
-      { label: 'serpapi.com', value: 'serpapi' },
-   ];
+   const allScrapers: SelectionOption[] = settings.available_scapers ? settings.available_scapers : [];
+   const scraperOptions: SelectionOption[] = [{ label: 'None', value: 'none' }, ...allScrapers];
 
    const tabStyle = 'inline-block px-4 py-1 rounded-full mr-3 cursor-pointer text-sm';
    return (
