@@ -63,21 +63,20 @@ const Settings = ({ closeSettings }:SettingsProps) => {
 
    const performUpdate = () => {
       let error: null|SettingsError = null;
-      if (settings.notification_interval !== 'never') {
+      const { notification_interval, notification_email, notification_email_from, scraper_type, smtp_port, smtp_server, scaping_api } = settings;
+      if (notification_interval !== 'never') {
          if (!settings.notification_email) {
             error = { type: 'no_email', msg: 'Insert a Valid Email address' };
          }
-         if (settings.notification_email
-            && (!settings.smtp_port || !settings.smtp_server
-               || !settings.notification_email_from)) {
+         if (notification_email && (!smtp_port || !smtp_server || !notification_email_from)) {
                let type = 'no_smtp_from';
-               if (!settings.smtp_port) { type = 'no_smtp_port'; }
-               if (!settings.smtp_server) { type = 'no_smtp_server'; }
+               if (!smtp_port) { type = 'no_smtp_port'; }
+               if (!smtp_server) { type = 'no_smtp_server'; }
                error = { type, msg: 'Insert SMTP Server details that will be used to send the emails.' };
          }
       }
 
-      if (settings?.scraper_type !== 'proxy' && settings?.scraper_type !== 'none') {
+      if (scraper_type !== 'proxy' && scraper_type !== 'none' && !scaping_api) {
          error = { type: 'no_api_key', msg: 'Insert a Valid API Key or Token for the Scraper Service.' };
       }
 
