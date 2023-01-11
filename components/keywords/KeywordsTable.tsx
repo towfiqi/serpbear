@@ -10,6 +10,7 @@ import KeywordFilters from './KeywordFilter';
 import Modal from '../common/Modal';
 import { useDeleteKeywords, useFavKeywords, useRefreshKeywords } from '../../services/keywords';
 import KeywordTagManager from './KeywordTagManager';
+import AddTags from './AddTags';
 
 type KeywordsTableProps = {
    domain: DomainType | null,
@@ -28,6 +29,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    const [showKeyDetails, setShowKeyDetails] = useState<KeywordType|null>(null);
    const [showRemoveModal, setShowRemoveModal] = useState<boolean>(false);
    const [showTagManager, setShowTagManager] = useState<null|number>(null);
+   const [showAddTags, setShowAddTags] = useState<boolean>(false);
    const [filterParams, setFilterParams] = useState<KeywordFilters>({ countries: [], tags: [], search: '' });
    const [sortBy, setSortBy] = useState<string>('date_asc');
    const [scDataType, setScDataType] = useState<string>('threeDays');
@@ -79,7 +81,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                         className='block px-2 py-2 cursor-pointer hover:text-indigo-600'
                         onClick={() => { refreshMutate({ ids: selectedKeywords }); setSelectedKeywords([]); }}
                         >
-                           <span className=' bg-indigo-100 text-blue-700 px-1 rounded'><Icon type="reload" size={11} /></span> Refresh Keyword
+                           <span className=' bg-indigo-100 text-blue-700 px-1 rounded'><Icon type="reload" size={11} /></span> Refresh Keywords
                         </a>
                      </li>
                      <li className='inline-block mr-4'>
@@ -87,7 +89,14 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                         className='block px-2 py-2 cursor-pointer hover:text-indigo-600'
                         onClick={() => setShowRemoveModal(true)}
                         >
-                           <span className=' bg-red-100 text-red-600 px-1 rounded'><Icon type="trash" size={14} /></span> Remove Keyword</a>
+                           <span className=' bg-red-100 text-red-600 px-1 rounded'><Icon type="trash" size={14} /></span> Remove Keywords</a>
+                     </li>
+                     <li className='inline-block mr-4'>
+                        <a
+                        className='block px-2 py-2 cursor-pointer hover:text-indigo-600'
+                        onClick={() => setShowAddTags(true)}
+                        >
+                           <span className=' bg-green-100 text-green-500  px-1 rounded'><Icon type="tags" size={14} /></span> Tag Keywords</a>
                      </li>
                   </ul>
                </div>
@@ -220,6 +229,12 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                allTags={allDomainTags}
                keyword={keywords.find((k) => k.ID === showTagManager)}
                closeModal={() => setShowTagManager(null)}
+               />
+         )}
+         {showAddTags && (
+            <AddTags
+               keywords={keywords.filter((k) => selectedKeywords.includes(k.ID))}
+               closeModal={() => setShowAddTags(false)}
                />
          )}
          <Toaster position='bottom-center' containerClassName="react_toaster" />

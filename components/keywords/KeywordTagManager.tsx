@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useUpdateKeywordTags } from '../../services/keywords';
 import Icon from '../common/Icon';
 import Modal from '../common/Modal';
+import AddTags from './AddTags';
 
 type keywordTagManagerProps = {
    keyword: KeywordType|undefined,
@@ -10,31 +11,12 @@ type keywordTagManagerProps = {
 }
 
 const KeywordTagManager = ({ keyword, closeModal }: keywordTagManagerProps) => {
-   const [tagInput, setTagInput] = useState('');
-   const [inputError, setInputError] = useState('');
-   const { mutate: updateMutate } = useUpdateKeywordTags(() => { setTagInput(''); });
+   const [showAddTag, setShowAddTag] = useState<boolean>(false);
+   const { mutate: updateMutate } = useUpdateKeywordTags(() => { });
 
    const removeTag = (tag:String) => {
       if (!keyword) { return; }
       const newTags = keyword.tags.filter((t) => t !== tag.trim());
-      updateMutate({ tags: { [keyword.ID]: newTags } });
-   };
-
-   const addTag = () => {
-      if (!keyword) { return; }
-      if (!tagInput) {
-         setInputError('Please Insert a Tag!');
-         setTimeout(() => { setInputError(''); }, 3000);
-         return;
-      }
-      if (keyword.tags.includes(tagInput)) {
-         setInputError('Tag Exist!');
-         setTimeout(() => { setInputError(''); }, 3000);
-         return;
-      }
-
-      console.log('New Tag: ', tagInput);
-      const newTags = [...keyword.tags, tagInput.trim()];
       updateMutate({ tags: { [keyword.ID]: newTags } });
    };
 
@@ -53,31 +35,27 @@ const KeywordTagManager = ({ keyword, closeModal }: keywordTagManagerProps) => {
                                  </button>
                            </li>;
                   })}
+                  <li className='inline-block py-1 px-1'>
+                     <button
+                     title='Add New Tag'
+                     className="cursor-pointer rounded p-1 px-3 bg-indigo-600 text-white font-semibold text-sm"
+                     onClick={() => setShowAddTag(true)}>+</button>
+                  </li>
                </ul>
             )}
             {keyword && keyword.tags.length === 0 && (
-               <div className="text-center w-full text-gray-500">No Tags Added to this Keyword.</div>
+               <div className="text-center w-full text-gray-500">
+                  No Tags Added to this Keyword. <button className=' text-indigo-600' onClick={() => setShowAddTag(true)}>+ Add Tag</button>
+               </div>
             )}
          </div>
-         <div className="relative">
-            {inputError && <span className="absolute top-[-24px] text-red-400 text-sm font-semibold">{inputError}</span>}
-            <span className='absolute text-gray-400 top-3 left-2'><Icon type="tags" size={16} /></span>
-            <input
-               className='w-full border rounded border-gray-200 py-3 px-4 pl-8 outline-none focus:border-indigo-300'
-               placeholder='Insert Tags'
-               value={tagInput}
-               onChange={(e) => setTagInput(e.target.value)}
-               onKeyDown={(e) => {
-                  if (e.code === 'Enter') {
-                    e.preventDefault();
-                    addTag();
-                  }
-               }}
-            />
-            <button className=" absolute right-2 top-2 cursor-pointer rounded p-1 px-4 bg-blue-600 text-white font-bold" onClick={addTag}>+</button>
-         </div>
+         {showAddTag && keyword && (
+            <AddTags
+               keywords={[keyword]}
+               closeModal={() => setShowAddTag(false)}
+               />
+         )}
       </Modal>
-
    );
 };
 
