@@ -54,7 +54,7 @@ const fetchSearchConsoleData = async (domainName:string, days:number, type?:stri
                date: row.keys[0],
                clicks: row.clicks,
                impressions: row.impressions,
-               ctr: row.ctr,
+               ctr: row.ctr * 100,
                position: row.position,
             });
          });
@@ -101,7 +101,7 @@ export const parseSearchConsoleItem = (SCItem: SearchAnalyticsRawItem, domainNam
    const page = SCItem.keys[3] ? SCItem.keys[3].replace('https://', '').replace('http://', '').replace('www', '').replace(domainName, '') : '';
    const uid = `${country.toLowerCase()}:${device}:${keyword.replaceAll(' ', '_')}`;
 
-   return { keyword, uid, device, country, clicks, impressions, ctr, position, page };
+   return { keyword, uid, device, country, clicks, impressions, ctr: ctr * 100, position, page };
 };
 
 export const integrateKeywordSCData = (keyword: KeywordType, SCData:SCDomainDataType) : KeywordType => {
