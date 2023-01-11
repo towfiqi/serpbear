@@ -18,10 +18,10 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<loginResponse
    if (!req.body.username || !req.body.password) {
       return res.status(401).json({ error: 'Username Password Missing' });
    }
-
-   if (req.body.username === process.env.USER
+   const userName = process.env.USERNAME ? process.env.USERNAME : process.env.USER;
+   if (req.body.username === userName
       && req.body.password === process.env.PASSWORD && process.env.SECRET) {
-      const token = jwt.sign({ user: process.env.USER }, process.env.SECRET);
+      const token = jwt.sign({ user: userName }, process.env.SECRET);
       const cookies = new Cookies(req, res);
       const expireDate = new Date();
       const sessDuration = process.env.SESSION_DURATION;
@@ -30,7 +30,7 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<loginResponse
       return res.status(200).json({ success: true, error: null });
    }
 
-   const error = req.body.username !== process.env.USER ? 'Incorrect Username' : 'Incorrect Password';
+   const error = req.body.username !== userName ? 'Incorrect Username' : 'Incorrect Password';
 
    return res.status(401).json({ success: false, error });
 };
