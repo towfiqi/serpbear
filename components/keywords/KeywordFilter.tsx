@@ -82,10 +82,10 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       { value: 'alpha_desc', label: 'Alphabetically(Z-A)' },
    ];
    if (integratedConsole) {
-      sortOptionChoices.push({ value: 'imp_asc', label: `Most Viewed${isConsole ? ' (Default)' : ''}` });
-      sortOptionChoices.push({ value: 'imp_desc', label: 'Least Viewed' });
-      sortOptionChoices.push({ value: 'visits_asc', label: 'Most Visited' });
-      sortOptionChoices.push({ value: 'visits_desc', label: 'Least Visited' });
+      sortOptionChoices.push({ value: 'imp_desc', label: `Most Viewed${isConsole ? ' (Default)' : ''}` });
+      sortOptionChoices.push({ value: 'imp_asc', label: 'Least Viewed' });
+      sortOptionChoices.push({ value: 'visits_desc', label: 'Most Visited' });
+      sortOptionChoices.push({ value: 'visits_asc', label: 'Least Visited' });
    }
    if (isConsole) {
       sortOptionChoices.splice(2, 2);

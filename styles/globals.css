@@ -84,8 +84,8 @@ body {
 
 .domKeywords_head--alpha_desc .domKeywords_head_keyword::after,
 .domKeywords_head--pos_desc .domKeywords_head_position::after,
-.domKeywords_head--imp_desc .domKeywords_head_imp::after,
-.domKeywords_head--visits_desc .domKeywords_head_visits::after,
+.domKeywords_head--imp_asc .domKeywords_head_imp::after,
+.domKeywords_head--visits_asc .domKeywords_head_visits::after,
 .domKeywords_head--ctr_desc .domKeywords_head_ctr::after {
    content: "↓";
    display: inline-block;
@@ -98,8 +98,8 @@ body {
 
 .domKeywords_head--alpha_asc .domKeywords_head_keyword::after,
 .domKeywords_head--pos_asc .domKeywords_head_position::after,
-.domKeywords_head--imp_asc .domKeywords_head_imp::after,
-.domKeywords_head--visits_asc .domKeywords_head_visits::after,
+.domKeywords_head--imp_desc .domKeywords_head_imp::after,
+.domKeywords_head--visits_desc .domKeywords_head_visits::after,
 .domKeywords_head--ctr_asc .domKeywords_head_ctr::after {
    content: "↑";
    display: inline-block;
