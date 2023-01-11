@@ -85,7 +85,7 @@ const KeywordDetails = ({ keyword, closeDetails }:KeywordDetailsProps) => {
                   <h3 className=' text-lg font-bold'>
                      <span title={countries[keyword.country][0]}
                      className={`fflag fflag-${keyword.country} w-[18px] h-[12px] mr-2`} /> {keyword.keyword}
-                     <span className='py-1 px-2 rounded bg-blue-50 text-blue-700 text-xs font-bold'>{keyword.position}</span>
+                     <span className='py-1 px-2 ml-2 rounded bg-blue-50 text-blue-700 text-xs font-bold'>{keyword.position}</span>
                   </h3>
                   <button
                   className='absolute top-2 right-2 p-2 px-3 text-gray-400 hover:text-gray-700 transition-all hover:rotate-90'
