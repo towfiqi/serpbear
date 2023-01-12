@@ -49,7 +49,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scr
       // Set Scraper Header
       const scrapeHeaders = scraper.headers ? scraper.headers(keyword, settings) : null;
       const scraperAPIURL = scraper.scrapeURL ? scraper.scrapeURL(keyword, settings, countries) : null;
-      if (scrapeHeaders) {
+      if (scrapeHeaders && Object.keys(scrapeHeaders).length > 0) {
          Object.keys(scrapeHeaders).forEach((headerItemKey:string) => {
             headers[headerItemKey] = scrapeHeaders[headerItemKey as keyof object];
          });
@@ -114,7 +114,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
       const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
       if (res && scrapeResult) {
-         const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult);
+         const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
          // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
@@ -141,9 +141,10 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 /**
  * Extracts the Google Search result as object array from the Google Search's HTML content
  * @param {string} content - scraped google search page html data.
+ * @param {string} device - The device of the keyword.
  * @returns {SearchResult[]}
  */
-export const extractScrapedResult = (content: string): SearchResult[] => {
+export const extractScrapedResult = (content: string, device: string): SearchResult[] => {
    const extractedResult = [];
 
    const $ = cheerio.load(content);
@@ -162,6 +163,24 @@ export const extractScrapedResult = (content: string): SearchResult[] => {
          }
       }
   }
+
+  // Mobile Scraper
+  if (extractedResult.length === 0 && device === 'mobile') {
+      const items = $('body').find('#rso > div');
+      for (let i = 0; i < items.length; i += 1) {
+         const item = $(items[i]);
+         const linkDom = item.find('a[role="presentation"]');
+         if (linkDom) {
+            const url = linkDom.attr('href');
+            const titleDom = linkDom.find('[role="link"]');
+            const title = titleDom ? titleDom.text() : '';
+            if (title && url) {
+               lastPosition += 1;
+               extractedResult.push({ title, url, position: lastPosition });
+            }
+         }
+      }
+   }
 
   return extractedResult;
 };
