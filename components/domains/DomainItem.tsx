@@ -24,7 +24,7 @@ const DomainItem = ({ domain, selected, isConsoleIntegrated = false }: DomainIte
                   <img src={`https://image.thum.io/get/maxAge/96/width/200/https://${domain.domain}`} alt={domain.domain} />
                </div>
                <div className="domain_details flex-1">
-                  <h3 className='font-semibold text-base mb-2 capitalize'>{domain.domain}</h3>
+                  <h3 className='font-semibold text-base mb-2'>{domain.domain}</h3>
                  {keywordsUpdated && (
                   <span className=' text-gray-600 text-xs'>
                      Updated <TimeAgo title={dayjs(keywordsUpdated).format('DD-MMM-YYYY, hh:mm:ss A')} date={keywordsUpdated} />
