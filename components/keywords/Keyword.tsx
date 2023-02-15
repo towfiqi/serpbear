@@ -115,7 +115,10 @@ const Keyword = (props: KeywordProps) => {
          <div
          className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 text-gray-400 lg:m-0 max-w-[70px] 
          overflow-hidden text-ellipsis whitespace-nowrap lg:max-w-none lg:pr-5`}>
-            <span className='mr-3 lg:hidden'><Icon type="link-alt" size={14} color="#999" /></span>{turncatedURL || '-'}</div>
+            <a href={url} target="_blank" rel="noreferrer"><span className='mr-3 lg:hidden'>
+               <Icon type="link-alt" size={14} color="#999" /></span>{turncatedURL || '-'}
+            </a>
+         </div>
          <div
          className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0'>
             <span className='mr-2 lg:hidden'><Icon type="clock" size={14} color="#999" /></span>
