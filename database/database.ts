@@ -6,7 +6,7 @@ import Keyword from './models/keyword';
 const connection = new Sequelize({
    dialect: 'sqlite',
    host: '0.0.0.0',
-   username: process.env.USERNAME ? process.env.USERNAME : process.env.USER,
+   username: process.env.USER_NAME ? process.env.USER_NAME : process.env.USER,
    password: process.env.PASSWORD,
    database: 'sequelize',
    dialectModule: sqlite3,

@@ -18,7 +18,8 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<loginResponse
    if (!req.body.username || !req.body.password) {
       return res.status(401).json({ error: 'Username Password Missing' });
    }
-   const userName = process.env.USERNAME ? process.env.USERNAME : process.env.USER;
+   const userName = process.env.USER_NAME ? process.env.USER_NAME : process.env.USER;
+
    if (req.body.username === userName
       && req.body.password === process.env.PASSWORD && process.env.SECRET) {
       const token = jwt.sign({ user: userName }, process.env.SECRET);
