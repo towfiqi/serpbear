@@ -29,7 +29,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/cron.js ./
 COPY --from=builder --chown=nextjs:nodejs /app/email ./email
 RUN rm package.json
 RUN npm init -y 
-RUN npm i cryptr dotenv node-cron @googleapis/searchconsole
+RUN npm i cryptr dotenv croner @googleapis/searchconsole
 RUN npm i -g concurrently
 
 USER nextjs
