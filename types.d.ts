@@ -80,6 +80,7 @@ type SettingsType = {
    search_console_integrated?: boolean,
    available_scapers?: Array,
    scrape_interval?: string
+   version?: string
 }
 
 type KeywordSCDataChild = {
