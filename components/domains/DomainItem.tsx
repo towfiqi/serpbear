@@ -9,10 +9,11 @@ import Icon from '../common/Icon';
 type DomainItemProps = {
    domain: DomainType,
    selected: boolean,
-   isConsoleIntegrated: boolean
+   isConsoleIntegrated: boolean,
+   thumb: string,
 }
 
-const DomainItem = ({ domain, selected, isConsoleIntegrated = false }: DomainItemProps) => {
+const DomainItem = ({ domain, selected, isConsoleIntegrated = false, thumb }: DomainItemProps) => {
    const { keywordsUpdated, slug, keywordCount = 0, avgPosition = 0, scVisits = 0, scImpressions = 0, scPosition = 0 } = domain;
    // const router = useRouter();
    return (
@@ -21,10 +22,10 @@ const DomainItem = ({ domain, selected, isConsoleIntegrated = false }: DomainIte
          <a className='flex flex-col lg:flex-row'>
             <div className={`flex-1 p-6 flex ${!isConsoleIntegrated ? 'basis-1/3' : ''}`}>
                <div className="domain_thumb w-20 h-20 mr-6 bg-slate-100 rounded border border-gray-200 overflow-hidden">
-                  <img src={`https://image.thum.io/get/maxAge/96/width/200/https://${domain.domain}`} alt={domain.domain} />
+                  {thumb && <img src={thumb} alt={domain.domain} />}
                </div>
                <div className="domain_details flex-1">
-                  <h3 className='font-semibold text-base mb-2 capitalize'>{domain.domain}</h3>
+                  <h3 className='font-semibold text-base mb-2'>{domain.domain}</h3>
                  {keywordsUpdated && (
                   <span className=' text-gray-600 text-xs'>
                      Updated <TimeAgo title={dayjs(keywordsUpdated).format('DD-MMM-YYYY, hh:mm:ss A')} date={keywordsUpdated} />

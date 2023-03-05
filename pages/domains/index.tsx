@@ -11,16 +11,43 @@ import { useFetchDomains } from '../../services/domains';
 import DomainItem from '../../components/domains/DomainItem';
 import Icon from '../../components/common/Icon';
 
+type thumbImages = { [domain:string] : string }
+
 const SingleDomain: NextPage = () => {
    const router = useRouter();
    const [noScrapprtError, setNoScrapprtError] = useState(false);
    const [showSettings, setShowSettings] = useState(false);
    const [showAddDomain, setShowAddDomain] = useState(false);
+   const [domainThumbs, setDomainThumbs] = useState<thumbImages>({});
    const { data: appSettings } = useFetchSettings();
    const { data: domainsData, isLoading } = useFetchDomains(router, true);
 
    useEffect(() => {
-      console.log('Domains Data: ', domainsData);
+      // console.log('Domains Data: ', domainsData);
+      if (domainsData?.domains && domainsData.domains.length > 0) {
+         const domainThumbsRaw = localStorage.getItem('domainThumbs');
+         const domThumbs = domainThumbsRaw ? JSON.parse(domainThumbsRaw) : {};
+         domainsData.domains.forEach(async (domain:DomainType) => {
+            if (domain.domain) {
+               if (!domThumbs[domain.domain]) {
+                  const domainImageBlob = await fetch(`https://image.thum.io/get/auth/66909-serpbear/maxAge/96/width/200/https://${domain.domain}`).then((res) => res.blob());
+                  if (domainImageBlob) {
+                     const reader = new FileReader();
+                     await new Promise((resolve, reject) => {
+                       reader.onload = resolve;
+                       reader.onerror = reject;
+                       reader.readAsDataURL(domainImageBlob);
+                     });
+                     const imageBase: string = reader.result && typeof reader.result === 'string' ? reader.result : '';
+                     localStorage.setItem('domainThumbs', JSON.stringify({ ...domThumbs, [domain.domain]: imageBase }));
+                     setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain.domain]: imageBase }));
+                  }
+               } else {
+                  setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain.domain]: domThumbs[domain.domain] }));
+               }
+            }
+         });
+      }
    }, [domainsData]);
 
    useEffect(() => {
@@ -62,6 +89,7 @@ const SingleDomain: NextPage = () => {
                            domain={domain}
                            selected={false}
                            isConsoleIntegrated={!!(appSettings && appSettings?.settings?.search_console_integrated) }
+                           thumb={domainThumbs[domain.domain]}
                            // isConsoleIntegrated={false}
                            />;
                })}
