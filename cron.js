@@ -49,6 +49,9 @@ const generateCronTime = (interval) => {
    if (interval === 'daily') {
       cronTime = '0 0 0 * * *';
    }
+   if (interval === 'other_day') {
+      cronTime = '0 0 2-30/2 * *';
+   }
    if (interval === 'daily_morning') {
       cronTime = '0 0 3 * * *';
    }
@@ -63,19 +66,43 @@ const generateCronTime = (interval) => {
 };
 
 const runAppCronJobs = () => {
-   // RUN SERP Scraping CRON (EveryDay at Midnight) 0 0 0 * *
-   const scrapeCronTime = generateCronTime('daily');
-   Cron(scrapeCronTime, () => {
-      // console.log('### Running Keyword Position Cron Job!');
-      const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
-      fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cron`, fetchOpts)
-      .then((res) => res.json())
-      // .then((data) =>{ console.log(data)})
-      .catch((err) => {
-         console.log('ERROR Making Daily Scraper Cron Request..');
-         console.log(err);
-      });
-   }, { scheduled: true });
+   getAppSettings().then((settings) => {
+      // RUN SERP Scraping CRON (EveryDay at Midnight) 0 0 0 * *
+      const scrape_interval = settings.scrape_interval || 'daily';
+      if (scrape_interval !== 'never') {
+         const scrapeCronTime = generateCronTime(scrape_interval);
+         Cron(scrapeCronTime, () => {
+            // console.log('### Running Keyword Position Cron Job!');
+            const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
+            fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cron`, fetchOpts)
+            .then((res) => res.json())
+            // .then((data) =>{ console.log(data)})
+            .catch((err) => {
+               console.log('ERROR Making SERP Scraper Cron Request..');
+               console.log(err);
+            });
+         }, { scheduled: true });
+      }
+
+      // RUN Email Notification CRON
+      const notif_interval = (!settings.notification_interval || settings.notification_interval === 'never') ? false : settings.notification_interval;
+      if (notif_interval) {
+         const cronTime = generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval);
+         if (cronTime) {
+            Cron(cronTime, () => {
+               // console.log('### Sending Notification Email...');
+               const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
+               fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notify`, fetchOpts)
+               .then((res) => res.json())
+               .then((data) => console.log(data))
+               .catch((err) => {
+                  console.log('ERROR Making Cron Email Notification Request..');
+                  console.log(err);
+               });
+            }, { scheduled: true });
+         }
+      }
+   });
 
    // Run Failed scraping CRON (Every Hour)
    const failedCronTime = generateCronTime('hourly');
@@ -115,27 +142,6 @@ const runAppCronJobs = () => {
          });
       }, { scheduled: true });
    }
-
-   // RUN Email Notification CRON
-   getAppSettings().then((settings) => {
-      const notif_interval = (!settings.notification_interval || settings.notification_interval === 'never') ? false : settings.notification_interval;
-      if (notif_interval) {
-         const cronTime = generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval);
-         if (cronTime) {
-            Cron(cronTime, () => {
-               // console.log('### Sending Notification Email...');
-               const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
-               fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notify`, fetchOpts)
-               .then((res) => res.json())
-               .then((data) => console.log(data))
-               .catch((err) => {
-                  console.log('ERROR Making Cron Email Notification Request..');
-                  console.log(err);
-               });
-            }, { scheduled: true });
-         }
-      }
-   });
 };
 
 runAppCronJobs();

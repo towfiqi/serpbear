@@ -97,6 +97,13 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       { label: 'Monthly', value: 'monthly' },
       { label: 'Never', value: 'never' },
    ];
+   const scrapingOptions: SelectionOption[] = [
+      { label: 'Daily', value: 'daily' },
+      { label: 'Every Other Day', value: 'other_day' },
+      { label: 'Weekly', value: 'weekly' },
+      { label: 'Monthly', value: 'monthly' },
+      { label: 'Never', value: 'never' },
+   ];
    const allScrapers: SelectionOption[] = settings.available_scapers ? settings.available_scapers : [];
    const scraperOptions: SelectionOption[] = [{ label: 'None', value: 'none' }, ...allScrapers];
 
@@ -167,6 +174,22 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                                  placeholder={'http://122.123.22.45:5049\nhttps://user:password@122.123.22.45:5049'}
                                  onChange={(event) => updateSettings('proxy', event.target.value)}
                               />
+                           </div>
+                        )}
+                        {settings.scraper_type !== 'none' && (
+                           <div className="settings__section__input mb-5">
+                              <label className={labelStyle}>Scraping Frequency</label>
+                              <SelectField
+                                 multiple={false}
+                                 selected={[settings?.scrape_interval || 'daily']}
+                                 options={scrapingOptions}
+                                 defaultLabel={'Notification Settings'}
+                                 updateField={(updated:string[]) => updated[0] && updateSettings('scrape_interval', updated[0])}
+                                 rounded='rounded'
+                                 maxHeight={48}
+                                 minWidth={270}
+                              />
+                              <small className=' text-gray-500 pt-2 block'>This option requires Server/Docker Instance Restart to take Effect.</small>
                            </div>
                         )}
                      </div>

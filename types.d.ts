@@ -78,7 +78,8 @@ type SettingsType = {
    smtp_username?: string,
    smtp_password?: string,
    search_console_integrated?: boolean,
-   available_scapers?: Array
+   available_scapers?: Array,
+   scrape_interval?: string
 }
 
 type KeywordSCDataChild = {
