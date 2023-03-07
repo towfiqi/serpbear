@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/towfiqi/serpbear/compare/v0.2.4...v0.2.5) (2023-03-07)
+
+
+### Features
+
+* Adds current App version Number in Footer. ([b83df5f](https://github.com/towfiqi/serpbear/commit/b83df5f3dbd64db657d31f0526438e7165e1b475))
+* Adds Keyword Scraping Interval Settings. ([3b6d034](https://github.com/towfiqi/serpbear/commit/3b6d034d6f7da0b4259070220fffff44184dd680)), closes [#81](https://github.com/towfiqi/serpbear/issues/81) [#76](https://github.com/towfiqi/serpbear/issues/76)
+
+
+### Bug Fixes
+
+* Fixes Broken Image thumbnail loading issue. ([5dd366b](https://github.com/towfiqi/serpbear/commit/5dd366b91e2a94e658bf5250a8a0fa64c09e1c11))
+* Settings Update Toast was not showing up. ([b9d58a7](https://github.com/towfiqi/serpbear/commit/b9d58a721df12f3f34220a3ae5da6897e23c83ec))
+
 ### [0.2.4](https://github.com/towfiqi/serpbear/compare/v0.2.3...v0.2.4) (2023-02-15)
 
 
