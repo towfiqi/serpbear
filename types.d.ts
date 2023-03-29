@@ -79,7 +79,8 @@ type SettingsType = {
    smtp_password?: string,
    search_console_integrated?: boolean,
    available_scapers?: Array,
-   scrape_interval?: string
+   scrape_interval?: string,
+   scrape_delay?: string,
    version?: string
 }
 

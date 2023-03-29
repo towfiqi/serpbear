@@ -1,4 +1,5 @@
 import { performance } from 'perf_hooks';
+import { setTimeout as sleep } from 'timers/promises';
 import { RefreshResult, scrapeKeywordFromGoogle } from './scraper';
 
 /**
@@ -21,6 +22,9 @@ const refreshKeywords = async (keywords:KeywordType[], settings:SettingsType): P
          console.log('START SCRAPE: ', keyword.keyword);
          const refreshedkeywordData = await scrapeKeywordFromGoogle(keyword, settings);
          refreshedResults.push(refreshedkeywordData);
+         if (keywords.length > 0 && settings.scrape_delay && settings.scrape_delay !== '0') {
+            await sleep(parseInt(settings.scrape_delay, 10));
+         }
       }
    }
 

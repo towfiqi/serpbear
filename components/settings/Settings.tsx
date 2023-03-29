@@ -17,6 +17,7 @@ type SettingsError = {
 
 const defaultSettings = {
    scraper_type: 'none',
+   scrape_delay: 'none',
    notification_interval: 'daily',
    notification_email: '',
    smtp_server: '',
@@ -104,6 +105,18 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       { label: 'Weekly', value: 'weekly' },
       { label: 'Monthly', value: 'monthly' },
       { label: 'Never', value: 'never' },
+   ];
+   const delayOptions: SelectionOption[] = [
+      { label: 'No Delay', value: '0' },
+      { label: '5 Seconds', value: '5000' },
+      { label: '10 Seconds', value: '10000' },
+      { label: '30 Seconds', value: '30000' },
+      { label: '1 Minutes', value: '60000' },
+      { label: '2 Minutes', value: '120000' },
+      { label: '5 Minutes', value: '300000' },
+      { label: '10 Minutes', value: '600000' },
+      { label: '15 Minutes', value: '900000' },
+      { label: '30 Minutes', value: '1800000' },
    ];
    const allScrapers: SelectionOption[] = settings.available_scapers ? settings.available_scapers : [];
    const scraperOptions: SelectionOption[] = [{ label: 'None', value: 'none' }, ...allScrapers];
@@ -193,6 +206,20 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                               <small className=' text-gray-500 pt-2 block'>This option requires Server/Docker Instance Restart to take Effect.</small>
                            </div>
                         )}
+                           <div className="settings__section__input mb-5">
+                              <label className={labelStyle}>Delay Between Each keyword Scrape</label>
+                              <SelectField
+                                 multiple={false}
+                                 selected={[settings?.scrape_delay || '0']}
+                                 options={delayOptions}
+                                 defaultLabel={'Delay Settings'}
+                                 updateField={(updated:string[]) => updated[0] && updateSettings('scrape_delay', updated[0])}
+                                 rounded='rounded'
+                                 maxHeight={48}
+                                 minWidth={270}
+                              />
+                              <small className=' text-gray-500 pt-2 block'>This option requires Server/Docker Instance Restart to take Effect.</small>
+                           </div>
                      </div>
                   </div>
                )}
