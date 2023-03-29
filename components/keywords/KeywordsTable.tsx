@@ -86,6 +86,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
          <Keyword
          key={keyword.ID}
          style={style}
+         index={index}
          selected={selectedKeywords.includes(keyword.ID)}
          selectKeyword={selectKeyword}
          keywordData={keyword}

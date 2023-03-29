@@ -9,6 +9,7 @@ import { generateTheChartData } from '../common/generateChartData';
 type KeywordProps = {
    keywordData: KeywordType,
    selected: boolean,
+   index: number,
    refreshkeyword: Function,
    favoriteKeyword: Function,
    removeKeyword: Function,
@@ -34,6 +35,7 @@ const Keyword = (props: KeywordProps) => {
       lastItem,
       showSCData = true,
       style,
+      index,
       scDataType = 'threeDays',
    } = props;
    const {
@@ -175,7 +177,8 @@ const Keyword = (props: KeywordProps) => {
             )}
          </div>
          {lastUpdateError && lastUpdateError.date && showPositionError && (
-            <div className=' absolute mt-[-70px] p-2 bg-white z-30 border border-red-200 rounded w-[220px] left-4 shadow-sm text-xs lg:bottom-12'>
+            <div className={`absolute p-2 bg-white z-30 border border-red-200 rounded w-[220px] left-4 shadow-sm text-xs 
+            ${index > 2 ? 'lg:bottom-12 mt-[-70px]' : ' top-12'}`}>
                Error Updating Keyword position (Tried <TimeAgo
                                                          title={dayjs(lastUpdateError.date).format('DD-MMM-YYYY, hh:mm:ss A')}
                                                          date={lastUpdateError.date} />)
