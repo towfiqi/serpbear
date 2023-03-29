@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.6](https://github.com/towfiqi/serpbear/compare/v0.2.5...v0.2.6) (2023-03-29)
+
+
+### Features
+
+* Add option to Delay Between scrapes. ([0a83924](https://github.com/towfiqi/serpbear/commit/0a83924ffe2243c52849c167c6c15d9688ff1dc7)), closes [#87](https://github.com/towfiqi/serpbear/issues/87)
+* Integrates Space Serp. ([0538a8c](https://github.com/towfiqi/serpbear/commit/0538a8c01601d2f6365848580591a248528e67c7))
+
+
+### Bug Fixes
+
+* **components:** fix typo "Goolge" -> "Google" ([dce7c41](https://github.com/towfiqi/serpbear/commit/dce7c412e813fc845973f36ad1c9fa91df4a6611))
+* Fixes first Keryword Error cut off issue. ([d950515](https://github.com/towfiqi/serpbear/commit/d9505158c439a924a1c86eb8243faf2a15bed43e))
+* Fixes lags when tracking thousands of keywords ([9757fde](https://github.com/towfiqi/serpbear/commit/9757fde02ec83405546733381104c54ed6510681)), closes [#88](https://github.com/towfiqi/serpbear/issues/88)
+
 ### [0.2.5](https://github.com/towfiqi/serpbear/compare/v0.2.4...v0.2.5) (2023-03-07)
 
 
