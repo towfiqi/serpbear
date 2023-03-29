@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { CSSTransition } from 'react-transition-group';
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import AddKeywords from './AddKeywords';
 import { filterKeywords, keywordsByDevice, sortKeywords } from '../../utils/sortFilter';
 import Icon from '../common/Icon';
@@ -30,6 +31,8 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    const [showRemoveModal, setShowRemoveModal] = useState<boolean>(false);
    const [showTagManager, setShowTagManager] = useState<null|number>(null);
    const [showAddTags, setShowAddTags] = useState<boolean>(false);
+   const [isMobile, setIsMobile] = useState<boolean>(false);
+   const [SCListHeight, setSCListHeight] = useState(500);
    const [filterParams, setFilterParams] = useState<KeywordFilters>({ countries: [], tags: [], search: '' });
    const [sortBy, setSortBy] = useState<string>('date_asc');
    const [scDataType, setScDataType] = useState<string>('threeDays');
@@ -46,6 +49,16 @@ const KeywordsTable = (props: KeywordsTableProps) => {
       avgThreeDays: 'Last Seven Days Avg',
       avgThirtyDays: 'Last Thirty Days Avg',
    };
+
+   useEffect(() => {
+      setIsMobile(!!(window.matchMedia('only screen and (max-width: 760px)').matches));
+      const resizeList = () => setSCListHeight(window.innerHeight - (isMobile ? 200 : 400));
+      resizeList();
+      window.addEventListener('resize', resizeList);
+      return () => {
+          window.removeEventListener('resize', resizeList);
+      };
+   }, [isMobile]);
 
    const processedKeywords: {[key:string] : KeywordType[]} = useMemo(() => {
       const procKeywords = keywords.filter((x) => x.device === device);
@@ -66,6 +79,26 @@ const KeywordsTable = (props: KeywordsTableProps) => {
          updatedSelectd = selectedKeywords.filter((keyID) => keyID !== keywordID);
       }
       setSelectedKeywords(updatedSelectd);
+   };
+   const Row = ({ data, index, style }:ListChildComponentProps) => {
+      const keyword = data[index];
+      return (
+         <Keyword
+         key={keyword.ID}
+         style={style}
+         selected={selectedKeywords.includes(keyword.ID)}
+         selectKeyword={selectKeyword}
+         keywordData={keyword}
+         refreshkeyword={() => refreshMutate({ ids: [keyword.ID] })}
+         favoriteKeyword={favoriteMutate}
+         manageTags={() => setShowTagManager(keyword.ID)}
+         removeKeyword={() => { setSelectedKeywords([keyword.ID]); setShowRemoveModal(true); }}
+         showKeywordDetails={() => setShowKeyDetails(keyword)}
+         lastItem={index === (processedKeywords[device].length - 1)}
+         showSCData={showSCData}
+         scDataType={scDataType}
+         />
+      );
    };
 
    const selectedAllItems = selectedKeywords.length === processedKeywords[device].length;
@@ -170,21 +203,19 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                      )}
                   </div>
                   <div className='domKeywords_keywords border-gray-200 min-h-[55vh] relative'>
-                     {processedKeywords[device] && processedKeywords[device].length > 0
-                        && processedKeywords[device].map((keyword, index) => <Keyword
-                                                      key={keyword.ID}
-                                                      selected={selectedKeywords.includes(keyword.ID)}
-                                                      selectKeyword={selectKeyword}
-                                                      keywordData={keyword}
-                                                      refreshkeyword={() => refreshMutate({ ids: [keyword.ID] })}
-                                                      favoriteKeyword={favoriteMutate}
-                                                      manageTags={() => setShowTagManager(keyword.ID)}
-                                                      removeKeyword={() => { setSelectedKeywords([keyword.ID]); setShowRemoveModal(true); }}
-                                                      showKeywordDetails={() => setShowKeyDetails(keyword)}
-                                                      lastItem={index === (processedKeywords[device].length - 1)}
-                                                      showSCData={showSCData}
-                                                      scDataType={scDataType}
-                                                      />)}
+                     {processedKeywords[device] && processedKeywords[device].length > 0 && (
+                        <List
+                        innerElementType="div"
+                        itemData={processedKeywords[device]}
+                        itemCount={processedKeywords[device].length}
+                        itemSize={isMobile ? 146 : 57}
+                        height={SCListHeight}
+                        width={'100%'}
+                        className={'styled-scrollbar'}
+                        >
+                           {Row}
+                        </List>
+                     )}
                      {!isLoading && processedKeywords[device].length === 0 && (
                         <p className=' p-9 pt-[10%] text-center text-gray-500'>No Keywords Added for this Device Type.</p>
                      )}
