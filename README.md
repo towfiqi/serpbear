@@ -40,6 +40,7 @@ The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SerpA
 | whatsmyserp.com | $49/mo| 30,000/mo| No |
 | serply.io | $49/mo | 5000/mo | Yes |
 | serpapi.com | From $50/mo** | From 5,000/mo** | Yes |
+| spaceserp.com | $59/lifetime | 15,000/mo | Yes |
 
 (*) Free upto a limit. If you are using ScrapingAnt you can lookup 10,000 times per month for free.
 (**) Free up to 100 per month. Paid from 5,000 to 10,000,000+ per month.
