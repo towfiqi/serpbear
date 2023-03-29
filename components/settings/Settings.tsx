@@ -151,7 +151,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                            minWidth={270}
                            />
                         </div>
-                        {['scrapingant', 'scrapingrobot', 'serply', 'serpapi'].includes(settings.scraper_type) && (
+                        {['scrapingant', 'scrapingrobot', 'serply', 'serpapi', 'spaceSerp'].includes(settings.scraper_type) && (
                            <div className="settings__section__input mr-3">
                               <label className={labelStyle}>Scraper API Key or Token</label>
                               <input
