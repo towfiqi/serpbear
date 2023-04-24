@@ -31,19 +31,19 @@ The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SerpA
 
 #### Compare SerpBear with other SERP tracking services
 
-|Service  | Cost | SERP Lookup | API |
-|--|--|--|--|
+| Service | Cost | SERP Lookup | API |
+| ------- | ---- | ----------- | --- |
 | SerpBear | Free* | Unlimited* | Yes |
-| ranktracker.com | $18/mo| 3,000/mo| No |
-| SerpWatch.io | $29/mo | 7500/mo | Yes |
-| Serpwatcher.com | $49/mo| 3000/mo | No |
-| whatsmyserp.com | $49/mo| 30,000/mo| No |
-| serply.io | $49/mo | 5000/mo | Yes |
-| serpapi.com | From $50/mo** | From 5,000/mo** | Yes |
-| spaceserp.com | $59/lifetime | 15,000/mo | Yes |
+| ranktracker.com | $18/mo| $3,000/mo | No |
+| SerpWatch.io | $29/mo | $7,500/mo | Yes |
+| Serpwatcher.com | $49/mo| $3,000/mo | No |
+| whatsmyserp.com | $49/mo| $30,000/mo| No |
+| serply.io | $49/mo | $5,000/mo | Yes |
+| serpapi.com | From $50/mo** | From $5,000/mo** | Yes |
+| spaceserp.com | $59/lifetime | $15,000/mo | Yes |
 
-(*) Free upto a limit. If you are using ScrapingAnt you can lookup 10,000 times per month for free.
-(**) Free up to 100 per month. Paid from 5,000 to 10,000,000+ per month.
+(*) Free up to a limit. If you are using ScrapingAnt you can lookup 10,000 times per month for free.  
+(**) Free up to $100 per month. Paid from $5,000 to $10,000,000+ per month.
 
 **Stack**
 -   Next.js for Frontend & Backend.  
