@@ -53,7 +53,7 @@ const SingleDomain: NextPage = () => {
       <div className="Domain ">
          {noScrapprtError && (
                <div className=' p-3 bg-red-600 text-white text-sm text-center'>
-                  A Scrapper/Proxy has not been set up Yet. Open Settings to set it up and start using the app.
+                  A Scraper/Proxy has not been set up Yet. Open Settings to set it up and start using the app.
                </div>
          )}
          {activDomain && activDomain.domain
