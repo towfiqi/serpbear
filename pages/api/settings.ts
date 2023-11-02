@@ -1,7 +1,7 @@
+import { writeFile, readFile } from 'fs/promises';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Cryptr from 'cryptr';
 import getConfig from 'next/config';
-import { writeFile, readFile } from 'fs/promises';
 import verifyUser from '../../utils/verifyUser';
 import allScrapers from '../../scrapers/index';
 
