@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { useAddDomain } from '../../services/domains';
+import { isValidDomain } from '../../utils/validators';
 
 type AddDomainProps = {
    closeModal: Function
@@ -13,7 +14,7 @@ const AddDomain = ({ closeModal }: AddDomainProps) => {
 
    const addDomain = () => {
       // console.log('ADD NEW DOMAIN', newDomain);
-      if (/^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(newDomain.trim())) {
+      if (isValidDomain(newDomain.trim())) {
          setNewDomainError(false);
          // TODO: Domain Action
          addMutate(newDomain.trim());
