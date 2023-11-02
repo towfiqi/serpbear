@@ -3,7 +3,7 @@ import db from '../../database/database';
 import Keyword from '../../database/models/keyword';
 import { getAppSettings } from './settings';
 import verifyUser from '../../utils/verifyUser';
-import { refreshAndUpdateKeywords } from './refresh';
+import refreshAndUpdateKeywords from '../../utils/refresh';
 
 type CRONRefreshRes = {
    started: boolean

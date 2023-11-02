@@ -1,27 +1,38 @@
 import { performance } from 'perf_hooks';
 import { setTimeout as sleep } from 'timers/promises';
-import { RefreshResult, scrapeKeywordFromGoogle } from './scraper';
+import { RefreshResult, removeFromRetryQueue, retryScrape, scrapeKeywordFromGoogle } from './scraper';
+import parseKeywords from './parseKeywords';
+import Keyword from '../database/models/keyword';
 
 /**
  * Refreshes the Keywords position by Scraping Google Search Result by
  * Determining whether the keywords should be scraped in Parallel or not
- * @param {KeywordType[]} keywords - Keywords to scrape
+ * @param {Keyword[]} rawkeyword - Keywords to scrape
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
  * @returns {Promise}
  */
-const refreshKeywords = async (keywords:KeywordType[], settings:SettingsType): Promise<RefreshResult[]> => {
-   if (!keywords || keywords.length === 0) { return []; }
+const refreshAndUpdateKeywords = async (rawkeyword:Keyword[], settings:SettingsType): Promise<KeywordType[]> => {
+   const keywords:KeywordType[] = rawkeyword.map((el) => el.get({ plain: true }));
+   if (!rawkeyword || rawkeyword.length === 0) { return []; }
    const start = performance.now();
-
-   let refreshedResults: RefreshResult[] = [];
+   const updatedKeywords: KeywordType[] = [];
 
    if (['scrapingant', 'serpapi'].includes(settings.scraper_type)) {
-      refreshedResults = await refreshParallel(keywords, settings);
+      const refreshedResults = await refreshParallel(keywords, settings);
+      if (refreshedResults.length > 0) {
+         for (const keyword of rawkeyword) {
+            const refreshedkeywordData = refreshedResults.find((k) => k && k.ID === keyword.id);
+            if (refreshedkeywordData) {
+               const updatedkeyword = await updateKeywordPosition(keyword, refreshedkeywordData, settings);
+               updatedKeywords.push(updatedkeyword);
+            }
+         }
+      }
    } else {
-      for (const keyword of keywords) {
+      for (const keyword of rawkeyword) {
          console.log('START SCRAPE: ', keyword.keyword);
-         const refreshedkeywordData = await scrapeKeywordFromGoogle(keyword, settings);
-         refreshedResults.push(refreshedkeywordData);
+         const updatedkeyword = await refreshAndUpdateKeyword(keyword, settings);
+         updatedKeywords.push(updatedkeyword);
          if (keywords.length > 0 && settings.scrape_delay && settings.scrape_delay !== '0') {
             await sleep(parseInt(settings.scrape_delay, 10));
          }
@@ -30,7 +41,77 @@ const refreshKeywords = async (keywords:KeywordType[], settings:SettingsType): P
 
    const end = performance.now();
    console.log(`time taken: ${end - start}ms`);
-   return refreshedResults;
+   return updatedKeywords;
+};
+
+/**
+ * Scrape Serp for given keyword and update the position in DB.
+ * @param {Keyword} keyword - Keywords to scrape
+ * @param {SettingsType} settings - The App Settings that contain the Scraper settings
+ * @returns {Promise<KeywordType>}
+ */
+const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType): Promise<KeywordType> => {
+   const currentkeyword = keyword.get({ plain: true });
+   const refreshedkeywordData = await scrapeKeywordFromGoogle(currentkeyword, settings);
+   const updatedkeyword = refreshedkeywordData ? await updateKeywordPosition(keyword, refreshedkeywordData, settings) : currentkeyword;
+   return updatedkeyword;
+};
+
+/**
+ * Processes the scraped data for the given keyword and updates the keyword serp position in DB.
+ * @param {Keyword} keywordRaw - Keywords to Update
+ * @param {RefreshResult} udpatedkeyword - scraped Data for that Keyword
+ * @param {SettingsType} settings - The App Settings that contain the Scraper settings
+ * @returns {Promise<KeywordType>}
+ */
+export const updateKeywordPosition = async (keywordRaw:Keyword, udpatedkeyword: RefreshResult, settings: SettingsType): Promise<KeywordType> => {
+   const keywordPrased = parseKeywords([keywordRaw.get({ plain: true })]);
+      const keyword = keywordPrased[0];
+      // const udpatedkeyword = refreshed;
+      let updated = keyword;
+
+      if (udpatedkeyword && keyword) {
+         const newPos = udpatedkeyword.position;
+         const newPosition = newPos !== 0 ? newPos : keyword.position;
+         const { history } = keyword;
+         const theDate = new Date();
+         const dateKey = `${theDate.getFullYear()}-${theDate.getMonth() + 1}-${theDate.getDate()}`;
+         history[dateKey] = newPosition;
+
+         const updatedVal = {
+            position: newPosition,
+            updating: false,
+            url: udpatedkeyword.url,
+            lastResult: udpatedkeyword.result,
+            history,
+            lastUpdated: udpatedkeyword.error ? keyword.lastUpdated : theDate.toJSON(),
+            lastUpdateError: udpatedkeyword.error
+               ? JSON.stringify({ date: theDate.toJSON(), error: `${udpatedkeyword.error}`, scraper: settings.scraper_type })
+               : 'false',
+         };
+
+         // If failed, Add to Retry Queue Cron
+         if (udpatedkeyword.error) {
+            await retryScrape(keyword.ID);
+         } else {
+            await removeFromRetryQueue(keyword.ID);
+         }
+
+         // Update the Keyword Position in Database
+         try {
+            await keywordRaw.update({
+               ...updatedVal,
+               lastResult: Array.isArray(udpatedkeyword.result) ? JSON.stringify(udpatedkeyword.result) : udpatedkeyword.result,
+               history: JSON.stringify(history),
+            });
+            console.log('[SUCCESS] Updating the Keyword: ', keyword.keyword);
+            updated = { ...keyword, ...updatedVal, lastUpdateError: JSON.parse(updatedVal.lastUpdateError) };
+         } catch (error) {
+            console.log('[ERROR] Updating SERP for Keyword', keyword.keyword, error);
+         }
+      }
+
+      return updated;
 };
 
 /**
@@ -53,4 +134,4 @@ const refreshParallel = async (keywords:KeywordType[], settings:SettingsType) : 
    });
 };
 
-export default refreshKeywords;
+export default refreshAndUpdateKeywords;

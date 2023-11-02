@@ -37,7 +37,10 @@ const getDomainSearchConsoleInsight = async (req: NextApiRequest, res: NextApiRe
 
    // First try and read the  Local SC Domain Data file.
    const localSCData = await readLocalSCData(domainname);
-   if (localSCData && localSCData.stats && localSCData.stats.length) {
+   const oldFetchedDate = localSCData.lastFetched;
+   const fetchTimeDiff = new Date().getTime() - (oldFetchedDate ? new Date(oldFetchedDate as string).getTime() : 0);
+
+   if (localSCData && localSCData.stats && localSCData.stats.length && fetchTimeDiff <= 86400000) {
       const response = getInsightFromSCData(localSCData);
       return res.status(200).json({ data: response });
    }

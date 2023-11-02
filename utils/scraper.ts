@@ -12,14 +12,14 @@ type SearchResult = {
 }
 
 type SERPObject = {
-   postion:number|boolean,
+   postion:number,
    url:string
 }
 
 export type RefreshResult = false | {
    ID: number,
    keyword: string,
-   position:number | boolean,
+   position:number,
    url: string,
    result: SearchResult[],
    error?: boolean | string
@@ -192,7 +192,7 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
  * @returns {SERPObject}
  */
 export const getSerp = (domain:string, result:SearchResult[]) : SERPObject => {
-   if (result.length === 0 || !domain) { return { postion: false, url: '' }; }
+   if (result.length === 0 || !domain) { return { postion: 0, url: '' }; }
    const foundItem = result.find((item) => {
       const itemDomain = item.url.replace('www.', '').match(/^(?:https?:)?(?:\/\/)?([^/?]+)/i);
       return itemDomain && itemDomain.includes(domain.replace('www.', ''));

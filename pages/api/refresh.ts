@@ -2,11 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Op } from 'sequelize';
 import db from '../../database/database';
 import Keyword from '../../database/models/keyword';
-import refreshKeywords from '../../utils/refresh';
+import refreshAndUpdateKeywords from '../../utils/refresh';
 import { getAppSettings } from './settings';
 import verifyUser from '../../utils/verifyUser';
 import parseKeywords from '../../utils/parseKeywords';
-import { removeFromRetryQueue, retryScrape } from '../../utils/scraper';
 
 type KeywordsRefreshRes = {
    keywords?: KeywordType[]
@@ -62,58 +61,4 @@ const refresTheKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywo
       console.log('ERROR refresThehKeywords: ', error);
       return res.status(400).json({ error: 'Error refreshing keywords!' });
    }
-};
-
-export const refreshAndUpdateKeywords = async (initKeywords:Keyword[], settings:SettingsType) => {
-   const formattedKeywords = initKeywords.map((el) => el.get({ plain: true }));
-   const refreshed: any = await refreshKeywords(formattedKeywords, settings);
-   // const fetchKeywords = await refreshKeywords(initialKeywords.map( k=> k.keyword ));
-   const updatedKeywords: KeywordType[] = [];
-
-   for (const keywordRaw of initKeywords) {
-      const keywordPrased = parseKeywords([keywordRaw.get({ plain: true })]);
-      const keyword = keywordPrased[0];
-      const udpatedkeyword = refreshed.find((item:any) => item.ID && item.ID === keyword.ID);
-
-      if (udpatedkeyword && keyword) {
-         const newPos = udpatedkeyword.position;
-         const newPosition = newPos !== false ? newPos : keyword.position;
-         const { history } = keyword;
-         const theDate = new Date();
-         history[`${theDate.getFullYear()}-${theDate.getMonth() + 1}-${theDate.getDate()}`] = newPosition;
-
-         const updatedVal = {
-            position: newPosition,
-            updating: false,
-            url: udpatedkeyword.url,
-            lastResult: udpatedkeyword.result,
-            history,
-            lastUpdated: udpatedkeyword.error ? keyword.lastUpdated : theDate.toJSON(),
-            lastUpdateError: udpatedkeyword.error
-               ? JSON.stringify({ date: theDate.toJSON(), error: `${udpatedkeyword.error}`, scraper: settings.scraper_type })
-               : 'false',
-         };
-         updatedKeywords.push({ ...keyword, ...{ ...updatedVal, lastUpdateError: JSON.parse(updatedVal.lastUpdateError) } });
-
-         // If failed, Add to Retry Queue Cron
-         if (udpatedkeyword.error) {
-            await retryScrape(keyword.ID);
-         } else {
-            await removeFromRetryQueue(keyword.ID);
-         }
-
-         // Update the Keyword Position in Database
-         try {
-            await keywordRaw.update({
-               ...updatedVal,
-               lastResult: Array.isArray(udpatedkeyword.result) ? JSON.stringify(udpatedkeyword.result) : udpatedkeyword.result,
-               history: JSON.stringify(history),
-            });
-            console.log('[SUCCESS] Updating the Keyword: ', keyword.keyword);
-         } catch (error) {
-            console.log('[ERROR] Updating SERP for Keyword', keyword.keyword, error);
-         }
-      }
-   }
-   return updatedKeywords;
 };

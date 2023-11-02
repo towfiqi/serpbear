@@ -2,11 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Op } from 'sequelize';
 import db from '../../database/database';
 import Keyword from '../../database/models/keyword';
-import { refreshAndUpdateKeywords } from './refresh';
 import { getAppSettings } from './settings';
 import verifyUser from '../../utils/verifyUser';
 import parseKeywords from '../../utils/parseKeywords';
 import { integrateKeywordSCData, readLocalSCData } from '../../utils/searchConsole';
+import refreshAndUpdateKeywords from '../../utils/refresh';
 
 type KeywordsGetResponse = {
    keywords?: KeywordType[],
