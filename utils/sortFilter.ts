@@ -98,7 +98,8 @@ export const filterKeywords = (keywords: KeywordType[], filterParams: KeywordFil
    const filteredItems:KeywordType[] = [];
    keywords.forEach((keywrd) => {
        const countryMatch = filterParams.countries.length === 0 ? true : filterParams.countries && filterParams.countries.includes(keywrd.country);
-       const searchMatch = !filterParams.search ? true : filterParams.search && keywrd.keyword.includes(filterParams.search);
+       const searchMatch = !filterParams.search ? true : filterParams.search
+       && keywrd.keyword.toLowerCase().includes(filterParams.search.toLowerCase());
        const tagsMatch = filterParams.tags.length === 0 ? true : filterParams.tags && keywrd.tags.find((x) => filterParams.tags.includes(x));
 
        if (countryMatch && searchMatch && tagsMatch) {
