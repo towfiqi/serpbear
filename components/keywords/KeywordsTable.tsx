@@ -175,7 +175,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                            <div>
                               <div
                               className=' w-48 select-none cursor-pointer absolute bg-white rounded-full
-                              px-2 py-[2px] mt-[-22px] ml-3 border border-gray-200 z-50'
+                              px-2 py-[2px] mt-[-22px] ml-3 border border-gray-200 z-40'
                               onClick={() => setShowScDataTypes(!showScDataTypes)}>
                                  <Icon type="google" size={13} /> {scDataObject[scDataType]}
                                  <Icon classes="ml-2" type={showScDataTypes ? 'caret-up' : 'caret-down'} size={10} />
