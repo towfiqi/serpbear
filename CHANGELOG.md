@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/towfiqi/serpbear/compare/v0.2.6...v0.3.0) (2023-11-03)
+
+
+### Features
+
+* Adds ability to disable/clear retry queue for failed keywords ([dc3c7a7](https://github.com/towfiqi/serpbear/commit/dc3c7a722b18248115969c51f2495ccf1c43926d))
+* Adds ability to search w/o case sensitivity ([4748ffc](https://github.com/towfiqi/serpbear/commit/4748ffc382161c5d861b8d43e8eba466a031e2bc)), closes [#115](https://github.com/towfiqi/serpbear/issues/115)
+* Displays the Best position of the keywords ([fc183d2](https://github.com/towfiqi/serpbear/commit/fc183d246d55e0eecf43c91f6da8a59192e8e771)), closes [#89](https://github.com/towfiqi/serpbear/issues/89)
+* Refresh All feature now shows update real-time ([1d6b2be](https://github.com/towfiqi/serpbear/commit/1d6b2be95aa133b7998f5cf098f15aa32f5badd2))
+* Remembers last selected coutry ([d3d336f](https://github.com/towfiqi/serpbear/commit/d3d336fa71cc789624b10f3cdd1a2b5983053e6f)), closes [#101](https://github.com/towfiqi/serpbear/issues/101)
+
+
+### Bug Fixes
+
+*  Resolves missing keyword scrape spinner issue ([f57bca2](https://github.com/towfiqi/serpbear/commit/f57bca23daa3fe888af4c19a681dcec6b6100d83))
+* Cron stopped on failing to parse failed queue ([8a949ce](https://github.com/towfiqi/serpbear/commit/8a949ce4c078ff377e91a95c4b86ef2b15dae88b)), closes [#116](https://github.com/towfiqi/serpbear/issues/116)
+* Fixes import order error in some instances. ([be80ed7](https://github.com/towfiqi/serpbear/commit/be80ed7ef3dd0a315c5ad67d17e61a4797dc274c)), closes [#114](https://github.com/towfiqi/serpbear/issues/114)
+* Fixes issue with adding hyphenated subdomains. ([c0470cf](https://github.com/towfiqi/serpbear/commit/c0470cfa9d0dac86317c886065b461cfe82ffb16))
+* Fixes the weekly cron day issue. ([392122a](https://github.com/towfiqi/serpbear/commit/392122a7101683342830e900c6f0c39f9272bb34)), closes [#118](https://github.com/towfiqi/serpbear/issues/118)
+* Fxies special character keyword scrape issue. ([9feff13](https://github.com/towfiqi/serpbear/commit/9feff13f18a4d72203dde694a147831f990b37fb)), closes [#113](https://github.com/towfiqi/serpbear/issues/113) [#122](https://github.com/towfiqi/serpbear/issues/122)
+
 ### [0.2.6](https://github.com/towfiqi/serpbear/compare/v0.2.5...v0.2.6) (2023-03-29)
 
 
