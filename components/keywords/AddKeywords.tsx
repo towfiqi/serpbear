@@ -21,7 +21,8 @@ type KeywordsInput = {
 
 const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
    const [error, setError] = useState<string>('');
-   const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: 'US', domain, tags: '' });
+   const defCountry = localStorage.getItem('default_country') || 'US';
+   const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '' });
    const { mutate: addMutate, isLoading: isAdding } = useAddKeywords(() => closeModal(false));
    const deviceTabStyle = 'cursor-pointer px-3 py-2 rounded mr-2';
 
@@ -64,7 +65,10 @@ const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
                      selected={[newKeywordsData.country]}
                      options={Object.keys(countries).map((countryISO:string) => { return { label: countries[countryISO][0], value: countryISO }; })}
                      defaultLabel='All Countries'
-                     updateField={(updated:string[]) => setNewKeywordsData({ ...newKeywordsData, country: updated[0] })}
+                     updateField={(updated:string[]) => {
+                        setNewKeywordsData({ ...newKeywordsData, country: updated[0] });
+                        localStorage.setItem('default_country', updated[0]);
+                     }}
                      rounded='rounded'
                      maxHeight={48}
                      flags={true}
