@@ -111,16 +111,20 @@ const runAppCronJobs = () => {
 
       readFile(`${process.cwd()}/data/failed_queue.json`, { encoding: 'utf-8' }, (err, data) => {
          if (data) {
-            const keywordsToRetry = data ? JSON.parse(data) : [];
-            if (keywordsToRetry.length > 0) {
-               const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
-               fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/refresh?id=${keywordsToRetry.join(',')}`, fetchOpts)
-               .then((res) => res.json())
-               .then((refreshedData) => console.log(refreshedData))
-               .catch((fetchErr) => {
-                  console.log('ERROR Making failed_queue Cron Request..');
-                  console.log(fetchErr);
-               });
+            try {
+               const keywordsToRetry = data ? JSON.parse(data) : [];
+               if (keywordsToRetry.length > 0) {
+                  const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
+                  fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/refresh?id=${keywordsToRetry.join(',')}`, fetchOpts)
+                  .then((res) => res.json())
+                  .then((refreshedData) => console.log(refreshedData))
+                  .catch((fetchErr) => {
+                     console.log('ERROR Making failed_queue Cron Request..');
+                     console.log(fetchErr);
+                  });
+               }
+            } catch (error) {
+               console.log('ERROR Reading Failed Scrapes Queue File..', error);
             }
          } else {
             console.log('ERROR Reading Failed Scrapes Queue File..', err);
