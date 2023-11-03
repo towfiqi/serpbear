@@ -113,7 +113,7 @@ const Keyword = (props: KeywordProps) => {
             {!updating && positionChange < 0 && <i className=' not-italic ml-1 text-xs text-red-300'>▼ {positionChange}</i>}
          </div>
          {chartData.labels.length > 0 && (
-            <div className='lg:flex-1 hidden lg:block'>
+            <div className='lg:flex-1 hidden lg:block cursor-pointer' onClick={() => showKeywordDetails()}>
                <ChartSlim labels={chartData.labels} sreies={chartData.sreies} />
             </div>
          )}
