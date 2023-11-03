@@ -57,6 +57,8 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
 export const getAppSettings = async () : Promise<SettingsType> => {
    try {
       const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
+      const failedQueueRaw = await readFile(`${process.cwd()}/data/failed_queue.json`, { encoding: 'utf-8' });
+      const failedQueue: string[] = failedQueueRaw ? JSON.parse(failedQueueRaw) : [];
       const settings: SettingsType = settingsRaw ? JSON.parse(settingsRaw) : {};
       let decryptedSettings = settings;
 
@@ -70,6 +72,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             smtp_password,
             search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL),
             available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
+            failed_queue: failedQueue,
          };
       } catch (error) {
          console.log('Error Decrypting Settings API Keys!');
@@ -87,6 +90,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          smtp_port: '',
          smtp_username: '',
          smtp_password: '',
+         scrape_retry: false,
       };
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(settings), { encoding: 'utf-8' });
       return settings;

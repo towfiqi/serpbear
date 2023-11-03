@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 // import { useQuery } from 'react-query';
-import useUpdateSettings, { useFetchSettings } from '../../services/settings';
+import useUpdateSettings, { useClearFailedQueue, useFetchSettings } from '../../services/settings';
 import Icon from '../common/Icon';
 import SelectField, { SelectionOption } from '../common/SelectField';
 
@@ -18,6 +18,7 @@ type SettingsError = {
 const defaultSettings = {
    scraper_type: 'none',
    scrape_delay: 'none',
+   scrape_retry: false,
    notification_interval: 'daily',
    notification_email: '',
    smtp_server: '',
@@ -33,6 +34,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
    const [settingsError, setSettingsError] = useState<SettingsError|null>(null);
    const { mutate: updateMutate, isLoading: isUpdating } = useUpdateSettings(() => console.log(''));
    const { data: appSettings, isLoading } = useFetchSettings();
+   const { mutate: clearFailedMutate, isLoading: clearingQueue } = useClearFailedQueue(() => {});
 
    useEffect(() => {
       if (appSettings && appSettings.settings) {
@@ -59,7 +61,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       if (e.target === e.currentTarget) { closeSettings(); }
    };
 
-   const updateSettings = (key: string, value:string|number) => {
+   const updateSettings = (key: string, value:string|number|boolean) => {
       setSettings({ ...settings, [key]: value });
    };
 
@@ -220,6 +222,37 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                               />
                               <small className=' text-gray-500 pt-2 block'>This option requires Server/Docker Instance Restart to take Effect.</small>
                            </div>
+                           <div className="settings__section__input mb-5">
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                 <span className="text-sm font-medium text-gray-900 dark:text-gray-300 w-56">Auto Retry Failed Keyword Scrape</span>
+                                 <input
+                                 type="checkbox"
+                                 value={settings?.scrape_retry ? 'true' : '' }
+                                 checked={settings.scrape_retry || false}
+                                 className="sr-only peer"
+                                 onChange={() => updateSettings('scrape_retry', !settings.scrape_retry)}
+                                 />
+                                 <div className="relative rounded-3xl w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4
+                                 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800rounded-full peer dark:bg-gray-700
+                                 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-['']
+                                 after:absolute after:top-[2px] after:left-[2px] after:bg-white  after:border-gray-300
+                                 after:border after:rounded-full after:h-5 after:w-5
+                                 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+
+                              </label>
+                           </div>
+                           {settings?.scrape_retry && (settings.failed_queue?.length || 0) > 0 && (
+                              <div className="settings__section__input mb-5">
+                                 <label className={labelStyle}>Clear Failed Retry Queue</label>
+                                 <button
+                                 onClick={() => clearFailedMutate()}
+                                 className=' py-3 px-5 w-full rounded cursor-pointer bg-gray-100 text-gray-800
+                                 font-semibold text-sm hover:bg-gray-200'>
+                                    {clearingQueue && <Icon type="loading" size={14} />} Clear Failed Queue
+                                      ({settings.failed_queue?.length || 0} Keywords)
+                                 </button>
+                              </div>
+                           )}
                      </div>
                   </div>
                )}

@@ -38,4 +38,27 @@ const useUpdateSettings = (onSuccess:Function|undefined) => {
    });
 };
 
+export function useClearFailedQueue(onSuccess:Function) {
+   const queryClient = useQueryClient();
+   return useMutation(async () => {
+      const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
+      const fetchOpts = { method: 'PUT', headers };
+      const res = await fetch(`${window.location.origin}/api/clearfailed`, fetchOpts);
+      if (res.status >= 400 && res.status < 600) {
+         throw new Error('Bad response from server');
+      }
+      return res.json();
+   }, {
+      onSuccess: async () => {
+         onSuccess();
+         toast('Failed Queue Cleared', { icon: '✔️' });
+         queryClient.invalidateQueries(['settings']);
+      },
+      onError: () => {
+         console.log('Error Clearing Failed Queue!!!');
+         toast('Error Clearing Failed Queue.', { icon: '⚠️' });
+      },
+   });
+}
+
 export default useUpdateSettings;

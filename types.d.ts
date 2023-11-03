@@ -81,6 +81,8 @@ type SettingsType = {
    available_scapers?: Array,
    scrape_interval?: string,
    scrape_delay?: string,
+   scrape_retry?: boolean,
+   failed_queue?: string[]
    version?: string
 }
 

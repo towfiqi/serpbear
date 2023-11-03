@@ -91,7 +91,7 @@ export const updateKeywordPosition = async (keywordRaw:Keyword, udpatedkeyword: 
          };
 
          // If failed, Add to Retry Queue Cron
-         if (udpatedkeyword.error) {
+         if (udpatedkeyword.error && settings?.scrape_retry) {
             await retryScrape(keyword.ID);
          } else {
             await removeFromRetryQueue(keyword.ID);
