@@ -56,7 +56,7 @@ const generateCronTime = (interval) => {
       cronTime = '0 0 3 * * *';
    }
    if (interval === 'weekly') {
-      cronTime = '0 0 0 */7 * *';
+      cronTime = '0 0 * * 1';
    }
    if (interval === 'monthly') {
       cronTime = '0 0 1 * *'; // Run every first day of the month at 00:00(midnight)
