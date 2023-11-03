@@ -83,7 +83,7 @@ const Keyword = (props: KeywordProps) => {
    const optionsButtonStyle = 'block px-2 py-2 cursor-pointer hover:bg-indigo-50 hover:text-blue-700';
 
    const renderPosition = (pos:number, type?:string) => {
-      if (pos === 0) {
+      if (!updating && pos === 0) {
          return <span className='text-gray-400' title='Not in Top 100'>{'>100'}</span>;
       }
       if (updating && type !== 'sc') {
