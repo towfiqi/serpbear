@@ -67,6 +67,19 @@ const Keyword = (props: KeywordProps) => {
       return status;
    }, [history, position]);
 
+   const bestPosition: false | {position: number, date: string} = useMemo(() => {
+      let bestPos;
+      if (Object.keys(history).length > 0) {
+         const historyArray = Object.keys(history).map((itemID) => ({ date: itemID, position: history[itemID] }))
+         .sort((a, b) => a.position - b.position);
+         if (historyArray[0]) {
+            bestPos = { ...historyArray[0] };
+         }
+      }
+
+      return bestPos || false;
+   }, [history]);
+
    const optionsButtonStyle = 'block px-2 py-2 cursor-pointer hover:bg-indigo-50 hover:text-blue-700';
 
    const renderPosition = (pos:number, type?:string) => {
@@ -85,6 +98,7 @@ const Keyword = (props: KeywordProps) => {
       style={style}
       className={`keyword relative py-5 px-4 text-gray-600 border-b-[1px] border-gray-200 lg:py-4 lg:px-6 lg:border-0 
       lg:flex lg:justify-between lg:items-center ${selected ? ' bg-indigo-50 keyword--selected' : ''} ${lastItem ? 'border-b-0' : ''}`}>
+
          <div className=' w-3/4 lg:flex-1 lg:basis-20 lg:w-auto font-semibold cursor-pointer'>
             <button
                className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border 
@@ -105,18 +119,32 @@ const Keyword = (props: KeywordProps) => {
                </button>
             }
          </div>
+
          <div
          className={`keyword_position absolute bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative
-          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-40 lg:grow-0 lg:right-0 text-center font-semibold`}>
+          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-24 lg:grow-0 lg:right-0 text-center font-semibold`}>
             {renderPosition(position)}
             {!updating && positionChange > 0 && <i className=' not-italic ml-1 text-xs text-[#5ed7c3]'>▲ {positionChange}</i>}
             {!updating && positionChange < 0 && <i className=' not-italic ml-1 text-xs text-red-300'>▼ {positionChange}</i>}
          </div>
+
+         <div
+         title={bestPosition && bestPosition.date
+            ? new Date(bestPosition.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }) : ''
+         }
+         className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
+          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-16 lg:grow-0 lg:right-0 text-center font-semibold`}>
+            {bestPosition ? bestPosition.position || '-' : (position || '-')}
+         </div>
+
          {chartData.labels.length > 0 && (
-            <div className='lg:flex-1 hidden lg:block cursor-pointer' onClick={() => showKeywordDetails()}>
+            <div
+               className='hidden basis-32 grow-0 cursor-pointer lg:block'
+               onClick={() => showKeywordDetails()}>
                <ChartSlim labels={chartData.labels} sreies={chartData.sreies} />
             </div>
          )}
+
          <div
          className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 text-gray-400 lg:m-0 max-w-[70px] 
          overflow-hidden text-ellipsis whitespace-nowrap lg:max-w-none lg:pr-5`}>
@@ -124,6 +152,7 @@ const Keyword = (props: KeywordProps) => {
                <Icon type="link-alt" size={14} color="#999" /></span>{turncatedURL || '-'}
             </a>
          </div>
+
          <div
          className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0'>
             <span className='mr-2 lg:hidden'><Icon type="clock" size={14} color="#999" /></span>
@@ -176,6 +205,7 @@ const Keyword = (props: KeywordProps) => {
                </ul>
             )}
          </div>
+
          {lastUpdateError && lastUpdateError.date && showPositionError && (
             <div className={`absolute p-2 bg-white z-30 border border-red-200 rounded w-[220px] left-4 shadow-sm text-xs 
             ${index > 2 ? 'lg:bottom-12 mt-[-70px]' : ' top-12'}`}>
@@ -189,7 +219,8 @@ const Keyword = (props: KeywordProps) => {
                   {lastUpdateError.scraper && <strong className='capitalize'>{lastUpdateError.scraper}: </strong>}{lastUpdateError.error}
                </div>
             </div>
-            )}
+         )}
+
       </div>
    );
  };

@@ -35,7 +35,7 @@ const ChartSlim = ({ labels, sreies }:ChartProps) => {
      },
    };
 
-   return <div className='w-[120px] h-[30px] rounded border border-gray-200'>
+   return <div className='w-[100px] h-[30px] rounded border border-gray-200'>
          <Line
             datasetIdKey='XXX'
             options={options}
