@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/towfiqi/serpbear/compare/v0.3.0...v0.3.1) (2023-11-04)
+
+
+### Bug Fixes
+
+* Removes dev files from docker volumes ([454454a](https://github.com/towfiqi/serpbear/commit/454454a422bab4d37a2d43ad95868e293a97b88e))
+* Updates vulnerable dependencies ([97dd0b1](https://github.com/towfiqi/serpbear/commit/97dd0b131be4cec73d07f35062334dd1881f0013))
+
 ## [0.3.0](https://github.com/towfiqi/serpbear/compare/v0.2.6...v0.3.0) (2023-11-03)
 
 
