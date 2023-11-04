@@ -92,7 +92,12 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          smtp_password: '',
          scrape_retry: false,
       };
+      const otherSettings = {
+         available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
+         failed_queue: [],
+      };
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(settings), { encoding: 'utf-8' });
-      return settings;
+      await writeFile(`${process.cwd()}/data/failed_queue.json`, JSON.stringify([]), { encoding: 'utf-8' });
+      return { ...settings, ...otherSettings };
    }
 };
