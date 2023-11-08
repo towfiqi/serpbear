@@ -53,6 +53,7 @@
     "@types/cookies": "^0.7.7",
     "@types/cryptr": "^4.0.1",
     "@types/isomorphic-fetch": "^0.0.36",
+    "@types/jest": "^29.5.8",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "18.11.0",
     "@types/nodemailer": "^6.4.6",

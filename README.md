@@ -18,7 +18,7 @@ SerpBear is an Open Source Search Engine Position Tracking App. It allows you to
 -   **Zero Cost to RUN:** Run the App on mogenius.com or Fly.io for free.
 
 #### How it Works
-The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SerpApi or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword. Also, When you connect your Googel Search Console account, the app shows actual search visits for each tracked keywords. You can also discover new keywords, and find the most performing keywords, countries, pages.
+The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SearchApi, SerpApi or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword. Also, When you connect your Googel Search Console account, the app shows actual search visits for each tracked keywords. You can also discover new keywords, and find the most performing keywords, countries, pages.
 
 #### Getting Started
 -   **Step 1:** Deploy & Run the App.
@@ -41,6 +41,7 @@ The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SerpA
 | serply.io | $49/mo | 5000/mo | Yes |
 | serpapi.com | From $50/mo** | From 5,000/mo** | Yes |
 | spaceserp.com | $59/lifetime | 15,000/mo | Yes |
+| SearchApi.io | From $40/mo | From 10,000/mo | Yes |
 
 (*) Free upto a limit. If you are using ScrapingAnt you can lookup 10,000 times per month for free.
 (**) Free up to 100 per month. Paid from 5,000 to 10,000,000+ per month.

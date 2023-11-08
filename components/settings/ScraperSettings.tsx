@@ -54,7 +54,7 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
             minWidth={270}
             />
          </div>
-         {['scrapingant', 'scrapingrobot', 'serply', 'serpapi', 'spaceSerp'].includes(settings.scraper_type) && (
+         {['scrapingant', 'scrapingrobot', 'serply', 'serpapi', 'spaceSerp', 'searchapi'].includes(settings.scraper_type) && (
             <div className="settings__section__input mr-3">
                <label className={labelStyle}>Scraper API Key or Token</label>
                <input
