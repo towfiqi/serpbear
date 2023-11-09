@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/towfiqi/serpbear/compare/v0.3.1...v0.3.2) (2023-11-09)
+
+
+### Bug Fixes
+
+* Resolves issue with adding long tld emails ([9b9b74a](https://github.com/towfiqi/serpbear/commit/9b9b74af4c249e27458d29ba052e96ab2db8b640)), closes [#127](https://github.com/towfiqi/serpbear/issues/127)
+
 ### [0.3.1](https://github.com/towfiqi/serpbear/compare/v0.3.0...v0.3.1) (2023-11-04)
 
 
