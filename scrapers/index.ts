@@ -4,6 +4,7 @@ import serpapi from './services/serpapi';
 import serply from './services/serply';
 import spaceserp from './services/spaceserp';
 import proxy from './services/proxy';
+import searchapi from './services/searchapi';
 
 export default [
    scrapingRobot,
@@ -12,4 +13,5 @@ export default [
    serply,
    spaceserp,
    proxy,
+   searchapi,
 ];

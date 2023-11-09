@@ -17,11 +17,11 @@ const refreshAndUpdateKeywords = async (rawkeyword:Keyword[], settings:SettingsT
    const start = performance.now();
    const updatedKeywords: KeywordType[] = [];
 
-   if (['scrapingant', 'serpapi'].includes(settings.scraper_type)) {
+   if (['scrapingant', 'serpapi', 'searchapi'].includes(settings.scraper_type)) {
       const refreshedResults = await refreshParallel(keywords, settings);
       if (refreshedResults.length > 0) {
          for (const keyword of rawkeyword) {
-            const refreshedkeywordData = refreshedResults.find((k) => k && k.ID === keyword.id);
+            const refreshedkeywordData = refreshedResults.find((k) => k && k.ID === keyword.ID);
             if (refreshedkeywordData) {
                const updatedkeyword = await updateKeywordPosition(keyword, refreshedkeywordData, settings);
                updatedKeywords.push(updatedkeyword);
