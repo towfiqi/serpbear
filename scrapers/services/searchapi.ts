@@ -5,10 +5,10 @@ const searchapi:ScraperSettings = {
   headers: (keyword, settings) => {
      return {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${settings.scaping_api}`,
+        Authorization: `Bearer ${settings.scaping_api}`,
      };
   },
-  scrapeURL: (keyword, settings) => {
+  scrapeURL: (keyword) => {
      return `https://www.searchapi.io/api/v1/search?engine=google&q=${encodeURI(keyword.keyword)}&num=100&gl=${keyword.country}&device=${keyword.device}`;
   },
   resultObjectKey: 'organic_results',
