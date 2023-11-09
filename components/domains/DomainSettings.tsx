@@ -41,7 +41,7 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
       let error: DomainSettingsError | null = null;
       if (domainSettings.notification_emails) {
          const notification_emails = domainSettings.notification_emails.split(',');
-         const invalidEmails = notification_emails.find((x) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(x) === false);
+         const invalidEmails = notification_emails.find((x) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,15})+$/.test(x) === false);
          console.log('invalidEmails: ', invalidEmails);
          if (invalidEmails) {
             error = { type: 'email', msg: 'Invalid Email' };
