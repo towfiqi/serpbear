@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -22,6 +22,16 @@ const SingleDomain: NextPage = () => {
    const [domainThumbs, setDomainThumbs] = useState<thumbImages>({});
    const { data: appSettings } = useFetchSettings();
    const { data: domainsData, isLoading } = useFetchDomains(router, true);
+
+   const totalKeywords = useMemo(() => {
+      let keywords = 0;
+      if (domainsData?.domains) {
+         domainsData.domains.forEach(async (domain:DomainType) => {
+            keywords += domain?.keywordCount || 0;
+         });
+      }
+      return keywords;
+   }, [domainsData]);
 
    useEffect(() => {
       if (domainsData?.domains && domainsData.domains.length > 0 && appSettings?.settings?.screenshot_key) {
@@ -69,7 +79,9 @@ const SingleDomain: NextPage = () => {
 
          <div className="flex flex-col w-full max-w-5xl mx-auto p-6 lg:mt-24 lg:p-0">
             <div className='flex justify-between mb-2 items-center'>
-               <div className=' text-sm'>{domainsData?.domains?.length || 0} Domains</div>
+               <div className=' text-sm text-gray-600'>
+                  {domainsData?.domains?.length || 0} Domains <span className=' text-gray-300 ml-1 mr-1'>|</span> {totalKeywords} keywords
+               </div>
                <div>
                   <button
                   className={'ml-2 inline-block py-2 text-blue-700 font-bold text-sm'}
