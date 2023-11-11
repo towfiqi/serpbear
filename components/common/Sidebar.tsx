@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -26,11 +27,11 @@ const Sidebar = ({ domains, showAddModal } : SidebarProps) => {
                                         rounded-r-none ${((`/domain/${d.slug}` === router.asPath || `/domain/console/${d.slug}` === router.asPath
                                         || `/domain/insight/${d.slug}` === router.asPath)
                                         ? 'bg-white text-zinc-800 border border-r-0' : 'text-zinc-500')}`}>
-                                          <i className={'text-center leading-4 mr-2 inline-block rounded-full w-5 h-5 bg-orange-200 not-italic'}>
-                                             {d.domain.charAt(0)}
-                                          </i>
+                                          <img
+                                          className={' inline-block mr-1'}
+                                          src={`https://www.google.com/s2/favicons?domain=${d.domain}&sz=16`} alt={d.domain}
+                                          />
                                           {d.domain}
-                                          {/* <span>0</span> */}
                                        </a>
                                     </Link>
                                  </li>)
