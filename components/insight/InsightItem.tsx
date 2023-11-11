@@ -5,10 +5,11 @@ import Icon from '../common/Icon';
 type InsightItemProps = {
    item: SCInsightItem,
    lastItem: boolean,
-   type: string
+   type: string,
+   domain: string
 }
 
-const InsightItem = ({ item, lastItem, type }:InsightItemProps) => {
+const InsightItem = ({ item, lastItem, type, domain }:InsightItemProps) => {
    const { clicks, impressions, ctr, position, country = 'zzz', keyword, page, keywords = 0, countries: cntrs = 0, date } = item;
    let firstItem = keyword;
    if (type === 'pages') { firstItem = page; } if (type === 'stats') {
@@ -24,7 +25,7 @@ const InsightItem = ({ item, lastItem, type }:InsightItemProps) => {
 
          <div className=' w-3/4 lg:flex-1 lg:basis-20 lg:w-auto font-semibold'>
             {type === 'countries' && <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} />}
-            {firstItem}
+            {type === 'pages' && domain ? <a href={`https://${domain}${page}`} target='_blank' rel="noreferrer">{firstItem}</a> : firstItem}
          </div>
 
          <div className='keyword_pos text-center inline-block mr-3 lg:mr-0 lg:flex-1'>

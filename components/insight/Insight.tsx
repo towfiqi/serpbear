@@ -12,7 +12,7 @@ type SCInsightProps = {
    isConsoleIntegrated: boolean,
 }
 
-const SCInsight = ({ insight, isLoading = true, isConsoleIntegrated = true }: SCInsightProps) => {
+const SCInsight = ({ insight, isLoading = true, isConsoleIntegrated = true, domain }: SCInsightProps) => {
    const [activeTab, setActiveTab] = useState<string>('stats');
 
    const insightItems = insight[activeTab as keyof InsightDataType];
@@ -108,7 +108,7 @@ const SCInsight = ({ insight, isLoading = true, isConsoleIntegrated = true }: SC
                               (item:SCInsightItem, index: number) => {
                               const insightItemCount = insight ? insightItems : [];
                               const lastItem = !!(insightItemCount && (index === insightItemCount.length));
-                              return <InsightItem key={index} item={item} type={activeTab} lastItem={lastItem} />;
+                              return <InsightItem key={index} item={item} type={activeTab} lastItem={lastItem} domain={domain?.domain || ''} />;
                            },
                         )
                      }
