@@ -19,6 +19,36 @@ export async function fetchDomains(router: NextRouter, withStats:boolean) {
    return res.json();
 }
 
+export async function fetchDomainScreenshot(domain: string, screenshot_key:string, forceFetch = false): Promise<string | false> {
+   const domainThumbsRaw = localStorage.getItem('domainThumbs');
+   const domThumbs = domainThumbsRaw ? JSON.parse(domainThumbsRaw) : {};
+   if (!domThumbs[domain] || forceFetch) {
+      try {
+         const screenshotURL = `https://image.thum.io/get/auth/${screenshot_key}/maxAge/96/width/200/https://${domain}`;
+         const domainImageRes = await fetch(screenshotURL);
+         const domainImageBlob = domainImageRes.status === 200 ? await domainImageRes.blob() : false;
+         if (domainImageBlob) {
+            const reader = new FileReader();
+            await new Promise((resolve, reject) => {
+               reader.onload = resolve;
+               reader.onerror = reject;
+               reader.readAsDataURL(domainImageBlob);
+            });
+            const imageBase: string = reader.result && typeof reader.result === 'string' ? reader.result : '';
+            localStorage.setItem('domainThumbs', JSON.stringify({ ...domThumbs, [domain]: imageBase }));
+            return imageBase;
+         }
+         return false;
+      } catch (error) {
+         return false;
+      }
+   } else if (domThumbs[domain]) {
+         return domThumbs[domain];
+   }
+
+   return false;
+}
+
 export function useFetchDomains(router: NextRouter, withStats:boolean = false) {
    return useQuery('domains', () => fetchDomains(router, withStats));
 }

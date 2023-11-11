@@ -55,6 +55,7 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
 };
 
 export const getAppSettings = async () : Promise<SettingsType> => {
+   const screenshotAPIKey = process.env.SCREENSHOT_API || '69408-serpbear';
    try {
       const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
       const failedQueueRaw = await readFile(`${process.cwd()}/data/failed_queue.json`, { encoding: 'utf-8' });
@@ -73,6 +74,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL),
             available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
             failed_queue: failedQueue,
+            screenshot_key: screenshotAPIKey,
          };
       } catch (error) {
          console.log('Error Decrypting Settings API Keys!');
@@ -81,7 +83,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
       return decryptedSettings;
    } catch (error) {
       console.log('[ERROR] Getting App Settings. ', error);
-      const settings = {
+      const settings: SettingsType = {
          scraper_type: 'none',
          notification_interval: 'never',
          notification_email: '',
@@ -91,6 +93,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          smtp_username: '',
          smtp_password: '',
          scrape_retry: false,
+         screenshot_key: screenshotAPIKey,
       };
       const otherSettings = {
          available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),

@@ -3,11 +3,12 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { CSSTransition } from 'react-transition-group';
+import toast, { Toaster } from 'react-hot-toast';
 import TopBar from '../../components/common/TopBar';
 import AddDomain from '../../components/domains/AddDomain';
 import Settings from '../../components/settings/Settings';
 import { useFetchSettings } from '../../services/settings';
-import { useFetchDomains } from '../../services/domains';
+import { fetchDomainScreenshot, useFetchDomains } from '../../services/domains';
 import DomainItem from '../../components/domains/DomainItem';
 import Icon from '../../components/common/Icon';
 
@@ -23,32 +24,17 @@ const SingleDomain: NextPage = () => {
    const { data: domainsData, isLoading } = useFetchDomains(router, true);
 
    useEffect(() => {
-      // console.log('Domains Data: ', domainsData);
-      if (domainsData?.domains && domainsData.domains.length > 0) {
-         const domainThumbsRaw = localStorage.getItem('domainThumbs');
-         const domThumbs = domainThumbsRaw ? JSON.parse(domainThumbsRaw) : {};
+      if (domainsData?.domains && domainsData.domains.length > 0 && appSettings?.settings?.screenshot_key) {
          domainsData.domains.forEach(async (domain:DomainType) => {
             if (domain.domain) {
-               if (!domThumbs[domain.domain]) {
-                  const domainImageBlob = await fetch(`https://image.thum.io/get/auth/66909-serpbear/maxAge/96/width/200/https://${domain.domain}`).then((res) => res.blob());
-                  if (domainImageBlob) {
-                     const reader = new FileReader();
-                     await new Promise((resolve, reject) => {
-                       reader.onload = resolve;
-                       reader.onerror = reject;
-                       reader.readAsDataURL(domainImageBlob);
-                     });
-                     const imageBase: string = reader.result && typeof reader.result === 'string' ? reader.result : '';
-                     localStorage.setItem('domainThumbs', JSON.stringify({ ...domThumbs, [domain.domain]: imageBase }));
-                     setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain.domain]: imageBase }));
-                  }
-               } else {
-                  setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain.domain]: domThumbs[domain.domain] }));
+               const domainThumb = await fetchDomainScreenshot(domain.domain, appSettings.settings.screenshot_key);
+               if (domainThumb) {
+                  setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain.domain]: domainThumb }));
                }
             }
          });
       }
-   }, [domainsData]);
+   }, [domainsData, appSettings]);
 
    useEffect(() => {
       // console.log('appSettings.settings: ', appSettings && appSettings.settings);
@@ -56,6 +42,18 @@ const SingleDomain: NextPage = () => {
          setNoScrapprtError(true);
       }
    }, [appSettings]);
+
+   const manuallyUpdateThumb = async (domain: string) => {
+      if (domain && appSettings?.settings?.screenshot_key) {
+         const domainThumb = await fetchDomainScreenshot(domain, appSettings.settings.screenshot_key, true);
+         if (domainThumb) {
+            toast(`${domain} Screenshot Updated Successfully!`, { icon: '✔️' });
+            setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain]: domainThumb }));
+         } else {
+            toast(`Failed to Fetch ${domain} Screenshot!`, { icon: '⚠️' });
+         }
+      }
+   };
 
    return (
       <div className="Domain flex flex-col min-h-screen">
@@ -90,6 +88,7 @@ const SingleDomain: NextPage = () => {
                            selected={false}
                            isConsoleIntegrated={!!(appSettings && appSettings?.settings?.search_console_integrated) }
                            thumb={domainThumbs[domain.domain]}
+                           updateThumb={manuallyUpdateThumb}
                            // isConsoleIntegrated={false}
                            />;
                })}
@@ -115,6 +114,7 @@ const SingleDomain: NextPage = () => {
          <footer className='text-center flex flex-1 justify-center pb-5 items-end'>
             <span className='text-gray-500 text-xs'><a href='https://github.com/towfiqi/serpbear' target="_blank" rel='noreferrer'>SerpBear v{appSettings?.settings?.version || '0.0.0'}</a></span>
          </footer>
+         <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>
    );
 };

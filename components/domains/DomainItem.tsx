@@ -11,9 +11,10 @@ type DomainItemProps = {
    selected: boolean,
    isConsoleIntegrated: boolean,
    thumb: string,
+   updateThumb: Function,
 }
 
-const DomainItem = ({ domain, selected, isConsoleIntegrated = false, thumb }: DomainItemProps) => {
+const DomainItem = ({ domain, selected, isConsoleIntegrated = false, thumb, updateThumb }: DomainItemProps) => {
    const { keywordsUpdated, slug, keywordCount = 0, avgPosition = 0, scVisits = 0, scImpressions = 0, scPosition = 0 } = domain;
    // const router = useRouter();
    return (
@@ -21,8 +22,20 @@ const DomainItem = ({ domain, selected, isConsoleIntegrated = false, thumb }: Do
          <Link href={`/domain/${slug}`} passHref={true}>
          <a className='flex flex-col lg:flex-row'>
             <div className={`flex-1 p-6 flex ${!isConsoleIntegrated ? 'basis-1/3' : ''}`}>
-               <div className="domain_thumb w-20 h-20 mr-6 bg-slate-100 rounded border border-gray-200 overflow-hidden">
-                  {thumb && <img src={thumb} alt={domain.domain} />}
+               <div className="group domain_thumb w-20 h-20 mr-6 bg-slate-100 rounded
+                  border border-gray-200 overflow-hidden flex justify-center relative">
+                  <button
+                     className=' absolute right-1 top-0 text-gray-400 p-1 transition-all
+                     invisible opacity-0 group-hover:visible group-hover:opacity-100 hover:text-gray-600 z-10'
+                     title='Reload Website Screenshot'
+                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateThumb(domain.domain); }}
+                  >
+                     <Icon type="reload" size={12} />
+                  </button>
+                  <img
+                  className={`self-center ${!thumb ? 'max-w-[50px]' : ''}`}
+                  src={thumb || `https://www.google.com/s2/favicons?domain=${domain.domain}&sz=128`} alt={domain.domain}
+                  />
                </div>
                <div className="domain_details flex-1">
                   <h3 className='font-semibold text-base mb-2'>{domain.domain}</h3>
