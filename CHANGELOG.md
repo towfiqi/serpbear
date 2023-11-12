@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/towfiqi/serpbear/compare/v0.3.2...v0.3.3) (2023-11-12)
+
+
+### Features
+
+* Adds ability to visit pages from Insight tab ([60c68bd](https://github.com/towfiqi/serpbear/commit/60c68bd339db7aeed35aea035dd21691702ffee3))
+* Domains now show their favicon. ([2339e31](https://github.com/towfiqi/serpbear/commit/2339e31af9e90bf918f5bcd4f23114f38cef0313)), closes [#130](https://github.com/towfiqi/serpbear/issues/130)
+* Shows total keywords count in domains page ([fbd23ed](https://github.com/towfiqi/serpbear/commit/fbd23ede256062c72ec2f7e3983a0a02f0240725))
+
+
+### Bug Fixes
+
+* Resolves Website Thumbnail missing issue ([4a60271](https://github.com/towfiqi/serpbear/commit/4a60271cac1209dc02748c4d31943bb21c9ecaf2)), closes [#131](https://github.com/towfiqi/serpbear/issues/131)
+
 ### [0.3.2](https://github.com/towfiqi/serpbear/compare/v0.3.1...v0.3.2) (2023-11-09)
 
 
