@@ -8,7 +8,7 @@ import Icon from '../components/common/Icon';
 const Home: NextPage = () => {
    const router = useRouter();
    useEffect(() => {
-      router.push('/domains');
+      if (router) router.push('/domains');
    }, [router]);
 
   return (

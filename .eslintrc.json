@@ -12,6 +12,7 @@
    "no-await-in-loop": "off",
    "arrow-body-style":"off",
    "max-len": ["error", {"code": 150, "ignoreComments": true, "ignoreUrls": true}],
+   "import/no-extraneous-dependencies": "off",
    "import/extensions": [
       "error",
       "ignorePackages",

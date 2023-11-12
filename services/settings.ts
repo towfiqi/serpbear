@@ -10,7 +10,7 @@ export function useFetchSettings() {
    return useQuery('settings', () => fetchSettings());
 }
 
-const useUpdateSettings = (onSuccess:Function|undefined) => {
+export const useUpdateSettings = (onSuccess:Function|undefined) => {
    const queryClient = useQueryClient();
 
    return useMutation(async (settings: SettingsType) => {
@@ -60,5 +60,3 @@ export function useClearFailedQueue(onSuccess:Function) {
       },
    });
 }
-
-export default useUpdateSettings;

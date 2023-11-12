@@ -14,7 +14,7 @@ import Icon from '../../components/common/Icon';
 
 type thumbImages = { [domain:string] : string }
 
-const SingleDomain: NextPage = () => {
+const Domains: NextPage = () => {
    const router = useRouter();
    const [noScrapprtError, setNoScrapprtError] = useState(false);
    const [showSettings, setShowSettings] = useState(false);
@@ -66,7 +66,7 @@ const SingleDomain: NextPage = () => {
    };
 
    return (
-      <div className="Domain flex flex-col min-h-screen">
+      <div data-testid="domains" className="Domain flex flex-col min-h-screen">
          {noScrapprtError && (
                <div className=' p-3 bg-red-600 text-white text-sm text-center'>
                   A Scrapper/Proxy has not been set up Yet. Open Settings to set it up and start using the app.
@@ -84,6 +84,7 @@ const SingleDomain: NextPage = () => {
                </div>
                <div>
                   <button
+                  data-testid="addDomainButton"
                   className={'ml-2 inline-block py-2 text-blue-700 font-bold text-sm'}
                   onClick={() => setShowAddDomain(true)}>
                      <span
@@ -131,4 +132,4 @@ const SingleDomain: NextPage = () => {
    );
 };
 
-export default SingleDomain;
+export default Domains;

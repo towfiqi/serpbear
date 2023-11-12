@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
-import useUpdateSettings, { useFetchSettings } from '../../services/settings';
+import { useFetchSettings, useUpdateSettings } from '../../services/settings';
 import Icon from '../common/Icon';
 import NotificationSettings from './NotificationSettings';
 import ScraperSettings from './ScraperSettings';
