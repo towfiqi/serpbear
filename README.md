@@ -49,3 +49,8 @@ The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, Searc
 **Stack**
 -   Next.js for Frontend & Backend.  
 -   Sqlite for Database.
+
+#### One-Click Deployment
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploy.png)](https://repocloud.io/details/?app_id=181)
+
