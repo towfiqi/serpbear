@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { useAddDomain } from '../../services/domains';
-import { isValidDomain } from '../../utils/validators';
+import { isValidDomain } from '../../utils/client/validators';
 
 type AddDomainProps = {
    closeModal: Function

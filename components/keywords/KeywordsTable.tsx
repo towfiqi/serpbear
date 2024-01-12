@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { CSSTransition } from 'react-transition-group';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import AddKeywords from './AddKeywords';
-import { filterKeywords, keywordsByDevice, sortKeywords } from '../../utils/sortFilter';
+import { filterKeywords, keywordsByDevice, sortKeywords } from '../../utils/client/sortFilter';
 import Icon from '../common/Icon';
 import Keyword from './Keyword';
 import KeywordDetails from './KeywordDetails';

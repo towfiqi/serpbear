@@ -10,7 +10,7 @@ import TopBar from '../../../../components/common/TopBar';
 import DomainHeader from '../../../../components/domains/DomainHeader';
 import AddDomain from '../../../../components/domains/AddDomain';
 import DomainSettings from '../../../../components/domains/DomainSettings';
-import exportCSV from '../../../../utils/exportcsv';
+import exportCSV from '../../../../utils/client/exportcsv';
 import Settings from '../../../../components/settings/Settings';
 import { useFetchDomains } from '../../../../services/domains';
 import { useFetchSCInsight } from '../../../../services/searchConsole';

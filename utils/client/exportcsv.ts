@@ -1,4 +1,4 @@
-import countries from './countries';
+import countries from '../countries';
 
   /**
    * Generates CSV File form the given domain & keywords, and automatically downloads it.

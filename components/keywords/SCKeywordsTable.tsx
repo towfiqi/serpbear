@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import { useAddKeywords, useFetchKeywords } from '../../services/keywords';
-import { SCfilterKeywords, SCkeywordsByDevice, SCsortKeywords } from '../../utils/SCsortFilter';
+import { SCfilterKeywords, SCkeywordsByDevice, SCsortKeywords } from '../../utils/client/SCsortFilter';
 import Icon from '../common/Icon';
 import KeywordFilters from './KeywordFilter';
 import SCKeyword from './SCKeyword';
