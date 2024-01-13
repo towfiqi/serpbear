@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { MockResponseInitFunction } from 'jest-fetch-mock';
 import SingleDomain from '../../pages/domain/[slug]';
 import { useAddDomain, useDeleteDomain, useFetchDomains, useUpdateDomain } from '../../services/domains';
-import { useAddKeywords, useDeleteKeywords, useFavKeywords, useFetchKeywords, useRefreshKeywords } from '../../services/keywords';
+import { useAddKeywords, useDeleteKeywords,
+   useFavKeywords, useFetchKeywords, useRefreshKeywords, useFetchSingleKeyword } from '../../services/keywords';
 import { dummyDomain, dummyKeywords, dummySettings } from '../../__mocks__/data';
 import { useFetchSettings } from '../../services/settings';
 
@@ -31,6 +31,7 @@ const useAddKeywordsFunc = useAddKeywords as jest.Mock<any>;
 const useUpdateDomainFunc = useUpdateDomain as jest.Mock<any>;
 const useDeleteDomainFunc = useDeleteDomain as jest.Mock<any>;
 const useFetchSettingsFunc = useFetchSettings as jest.Mock<any>;
+const useFetchSingleKeywordFunc = useFetchSingleKeyword as jest.Mock<any>;
 
 describe('SingleDomain Page', () => {
    const queryClient = new QueryClient();
@@ -38,6 +39,8 @@ describe('SingleDomain Page', () => {
       useFetchSettingsFunc.mockImplementation(() => ({ data: { settings: dummySettings }, isLoading: false }));
       useFetchDomainsFunc.mockImplementation(() => ({ data: { domains: [dummyDomain] }, isLoading: false }));
       useFetchKeywordsFunc.mockImplementation(() => ({ keywordsData: { keywords: dummyKeywords }, keywordsLoading: false }));
+      const fetchPayload = { history: dummyKeywords[0].history || [], searchResult: dummyKeywords[0].lastResult || [] };
+      useFetchSingleKeywordFunc.mockImplementation(() => ({ data: fetchPayload, isLoading: false }));
       useDeleteKeywordsFunc.mockImplementation(() => ({ mutate: () => { } }));
       useFavKeywordsFunc.mockImplementation(() => ({ mutate: () => { } }));
       useRefreshKeywordsFunc.mockImplementation(() => ({ mutate: () => { } }));
@@ -67,16 +70,7 @@ describe('SingleDomain Page', () => {
       const keywords = document.querySelectorAll('.keyword');
       const firstKeyword = keywords && keywords[0].querySelector('a');
       if (firstKeyword) fireEvent.click(firstKeyword);
-      const fn: MockResponseInitFunction = async () => {
-         return new Promise((resolve) => {
-            resolve({
-               body: JSON.stringify({ keyword: dummyKeywords[0] }),
-               status: 200,
-            });
-         });
-      };
-      fetchMock.mockIf(`${window.location.origin}/api/keyword?id=${dummyKeywords[0].ID}`, fn);
-
+      expect(useFetchSingleKeyword).toHaveBeenCalled();
       expect(screen.getByTestId('keywordDetails')).toBeVisible();
    });
    it('Should Display the AddDomain Modal on Add Domain Button Click.', async () => {
