@@ -221,6 +221,14 @@ const Icon = ({ type, color = 'currentColor', size = 16, title = '', classes = '
                   </g>
                </svg>
          }
+         {type === 'eye-closed'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <g fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                     <path d="M6.873 17.129c-1.845-1.31-3.305-3.014-4.13-4.09a1.693 1.693 0 0 1 0-2.077C4.236 9.013 7.818 5 12 5c1.876 0 3.63.807 5.13 1.874"/>
+                     <path d="M14.13 9.887a3 3 0 1 0-4.243 4.242M4 20L20 4M10 18.704A7.124 7.124 0 0 0 12 19c4.182 0 7.764-4.013 9.257-5.962a1.694 1.694 0 0 0-.001-2.078A22.939 22.939 0 0 0 19.57 9"/>
+                  </g>
+               </svg>
+         }
          {type === 'target'
             && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
                   <path d="M19.938 13A8.004 8.004 0 0 1 13 19.938V22h-2v-2.062A8.004 8.004 0 0 1 4.062 13H2v-2h2.062A8.004 8.004 0 0 1 11 4.062V2h2v2.062A8.004 8.004 0 0 1 19.938 11H22v2h-2.062zM12 18a6 6 0 1 0 0-12a6 6 0 0 0 0 12zm0-3a3 3 0 1 0 0-6a3 3 0 0 0 0 6z" fill={color} fillRule="nonzero"/>

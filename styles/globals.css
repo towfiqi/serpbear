@@ -282,3 +282,8 @@ body {
       right: 240px;
    }
 }
+
+/* Disable LastPass Icon for Secret Field */
+[autocomplete="off"] + div[data-lastpass-icon-root="true"], [autocomplete="off"] + div[data-lastpass-infield="true"] {
+   display: none;
+}

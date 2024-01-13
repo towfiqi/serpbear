@@ -1,5 +1,6 @@
 import React from 'react';
 import SelectField from '../common/SelectField';
+import SecretField from '../common/SecretField';
 
 type NotificationSettingsProps = {
    settings: SettingsType,
@@ -76,15 +77,13 @@ const NotificationSettings = ({ settings, settingsError, updateSettings }:Notifi
                         onChange={(event) => updateSettings('smtp_username', event.target.value)}
                      />
                   </div>
-                  <div className="settings__section__input mb-5">
-                     <label className={labelStyle}>SMTP Password</label>
-                     <input
-                        className={'w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200'}
-                        type="text"
-                        value={settings?.smtp_password || ''}
-                        onChange={(event) => updateSettings('smtp_password', event.target.value)}
-                     />
-                  </div>
+
+                  <SecretField
+                  label='SMTP Password'
+                  value={settings?.smtp_password || ''}
+                  onChange={(value:string) => updateSettings('smtp_password', value)}
+                  />
+
                   <div className="settings__section__input mb-5">
                      <label className={labelStyle}>From Email Address</label>
                      <input

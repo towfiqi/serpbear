@@ -2,6 +2,7 @@ import React from 'react';
 import { useClearFailedQueue } from '../../services/settings';
 import Icon from '../common/Icon';
 import SelectField, { SelectionOption } from '../common/SelectField';
+import SecretField from '../common/SecretField';
 
 type ScraperSettingsProps = {
    settings: SettingsType,
@@ -55,17 +56,13 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
             />
          </div>
          {['scrapingant', 'scrapingrobot', 'serply', 'serpapi', 'spaceSerp', 'searchapi'].includes(settings.scraper_type) && (
-            <div className="settings__section__input mr-3">
-               <label className={labelStyle}>Scraper API Key or Token</label>
-               <input
-                  className={`w-full p-2 border border-gray-200 rounded mt-2 mb-3 focus:outline-none  focus:border-blue-200 
-                  ${settingsError?.type === 'no_api_key' ? ' border-red-400 focus:border-red-400' : ''} `}
-                  type="text"
-                  value={settings?.scaping_api || ''}
-                  placeholder={'API Key/Token'}
-                  onChange={(event) => updateSettings('scaping_api', event.target.value)}
-               />
-            </div>
+            <SecretField
+            label='Scraper API Key or Token'
+            placeholder={'API Key/Token'}
+            value={settings?.scaping_api || ''}
+            hasError={settingsError?.type === 'no_api_key'}
+            onChange={(value:string) => updateSettings('scaping_api', value)}
+            />
          )}
          {settings.scraper_type === 'proxy' && (
             <div className="settings__section__input mb-5">
