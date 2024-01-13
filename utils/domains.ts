@@ -15,7 +15,8 @@ const getdomainStats = async (domains:DomainType[]): Promise<DomainType[]> => {
       domainWithStat.keywordCount = keywords.length;
       const keywordPositions = keywords.reduce((acc, itm) => (acc + itm.position), 0);
       const KeywordsUpdateDates: number[] = keywords.reduce((acc: number[], itm) => [...acc, new Date(itm.lastUpdated).getTime()], [0]);
-      domainWithStat.keywordsUpdated = new Date(Math.max(...KeywordsUpdateDates)).toJSON();
+      const lastKeywordUpdateDate = Math.max(...KeywordsUpdateDates);
+      domainWithStat.keywordsUpdated = new Date(lastKeywordUpdateDate || new Date(domain.lastUpdated).getTime()).toJSON();
       domainWithStat.avgPosition = Math.round(keywordPositions / keywords.length);
 
       // Then Load the SC File and read the stats and calculate the Last 7 days stats
