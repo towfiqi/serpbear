@@ -48,8 +48,8 @@ const KeywordsTable = (props: KeywordsTableProps) => {
       threeDays: 'Last Three Days',
       sevenDays: 'Last Seven Days',
       thirtyDays: 'Last Thirty Days',
-      avgSevenDays: 'Last Three Days Avg',
-      avgThreeDays: 'Last Seven Days Avg',
+      avgThreeDays: 'Last Three Days Avg',
+      avgSevenDays: 'Last Seven Days Avg',
       avgThirtyDays: 'Last Thirty Days Avg',
    };
 
