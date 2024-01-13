@@ -2,6 +2,12 @@ import Keyword from '../database/models/keyword';
 import parseKeywords from './parseKeywords';
 import { readLocalSCData } from './searchConsole';
 
+/**
+ * The function `getdomainStats` takes an array of domain objects, retrieves keyword and stats data for
+ * each domain, and calculates various statistics for each domain.
+ * @param {DomainType[]} domains - An array of objects of type DomainType.
+ * @returns {DomainType[]} - An array of objects of type DomainType.
+ */
 const getdomainStats = async (domains:DomainType[]): Promise<DomainType[]> => {
    const finalDomains: DomainType[] = [];
    console.log('domains: ', domains.length);

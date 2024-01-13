@@ -6,7 +6,16 @@ export type SCDomainFetchError = {
    error: boolean,
    errorMsg: string,
 }
+
 type fetchConsoleDataResponse = SearchAnalyticsItem[] | SearchAnalyticsStat[] | SCDomainFetchError;
+
+/**
+ * function that retrieves data from the Google Search Console API based on the provided domain name, number of days, and optional type.
+ * @param {string} domainName - The domain name for which you want to fetch search console data.
+ * @param {number} days - The `days` parameter is the number of days of data you want to fetch from the Search Console.
+ * @param {string} [type] - The `type` parameter is an optional parameter that specifies the type of data to fetch from the Search Console API.
+ * @returns {Promise<fetchConsoleDataResponse>}
+ */
 const fetchSearchConsoleData = async (domainName:string, days:number, type?:string): Promise<fetchConsoleDataResponse> => {
    if (!domainName) return { error: true, errorMsg: 'Domain Not Provided!' };
    try {
@@ -68,6 +77,13 @@ const fetchSearchConsoleData = async (domainName:string, days:number, type?:stri
    }
 };
 
+/**
+ * The function fetches search console data for a given domain and returns it in a structured format.
+ * @param {string} domain - The `domain` parameter is a string that represents the domain for which we
+ * want to fetch search console data.
+ * @returns The function `fetchDomainSCData` is returning a Promise that resolves to an object of type
+ * `SCDomainDataType`.
+ */
 export const fetchDomainSCData = async (domain:string): Promise<SCDomainDataType> => {
    const days = [3, 7, 30];
    const scDomainData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '', stats: [] };
@@ -93,6 +109,12 @@ export const fetchDomainSCData = async (domain:string): Promise<SCDomainDataType
    return scDomainData;
 };
 
+/**
+ * The function takes a raw search console item and a domain name as input and returns a parsed search analytics item.
+ * @param {SearchAnalyticsRawItem} SCItem - The SCItem parameter is an object that represents a raw item from the Search Console API.
+ * @param {string} domainName - The `domainName` parameter is a string that represents the domain name of the website.
+ * @returns {SearchAnalyticsItem}.
+ */
 export const parseSearchConsoleItem = (SCItem: SearchAnalyticsRawItem, domainName: string): SearchAnalyticsItem => {
    const { clicks = 0, impressions = 0, ctr = 0, position = 0 } = SCItem;
    const keyword = SCItem.keys[0];
@@ -104,6 +126,12 @@ export const parseSearchConsoleItem = (SCItem: SearchAnalyticsRawItem, domainNam
    return { keyword, uid, device, country, clicks, impressions, ctr: ctr * 100, position, page };
 };
 
+/**
+ * The function integrates search console data with a keyword object and returns the updated keyword object with the search console data.
+ * @param {KeywordType} keyword - The `keyword` parameter is of type `KeywordType`, which is a custom type representing a keyword.
+ * @param {SCDomainDataType} SCData - SCData is an object that contains search analytics data for different time periods
+ * @returns {KeywordType}
+ */
 export const integrateKeywordSCData = (keyword: KeywordType, SCData:SCDomainDataType) : KeywordType => {
    const kuid = `${keyword.country.toLowerCase()}:${keyword.device}:${keyword.keyword.replaceAll(' ', '_')}`;
    const impressions:any = { yesterday: 0, threeDays: 0, sevenDays: 0, thirtyDays: 0, avgSevenDays: 0, avgThreeDays: 0, avgThirtyDays: 0 };
@@ -136,6 +164,11 @@ export const integrateKeywordSCData = (keyword: KeywordType, SCData:SCDomainData
    return { ...keyword, scData: finalSCData };
 };
 
+/**
+ * The function reads and returns the domain-specific data stored in a local JSON file.
+ * @param {string} domain - The `domain` parameter is a string that represents the domain for which the SC data is being read.
+ * @returns {Promise<SCDomainDataType>}
+ */
 export const readLocalSCData = async (domain:string): Promise<SCDomainDataType> => {
    const filePath = `${process.cwd()}/data/SC_${domain}.json`;
    const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch(async () => { await updateLocalSCData(domain); return '{}'; });
@@ -143,6 +176,12 @@ export const readLocalSCData = async (domain:string): Promise<SCDomainDataType> 
    return domainSCData;
 };
 
+/**
+ * The function reads and returns the domain-specific data stored in a local JSON file.
+ * @param {string} domain - The `domain` parameter is a string that represents the domain for which the SC data will be written.
+ * @param {SCDomainDataType} scDomainData - an object that contains search analytics data for different time periods.
+ * @returns {Promise<SCDomainDataType|false>}
+ */
 export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDataType): Promise<SCDomainDataType|false> => {
    const filePath = `${process.cwd()}/data/SC_${domain}.json`;
    const emptyData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '' };

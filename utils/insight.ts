@@ -1,4 +1,10 @@
-export const sortInsightItems = (items:SCInsightItem[], sortBy: string = 'clicks') => {
+/**
+ * The function `sortInsightItems` sorts an array of `SCInsightItem` objects based on a specified property.
+ * @param {SCInsightItem[]} items - An array of SCInsightItem objects.
+ * @param {string} [sortBy=clicks] - The `sortBy` parameter determines the property by which the `items` array should be sorted.
+ * @returns {SCInsightItem[]}
+ */
+export const sortInsightItems = (items:SCInsightItem[], sortBy: string = 'clicks'): SCInsightItem[] => {
    const sortKey = sortBy as keyof SCInsightItem;
    let sortedItems = [];
    switch (sortKey) {
@@ -18,6 +24,13 @@ export const sortInsightItems = (items:SCInsightItem[], sortBy: string = 'clicks
    return sortedItems;
 };
 
+/**
+ * The `getCountryInsight` function takes search analytics data and returns insights about countries based on clicks, impressions, CTR, and position.
+ * @param {SCDomainDataType} SCData - The SCData parameter is an object that contains search analytics data for different dates.
+ * @param {string} [sortBy=clicks] - The "sortBy" parameter is used to specify the sorting criteria for the country insights.
+ * @param {string} [queryDate=thirtyDays] - The `queryDate` parameter is a string that represents the date range for which the search analytics data is retrieved.
+ * @returns {SCInsightItem[]}
+ */
 export const getCountryInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks', queryDate:string = 'thirtyDays') : SCInsightItem[] => {
    const keywordsCounts: { [key:string]: string[] } = {};
    const countryItems: { [key:string]: SCInsightItem } = {};
@@ -57,6 +70,13 @@ export const getCountryInsight = (SCData:SCDomainDataType, sortBy:string = 'clic
    return sortBy ? sortInsightItems(countryInsight, sortBy) : countryInsight;
 };
 
+/**
+ * The `getKeywordsInsight` function takes search analytics data, sorts it based on specified criteria, and returns insights on keywords.
+ * @param {SCDomainDataType} SCData - The SCData parameter is of type SCDomainDataType, which is an object containing search analytics data for a specific domain.
+ * @param {string} [sortBy=clicks] - The "sortBy" parameter is used to specify the sorting criteria for the keyword insights.
+ * @param {string} [queryDate=thirtyDays] - The `queryDate` parameter is a string that represents the date range for which the search analytics data is retrieved.
+ * @returns {SCInsightItem[]}
+ */
 export const getKeywordsInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks', queryDate:string = 'thirtyDays') : SCInsightItem[] => {
    const keywordItems: { [key:string]: SCInsightItem } = {};
    const keywordCounts: { [key:string]: number } = {};
@@ -99,6 +119,13 @@ export const getKeywordsInsight = (SCData:SCDomainDataType, sortBy:string = 'cli
    return sortBy ? sortInsightItems(keywordInsight, sortBy) : keywordInsight;
 };
 
+/**
+ * The `getPagesInsight` function takes a domain's search analytics data, sorts it based on specified criteria and returns insights about the pages.
+ * @param {SCDomainDataType} SCData - SCData is an object that contains search analytics data for a  specific domain.
+ * @param {string} [sortBy=clicks] - The `sortBy` parameter is used to specify the sorting criteria for the pages insight.
+ * @param {string} [queryDate=thirtyDays] - The `queryDate` parameter is a string that represents the date range for which you want to retrieve the data.
+ * @returns {SCInsightItem[]}
+ */
 export const getPagesInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks', queryDate:string = 'thirtyDays') : SCInsightItem[] => {
    const pagesItems: { [key:string]: SCInsightItem } = {};
    const keywordCounts: { [key:string]: number } = {};
