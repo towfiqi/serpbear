@@ -12,6 +12,7 @@ WORKDIR /app
 COPY --from=deps /app ./
 RUN rm -rf /app/data
 RUN rm -rf /app/__tests__
+RUN rm -rf /app/__mocks__
 RUN npm run build
 
 
