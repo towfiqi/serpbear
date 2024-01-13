@@ -4,6 +4,7 @@ import { useFetchSettings, useUpdateSettings } from '../../services/settings';
 import Icon from '../common/Icon';
 import NotificationSettings from './NotificationSettings';
 import ScraperSettings from './ScraperSettings';
+import useOnKey from '../../hooks/useOnKey';
 
 type SettingsProps = {
    closeSettings: Function,
@@ -34,25 +35,13 @@ const Settings = ({ closeSettings }:SettingsProps) => {
    const [settingsError, setSettingsError] = useState<SettingsError|null>(null);
    const { mutate: updateMutate, isLoading: isUpdating } = useUpdateSettings(() => console.log(''));
    const { data: appSettings, isLoading } = useFetchSettings();
+   useOnKey('Escape', closeSettings);
 
    useEffect(() => {
       if (appSettings && appSettings.settings) {
          setSettings(appSettings.settings);
       }
    }, [appSettings]);
-
-   useEffect(() => {
-      const closeModalonEsc = (event:KeyboardEvent) => {
-         if (event.key === 'Escape') {
-            console.log(event.key);
-            closeSettings();
-         }
-      };
-      window.addEventListener('keydown', closeModalonEsc, false);
-      return () => {
-         window.removeEventListener('keydown', closeModalonEsc, false);
-      };
-   }, [closeSettings]);
 
    const closeOnBGClick = (e:React.SyntheticEvent) => {
       e.stopPropagation();

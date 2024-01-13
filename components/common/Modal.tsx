@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Icon from './Icon';
+import useOnKey from '../../hooks/useOnKey';
 
 type ModalProps = {
    children: React.ReactNode,
@@ -9,17 +10,7 @@ type ModalProps = {
 }
 
 const Modal = ({ children, width = '1/2', closeModal, title }:ModalProps) => {
-   useEffect(() => {
-      const closeModalonEsc = (event:KeyboardEvent) => {
-         if (event.key === 'Escape') {
-            closeModal();
-         }
-      };
-      window.addEventListener('keydown', closeModalonEsc, false);
-      return () => {
-         window.removeEventListener('keydown', closeModalonEsc, false);
-      };
-   }, [closeModal]);
+   useOnKey('Escape', closeModal);
 
    const closeOnBGClick = (e:React.SyntheticEvent) => {
       e.stopPropagation();

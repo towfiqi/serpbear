@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Icon from '../common/Icon';
 import Modal from '../common/Modal';
 import { useDeleteDomain, useUpdateDomain } from '../../services/domains';
@@ -18,19 +18,16 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
    const router = useRouter();
    const [showRemoveDomain, setShowRemoveDomain] = useState<boolean>(false);
    const [settingsError, setSettingsError] = useState<DomainSettingsError>({ type: '', msg: '' });
-   const [domainSettings, setDomainSettings] = useState<DomainSettings>({ notification_interval: 'never', notification_emails: '' });
+   const [domainSettings, setDomainSettings] = useState<DomainSettings>(() => ({
+      notification_interval: domain && domain.notification_interval ? domain.notification_interval : 'never',
+      notification_emails: domain && domain.notification_emails ? domain.notification_emails : '',
+   }));
 
    const { mutate: updateMutate } = useUpdateDomain(() => closeModal(false));
    const { mutate: deleteMutate } = useDeleteDomain(() => {
       closeModal(false);
       router.push('/domains');
    });
-
-   useEffect(() => {
-      if (domain) {
-         setDomainSettings({ notification_interval: domain.notification_interval, notification_emails: domain.notification_emails });
-      }
-   }, [domain]);
 
    const updateNotiEmails = (event:React.FormEvent<HTMLInputElement>) => {
       setDomainSettings({ ...domainSettings, notification_emails: event.currentTarget.value });

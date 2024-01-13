@@ -4,7 +4,8 @@ import dayjs from 'dayjs';
 import Icon from '../common/Icon';
 import countries from '../../utils/countries';
 import ChartSlim from '../common/ChartSlim';
-import { generateTheChartData } from '../common/generateChartData';
+import KeywordPosition from './KeywordPosition';
+import { generateTheChartData } from '../../utils/client/generateChartData';
 
 type KeywordProps = {
    keywordData: KeywordType,
@@ -82,16 +83,6 @@ const Keyword = (props: KeywordProps) => {
 
    const optionsButtonStyle = 'block px-2 py-2 cursor-pointer hover:bg-indigo-50 hover:text-blue-700';
 
-   const renderPosition = (pos:number, type?:string) => {
-      if (!updating && pos === 0) {
-         return <span className='text-gray-400' title='Not in Top 100'>{'>100'}</span>;
-      }
-      if (updating && type !== 'sc') {
-         return <span title='Updating Keyword Position'><Icon type="loading" /></span>;
-      }
-      return pos;
-   };
-
    return (
       <div
       key={keyword}
@@ -123,7 +114,7 @@ const Keyword = (props: KeywordProps) => {
          <div
          className={`keyword_position absolute bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative
           lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-24 lg:grow-0 lg:right-0 text-center font-semibold`}>
-            {renderPosition(position)}
+            <KeywordPosition position={position} />
             {!updating && positionChange > 0 && <i className=' not-italic ml-1 text-xs text-[#5ed7c3]'>▲ {positionChange}</i>}
             {!updating && positionChange < 0 && <i className=' not-italic ml-1 text-xs text-red-300'>▼ {positionChange}</i>}
          </div>
@@ -164,7 +155,10 @@ const Keyword = (props: KeywordProps) => {
             relative flex justify-between text-center lg:flex-1 lg:text-sm lg:m-0 lg:mt-0 lg:border-t-0 lg:pt-0 lg:top-0'>
                <span className='min-w-[40px]'>
                   <span className='lg:hidden'>SC Position: </span>
-                  {renderPosition(keywordData?.scData?.position[scDataType as keyof KeywordSCDataChild] || 0, 'sc')}
+                  <KeywordPosition
+                  position={keywordData?.scData?.position[scDataType as keyof KeywordSCDataChild] || 0}
+                  type='sc'
+                  />
                </span>
                <span className='min-w-[40px]'>
                   <span className='lg:hidden'>Impressions: </span>{keywordData?.scData?.impressions[scDataType as keyof KeywordSCDataChild] || 0}

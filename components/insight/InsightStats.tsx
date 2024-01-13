@@ -1,6 +1,7 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { formattedNum } from '../../utils/client/helpers';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -12,21 +13,15 @@ type InsightStatsProps = {
 }
 
 const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }:InsightStatsProps) => {
-   const formattedNum = (num:number) => new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(num);
-   const [totalStat, setTotalStat] = useState({ impressions: 0, clicks: 0, ctr: 0, position: 0 });
-
-   useEffect(() => {
-      if (stats.length > 0) {
-         const totalStats = stats.reduce((acc, item) => {
-            return {
-               impressions: item.impressions + acc.impressions,
-               clicks: item.clicks + acc.clicks,
-               ctr: item.ctr + acc.ctr,
-               position: item.position + acc.position,
-            };
-         }, { impressions: 0, clicks: 0, ctr: 0, position: 0 });
-         setTotalStat(totalStats);
-      }
+   const totalStat = useMemo(() => {
+      return stats.reduce((acc, item) => {
+         return {
+            impressions: item.impressions + acc.impressions,
+            clicks: item.clicks + acc.clicks,
+            ctr: item.ctr + acc.ctr,
+            position: item.position + acc.position,
+         };
+      }, { impressions: 0, clicks: 0, ctr: 0, position: 0 });
    }, [stats]);
 
    const chartData = useMemo(() => {

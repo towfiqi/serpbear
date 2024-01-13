@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import { useAddKeywords, useFetchKeywords } from '../../services/keywords';
@@ -7,6 +7,9 @@ import { SCfilterKeywords, SCkeywordsByDevice, SCsortKeywords } from '../../util
 import Icon from '../common/Icon';
 import KeywordFilters from './KeywordFilter';
 import SCKeyword from './SCKeyword';
+import useWindowResize from '../../hooks/useWindowResize';
+import useIsMobile from '../../hooks/useIsMobile';
+import { formattedNum } from '../../utils/client/helpers';
 
 type SCKeywordsTableProps = {
    domain: DomainType | null,
@@ -27,11 +30,13 @@ const SCKeywordsTable = ({ domain, keywords = [], isLoading = true, isConsoleInt
    const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
    const [filterParams, setFilterParams] = useState<KeywordFilters>({ countries: [], tags: [], search: '' });
    const [sortBy, setSortBy] = useState<string>('imp_desc');
-   const [isMobile, setIsMobile] = useState<boolean>(false);
    const [SCListHeight, setSCListHeight] = useState(500);
    const { keywordsData } = useFetchKeywords(router);
    const addedkeywords: string[] = keywordsData?.keywords?.map((key: KeywordType) => `${key.keyword}:${key.country}:${key.device}`) || [];
    const { mutate: addKeywords } = useAddKeywords(() => { if (domain && domain.slug) router.push(`/domain/${domain.slug}`); });
+   const [isMobile] = useIsMobile();
+   useWindowResize(() => setSCListHeight(window.innerHeight - (isMobile ? 200 : 400)));
+
    const finalKeywords: {[key:string] : SCKeywordType[] } = useMemo(() => {
       const procKeywords = keywords.filter((x) => x.device === device);
       const filteredKeywords = SCfilterKeywords(procKeywords, filterParams);
@@ -70,16 +75,6 @@ const SCKeywordsTable = ({ domain, keywords = [], isLoading = true, isConsoleInt
             ctr: kwSummary.ctr / keyCount,
          };
    }, [finalKeywords, device]);
-
-   useEffect(() => {
-      setIsMobile(!!(window.matchMedia('only screen and (max-width: 760px)').matches));
-      const resizeList = () => setSCListHeight(window.innerHeight - (isMobile ? 200 : 400));
-      resizeList();
-      window.addEventListener('resize', resizeList);
-      return () => {
-          window.removeEventListener('resize', resizeList);
-      };
-   }, [isMobile]);
 
    const selectKeyword = (keywordID: string) => {
       console.log('Select Keyword: ', keywordID);
@@ -194,10 +189,10 @@ const SCKeywordsTable = ({ domain, keywords = [], isLoading = true, isConsoleInt
                               </span>
                               <span className='domKeywords_head_position flex-1 basis-40 grow-0 text-center'>{viewSummary.position}</span>
                               <span className='domKeywords_head_imp flex-1 text-center'>
-                                 {new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(viewSummary.impressions)}
+                                 {formattedNum(viewSummary.impressions)}
                               </span>
                               <span className='domKeywords_head_visits flex-1 text-center'>
-                                 {new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(viewSummary.visits)}
+                                 {formattedNum(viewSummary.visits)}
                               </span>
                               <span className='domKeywords_head_ctr flex-1 text-center'>
                                  {new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(viewSummary.ctr)}%

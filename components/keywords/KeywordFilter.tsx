@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Icon from '../common/Icon';
 import SelectField, { SelectionOption } from '../common/SelectField';
 import countries from '../../utils/countries';
@@ -17,11 +17,6 @@ type KeywordFilterProps = {
    SCcountries?: string[];
 }
 
-type KeywordCountState = {
-   desktop: number,
-   mobile: number
-}
-
 const KeywordFilters = (props: KeywordFilterProps) => {
    const {
       device,
@@ -36,20 +31,14 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       integratedConsole = false,
       SCcountries = [],
     } = props;
-   const [keywordCounts, setKeywordCounts] = useState<KeywordCountState>({ desktop: 0, mobile: 0 });
    const [sortOptions, showSortOptions] = useState(false);
    const [filterOptions, showFilterOptions] = useState(false);
 
-   useEffect(() => {
-      const keyWordCount = { desktop: 0, mobile: 0 };
-      keywords.forEach((k) => {
-         if (k.device === 'desktop') {
-            keyWordCount.desktop += 1;
-         } else {
-            keyWordCount.mobile += 1;
-         }
-      });
-      setKeywordCounts(keyWordCount);
+   const keywordCounts = useMemo(() => {
+      return keywords.reduce((acc, k) => ({
+         desktop: k.device === 'desktop' ? acc.desktop + 1 : acc.desktop,
+         mobile: k.device !== 'desktop' ? acc.mobile + 1 : acc.mobile,
+      }), { desktop: 0, mobile: 0 });
    }, [keywords]);
 
    const filterCountry = (cntrs:string[]) => filterKeywords({ ...filterParams, countries: cntrs });

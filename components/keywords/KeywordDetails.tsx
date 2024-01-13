@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import Icon from '../common/Icon';
 import countries from '../../utils/countries';
 import Chart from '../common/Chart';
 import SelectField from '../common/SelectField';
-import { generateTheChartData } from '../common/generateChartData';
+import { useFetchSingleKeyword } from '../../services/keywords';
+import useOnKey from '../../hooks/useOnKey';
+import { generateTheChartData } from '../../utils/client/generateChartData';
 
 type KeywordDetailsProps = {
    keyword: KeywordType,
@@ -13,11 +15,12 @@ type KeywordDetailsProps = {
 
 const KeywordDetails = ({ keyword, closeDetails }:KeywordDetailsProps) => {
    const updatedDate = new Date(keyword.lastUpdated);
-   const [keywordHistory, setKeywordHistory] = useState<KeywordHistory>(keyword.history);
-   const [keywordSearchResult, setKeywordSearchResult] = useState<KeywordLastResult[]>([]);
    const [chartTime, setChartTime] = useState<string>('30');
    const searchResultContainer = useRef<HTMLDivElement>(null);
    const searchResultFound = useRef<HTMLDivElement>(null);
+   const { data: keywordData } = useFetchSingleKeyword(keyword.ID);
+   const keywordHistory: KeywordHistory = keywordData?.history || keyword.history;
+   const keywordSearchResult: KeywordLastResult = keywordData?.searchResult || keyword.history;
    const dateOptions = [
       { label: 'Last 7 Days', value: '7' },
       { label: 'Last 30 Days', value: '30' },
@@ -26,39 +29,9 @@ const KeywordDetails = ({ keyword, closeDetails }:KeywordDetailsProps) => {
       { label: 'All Time', value: 'all' },
    ];
 
-   useEffect(() => {
-      const fetchFullKeyword = async () => {
-         try {
-            const fetchURL = `${window.location.origin}/api/keyword?id=${keyword.ID}`;
-            const res = await fetch(fetchURL, { method: 'GET' }).then((result) => result.json());
-            if (res.keyword) {
-               console.log(res.keyword, new Date().getTime());
-               setKeywordHistory(res.keyword.history || []);
-               setKeywordSearchResult(res.keyword.lastResult || []);
-            }
-         } catch (error) {
-            console.log(error);
-         }
-      };
-      if (keyword.lastResult.length === 0) {
-         fetchFullKeyword();
-      }
-   }, [keyword]);
+   useOnKey('Escape', closeDetails);
 
-   useEffect(() => {
-      const closeModalonEsc = (event:KeyboardEvent) => {
-         if (event.key === 'Escape') {
-            console.log(event.key);
-            closeDetails();
-         }
-      };
-      window.addEventListener('keydown', closeModalonEsc, false);
-      return () => {
-         window.removeEventListener('keydown', closeModalonEsc, false);
-      };
-   }, [closeDetails]);
-
-   useEffect(() => {
+   useLayoutEffect(() => {
       if (keyword.position < 100 && keyword.position > 0 && searchResultFound?.current) {
          searchResultFound.current.scrollIntoView({
             behavior: 'smooth',

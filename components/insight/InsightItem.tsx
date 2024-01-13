@@ -1,6 +1,7 @@
 import React from 'react';
 import countries from '../../utils/countries';
 import Icon from '../common/Icon';
+import { formattedNum } from '../../utils/client/helpers';
 
 type InsightItemProps = {
    item: SCInsightItem,
@@ -16,7 +17,6 @@ const InsightItem = ({ item, lastItem, type, domain }:InsightItemProps) => {
       firstItem = date && new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(date));
    }
    if (type === 'countries') { firstItem = countries[country] && countries[country][0]; }
-   const formattedNum = (num:number) => new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(num);
 
    return (
       <div
@@ -35,7 +35,6 @@ const InsightItem = ({ item, lastItem, type, domain }:InsightItemProps) => {
             {Math.round(position)}
          </div>
 
-         {/* <div className='keyword_imp text-center inline-block lg:flex-1'>{formattedNum(clicks)}</div> */}
          <div className={`keyword_position absolute bg-[#f8f9ff] w-fit min-w-[50px] h-14 p-2 text-base mt-[-55px] rounded right-5 lg:relative
           lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-40 lg:grow-0 lg:right-0 text-center font-semibold`}>
             {formattedNum(clicks)}

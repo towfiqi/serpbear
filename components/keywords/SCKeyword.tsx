@@ -1,6 +1,8 @@
 import React from 'react';
 import Icon from '../common/Icon';
 import countries from '../../utils/countries';
+import KeywordPosition from './KeywordPosition';
+import { formattedNum } from '../../utils/client/helpers';
 
 type SCKeywordProps = {
    keywordData: SearchAnalyticsItem,
@@ -14,13 +16,6 @@ type SCKeywordProps = {
 const SCKeyword = (props: SCKeywordProps) => {
    const { keywordData, selected, lastItem, selectKeyword, style, isTracked = false } = props;
    const { keyword, uid, position, country, impressions, ctr, clicks } = keywordData;
-
-   const renderPosition = () => {
-      if (position === 0) {
-         return <span className='text-gray-400' title='Not in Top 100'>{'>100'}</span>;
-      }
-      return Math.round(position);
-   };
 
    return (
       <div
@@ -45,7 +40,7 @@ const SCKeyword = (props: SCKeywordProps) => {
 
          <div className={`keyword_position absolute bg-[#f8f9ff] w-fit min-w-[50px] h-15 p-2 text-base mt-[-20px] rounded right-5 lg:relative
           lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-40 lg:grow-0 lg:right-0 text-center font-semibold`}>
-            {renderPosition()}
+            <KeywordPosition position={position} />
             <span className='block text-xs text-gray-500 lg:hidden'>Position</span>
          </div>
 
@@ -53,14 +48,14 @@ const SCKeyword = (props: SCKeywordProps) => {
             <span className='mr-3 lg:hidden'>
                <Icon type="eye" size={14} color="#999" />
             </span>
-            {new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(impressions)}
+            {formattedNum(impressions)}
          </div>
 
          <div className={'keyword_visits text-center inline-block mt-4 mr-5 ml-5 lg:flex-1 lg:m-0 max-w-[70px] lg:max-w-none lg:pr-5'}>
             <span className='mr-3 lg:hidden'>
                <Icon type="cursor" size={14} color="#999" />
             </span>
-            {new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(clicks)}
+            {formattedNum(clicks)}
          </div>
 
          <div className='keyword_ctr text-center inline-block mt-4 relative lg:flex-1 lg:m-0 '>

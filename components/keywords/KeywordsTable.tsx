@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { CSSTransition } from 'react-transition-group';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
@@ -12,6 +12,8 @@ import Modal from '../common/Modal';
 import { useDeleteKeywords, useFavKeywords, useRefreshKeywords } from '../../services/keywords';
 import KeywordTagManager from './KeywordTagManager';
 import AddTags from './AddTags';
+import useWindowResize from '../../hooks/useWindowResize';
+import useIsMobile from '../../hooks/useIsMobile';
 
 type KeywordsTableProps = {
    domain: DomainType | null,
@@ -31,7 +33,6 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    const [showRemoveModal, setShowRemoveModal] = useState<boolean>(false);
    const [showTagManager, setShowTagManager] = useState<null|number>(null);
    const [showAddTags, setShowAddTags] = useState<boolean>(false);
-   const [isMobile, setIsMobile] = useState<boolean>(false);
    const [SCListHeight, setSCListHeight] = useState(500);
    const [filterParams, setFilterParams] = useState<KeywordFilters>({ countries: [], tags: [], search: '' });
    const [sortBy, setSortBy] = useState<string>('date_asc');
@@ -40,6 +41,8 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    const { mutate: deleteMutate } = useDeleteKeywords(() => {});
    const { mutate: favoriteMutate } = useFavKeywords(() => {});
    const { mutate: refreshMutate } = useRefreshKeywords(() => {});
+   const [isMobile] = useIsMobile();
+   useWindowResize(() => setSCListHeight(window.innerHeight - (isMobile ? 200 : 400)));
 
    const scDataObject:{ [k:string] : string} = {
       threeDays: 'Last Three Days',
@@ -49,16 +52,6 @@ const KeywordsTable = (props: KeywordsTableProps) => {
       avgThreeDays: 'Last Seven Days Avg',
       avgThirtyDays: 'Last Thirty Days Avg',
    };
-
-   useEffect(() => {
-      setIsMobile(!!(window.matchMedia('only screen and (max-width: 760px)').matches));
-      const resizeList = () => setSCListHeight(window.innerHeight - (isMobile ? 200 : 400));
-      resizeList();
-      window.addEventListener('resize', resizeList);
-      return () => {
-          window.removeEventListener('resize', resizeList);
-      };
-   }, [isMobile]);
 
    const processedKeywords: {[key:string] : KeywordType[]} = useMemo(() => {
       const procKeywords = keywords.filter((x) => x.device === device);

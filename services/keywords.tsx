@@ -153,3 +153,23 @@ export function useRefreshKeywords(onSuccess:Function) {
       },
    });
 }
+
+export function useFetchSingleKeyword(keywordID:number) {
+   return useQuery(['keyword', keywordID], async () => {
+      try {
+         const fetchURL = `${window.location.origin}/api/keyword?id=${keywordID}`;
+         const res = await fetch(fetchURL, { method: 'GET' }).then((result) => result.json());
+         if (res.status >= 400 && res.status < 600) {
+            throw new Error('Bad response from server');
+         }
+         return { history: res.keyword.history || [], searchResult: res.keyword.lastResult || [] };
+      } catch (error) {
+         throw new Error('Error Loading Keyword Details');
+      }
+   }, {
+      onError: () => {
+         console.log('Error Loading Keyword Data!!!');
+         toast('Error Loading Keyword Details.', { icon: '⚠️' });
+      },
+   });
+}
