@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.4](https://github.com/towfiqi/serpbear/compare/v0.3.3...v0.3.4) (2024-01-15)
+
+
+### Features
+
+* adds ability to add multiple domains at once. ([faa88c9](https://github.com/towfiqi/serpbear/commit/faa88c92542194f19b5cfe2b5cfd07d7d4f7ee46))
+* Adds the ability to show/hide Keys & Passwords in Settings Panel ([c897a52](https://github.com/towfiqi/serpbear/commit/c897a525509baf5b9e8df18d82f5e87aec64f66e))
+
+
+### Bug Fixes
+
+* fixes local SC data not being removed on deleting domain. ([cca9f95](https://github.com/towfiqi/serpbear/commit/cca9f95358b2d3ea06edb33595cdbf616a175469))
+* Resolves incorrect keyword average SC data values in Tracker ([e166b58](https://github.com/towfiqi/serpbear/commit/e166b588aa6c8db55d61b5bc13db66514575c745))
+* resolves newly added Domain's Update time rendering issue ([df3a738](https://github.com/towfiqi/serpbear/commit/df3a738788fa957e7246a0feefe395a9eadd5baf))
+
 ### [0.3.3](https://github.com/towfiqi/serpbear/compare/v0.3.2...v0.3.3) (2023-11-12)
 
 
