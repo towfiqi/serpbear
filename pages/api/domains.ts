@@ -11,7 +11,7 @@ type DomainsGetRes = {
 }
 
 type DomainsAddResponse = {
-   domain: Domain|null,
+   domains: DomainType[]|null,
    error?: string|null,
 }
 
@@ -59,23 +59,29 @@ export const getDomains = async (req: NextApiRequest, res: NextApiResponse<Domai
    }
 };
 
-export const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddResponse>) => {
-   if (!req.body.domain) {
-      return res.status(400).json({ domain: null, error: 'Error Adding Domain.' });
-   }
-   const { domain } = req.body || {};
-   const domainData = {
-      domain: domain.trim(),
-      slug: domain.trim().replaceAll('-', '_').replaceAll('.', '-'),
-      lastUpdated: new Date().toJSON(),
-      added: new Date().toJSON(),
-   };
+const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddResponse>) => {
+   const { domains } = req.body;
+   if (domains && Array.isArray(domains) && domains.length > 0) {
+      const domainsToAdd: any = [];
 
-   try {
-      const addedDomain = await Domain.create(domainData);
-      return res.status(201).json({ domain: addedDomain });
-   } catch (error) {
-      return res.status(400).json({ domain: null, error: 'Error Adding Domain.' });
+      domains.forEach((domain: string) => {
+         domainsToAdd.push({
+            domain: domain.trim(),
+            slug: domain.trim().replaceAll('-', '_').replaceAll('.', '-'),
+            lastUpdated: new Date().toJSON(),
+            added: new Date().toJSON(),
+         });
+      });
+      try {
+         const newDomains:Domain[] = await Domain.bulkCreate(domainsToAdd);
+         const formattedDomains = newDomains.map((el) => el.get({ plain: true }));
+         return res.status(201).json({ domains: formattedDomains });
+      } catch (error) {
+         console.log('[ERROR] Adding New Domain ', error);
+         return res.status(400).json({ domains: [], error: 'Error Adding Domain.' });
+      }
+   } else {
+      return res.status(400).json({ domains: [], error: 'Necessary data missing.' });
    }
 };
 

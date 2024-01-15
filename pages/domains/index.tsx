@@ -119,7 +119,7 @@ const Domains: NextPage = () => {
          </div>
 
          <CSSTransition in={showAddDomain} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
-            <AddDomain closeModal={() => setShowAddDomain(false)} />
+            <AddDomain closeModal={() => setShowAddDomain(false)} domains={domainsData?.domains || []} />
          </CSSTransition>
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
              <Settings closeSettings={() => setShowSettings(false)} />

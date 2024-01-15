@@ -4,51 +4,57 @@ import { useAddDomain } from '../../services/domains';
 import { isValidDomain } from '../../utils/client/validators';
 
 type AddDomainProps = {
+   domains: DomainType[],
    closeModal: Function
 }
 
-const AddDomain = ({ closeModal }: AddDomainProps) => {
+const AddDomain = ({ closeModal, domains = [] }: AddDomainProps) => {
    const [newDomain, setNewDomain] = useState<string>('');
-   const [newDomainError, setNewDomainError] = useState<boolean>(false);
+   const [newDomainError, setNewDomainError] = useState('');
    const { mutate: addMutate, isLoading: isAdding } = useAddDomain(() => closeModal());
 
    const addDomain = () => {
-      // console.log('ADD NEW DOMAIN', newDomain);
-      if (isValidDomain(newDomain.trim())) {
-         setNewDomainError(false);
+      setNewDomainError('');
+      const existingDomains = domains.map((d) => d.domain);
+      const insertedDomains = newDomain.split('\n');
+      const domainsTobeAdded:string[] = [];
+      const invalidDomains:string[] = [];
+      insertedDomains.forEach((dom) => {
+        const domain = dom.trim();
+        if (isValidDomain(domain)) {
+         if (!existingDomains.includes(domain)) {
+            domainsTobeAdded.push(domain);
+         }
+        } else {
+         invalidDomains.push(domain);
+        }
+      });
+      if (invalidDomains.length > 0) {
+         setNewDomainError(`Please Insert Valid Domain names. Invalid Domains: ${invalidDomains.join(', ')}`);
+      } else if (domainsTobeAdded.length > 0) {
          // TODO: Domain Action
-         addMutate(newDomain.trim());
-      } else {
-         setNewDomainError(true);
+          addMutate(domainsTobeAdded);
       }
    };
 
-   const handleDomainInput = (e:React.FormEvent<HTMLInputElement>) => {
-      if (e.currentTarget.value === '' && newDomainError) { setNewDomainError(false); }
+   const handleDomainInput = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (e.currentTarget.value === '' && newDomainError) { setNewDomainError(''); }
       setNewDomain(e.currentTarget.value);
    };
 
    return (
       <Modal closeModal={() => { closeModal(false); }} title={'Add New Domain'}>
          <div data-testid="adddomain_modal">
-            <h4 className='text-sm mt-4'>
-               Domain Name {newDomainError && <span className=' ml-2 block float-right text-red-500 text-xs font-semibold'>Not a Valid Domain</span>}
-            </h4>
-            <input
-               className={`w-full p-2 border border-gray-200 rounded mt-2 mb-3 focus:outline-none  focus:border-blue-200 
-               ${newDomainError ? ' border-red-400 focus:border-red-400' : ''} `}
-               type="text"
+            <h4 className='text-sm mt-4'>Domain Names</h4>
+            <textarea
+               className={`w-full h-40 border rounded border-gray-200 p-4 outline-none
+                focus:border-indigo-300 ${newDomainError ? ' border-red-400 focus:border-red-400' : ''}`}
+               placeholder="Type or Paste Domains here. Insert Each Domain in a New line."
                value={newDomain}
-               placeholder={'example.com'}
-               onChange={handleDomainInput}
                autoFocus={true}
-               onKeyDown={(e) => {
-                  if (e.code === 'Enter') {
-                    e.preventDefault();
-                    addDomain();
-                  }
-               }}
-            />
+               onChange={handleDomainInput}>
+            </textarea>
+            {newDomainError && <div><span className=' ml-2 block float-right text-red-500 text-xs font-semibold'>{newDomainError}</span></div>}
             <div className='mt-6 text-right text-sm font-semibold'>
                <button className='py-2 px-5 rounded cursor-pointer bg-indigo-50 text-slate-500 mr-3' onClick={() => closeModal(false)}>Cancel</button>
                <button className='py-2 px-5 rounded cursor-pointer bg-blue-700 text-white' onClick={() => !isAdding && addDomain() }>

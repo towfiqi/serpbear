@@ -34,7 +34,7 @@ const InsightPage: NextPage = () => {
    const activDomain: DomainType|null = useMemo(() => {
       let active:DomainType|null = null;
       if (domainsData?.domains && router.query?.slug) {
-         active = domainsData.domains.find((x:DomainType) => x.slug === router.query.slug);
+         active = domainsData.domains.find((x:DomainType) => x.slug === router.query.slug) || null;
       }
       return active;
    }, [router.query.slug, domainsData]);
@@ -71,7 +71,7 @@ const InsightPage: NextPage = () => {
          </div>
 
          <CSSTransition in={showAddDomain} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
-            <AddDomain closeModal={() => setShowAddDomain(false)} />
+            <AddDomain closeModal={() => setShowAddDomain(false)} domains={domainsData?.domains || []} />
          </CSSTransition>
 
          <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>

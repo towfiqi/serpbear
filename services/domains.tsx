@@ -7,7 +7,7 @@ type UpdatePayload = {
    domain: DomainType
 }
 
-export async function fetchDomains(router: NextRouter, withStats:boolean) {
+export async function fetchDomains(router: NextRouter, withStats:boolean): Promise<{domains: DomainType[]}> {
    const res = await fetch(`${window.location.origin}/api/domains${withStats ? '?withstats=true' : ''}`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
@@ -56,9 +56,9 @@ export function useFetchDomains(router: NextRouter, withStats:boolean = false) {
 export function useAddDomain(onSuccess:Function) {
    const router = useRouter();
    const queryClient = useQueryClient();
-   return useMutation(async (domainName:string) => {
+   return useMutation(async (domains:string[]) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
-      const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ domain: domainName }) };
+      const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ domains }) };
       const res = await fetch(`${window.location.origin}/api/domains`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
@@ -67,11 +67,12 @@ export function useAddDomain(onSuccess:Function) {
    }, {
       onSuccess: async (data) => {
          console.log('Domain Added!!!', data);
-         const newDomain:DomainType = data.domain;
-         toast(`${newDomain.domain} Added Successfully!`, { icon: '✔️' });
+         const newDomain:DomainType[] = data.domains;
+         const singleDomain = newDomain.length === 1;
+         toast(`${singleDomain ? newDomain[0].domain : `${newDomain.length} domains`} Added Successfully!`, { icon: '✔️' });
          onSuccess(false);
-         if (newDomain && newDomain.slug) {
-            router.push(`/domain/${data.domain.slug}`);
+         if (singleDomain) {
+            router.push(`/domain/${newDomain[0].slug}`);
          }
          queryClient.invalidateQueries(['domains']);
       },
