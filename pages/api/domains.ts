@@ -4,6 +4,7 @@ import Domain from '../../database/models/domain';
 import Keyword from '../../database/models/keyword';
 import getdomainStats from '../../utils/domains';
 import verifyUser from '../../utils/verifyUser';
+import { removeLocalSCData } from '../../utils/searchConsole';
 
 type DomainsGetRes = {
    domains: DomainType[]
@@ -18,6 +19,7 @@ type DomainsAddResponse = {
 type DomainsDeleteRes = {
    domainRemoved: number,
    keywordsRemoved: number,
+   SCDataRemoved: boolean,
    error?: string|null,
 }
 
@@ -87,19 +89,17 @@ const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddRes
 
 export const deleteDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsDeleteRes>) => {
    if (!req.query.domain && typeof req.query.domain !== 'string') {
-      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, error: 'Domain is Required!' });
+      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, SCDataRemoved: false, error: 'Domain is Required!' });
    }
    try {
       const { domain } = req.query || {};
       const removedDomCount: number = await Domain.destroy({ where: { domain } });
       const removedKeywordCount: number = await Keyword.destroy({ where: { domain } });
-      return res.status(200).json({
-            domainRemoved: removedDomCount,
-            keywordsRemoved: removedKeywordCount,
-         });
+      const SCDataRemoved = await removeLocalSCData(domain as string);
+      return res.status(200).json({ domainRemoved: removedDomCount, keywordsRemoved: removedKeywordCount, SCDataRemoved });
    } catch (error) {
       console.log('[ERROR] Deleting Domain: ', req.query.domain, error);
-      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, error: 'Error Deleting Domain' });
+      return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, SCDataRemoved: false, error: 'Error Deleting Domain' });
    }
 };
 

@@ -1,5 +1,5 @@
 import { auth, searchconsole_v1 } from '@googleapis/searchconsole';
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, unlink } from 'fs/promises';
 import { getCountryCodeFromAlphaThree } from './countries';
 
 export type SCDomainFetchError = {
@@ -187,6 +187,21 @@ export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDat
    const emptyData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '' };
    await writeFile(filePath, JSON.stringify(scDomainData || emptyData), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
    return scDomainData || emptyData;
+};
+
+/**
+ * The function removes the domain-specific Seach Console data stored in a local JSON file.
+ * @param {string} domain - The `domain` parameter is a string that represents the domain for which the SC data file will be removed.
+ * @returns {Promise<boolean>} - Returns true if file was removed, else returns false.
+ */
+export const removeLocalSCData = async (domain:string): Promise<boolean> => {
+   const filePath = `${process.cwd()}/data/SC_${domain}.json`;
+   try {
+      await unlink(filePath);
+      return true;
+   } catch (error) {
+      return false;
+   }
 };
 
 export default fetchSearchConsoleData;
