@@ -23,7 +23,7 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       setDevice,
       filterKeywords,
       allTags = [],
-      keywords,
+      keywords = [],
       updateSort,
       sortBy,
       filterParams,
@@ -35,10 +35,17 @@ const KeywordFilters = (props: KeywordFilterProps) => {
    const [filterOptions, showFilterOptions] = useState(false);
 
    const keywordCounts = useMemo(() => {
-      return keywords.reduce((acc, k) => ({
-         desktop: k.device === 'desktop' ? acc.desktop + 1 : acc.desktop,
-         mobile: k.device !== 'desktop' ? acc.mobile + 1 : acc.mobile,
-      }), { desktop: 0, mobile: 0 });
+      const counts = { desktop: 0, mobile: 0 };
+      if (keywords && keywords.length > 0) {
+         keywords.forEach((k) => {
+            if (k.device === 'desktop') {
+               counts.desktop += 1;
+            } else {
+               counts.mobile += 1;
+            }
+         });
+      }
+      return counts;
    }, [keywords]);
 
    const filterCountry = (cntrs:string[]) => filterKeywords({ ...filterParams, countries: cntrs });
