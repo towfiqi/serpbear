@@ -69,7 +69,7 @@ const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddRes
       domains.forEach((domain: string) => {
          domainsToAdd.push({
             domain: domain.trim(),
-            slug: domain.trim().replaceAll('-', '_').replaceAll('.', '-'),
+            slug: domain.trim().replaceAll('-', '_').replaceAll('.', '-').replaceAll('/', '-'),
             lastUpdated: new Date().toJSON(),
             added: new Date().toJSON(),
          });

@@ -2,16 +2,21 @@ import toast from 'react-hot-toast';
 import { NextRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-export const fetchKeywords = async (router: NextRouter) => {
-   if (!router.query.slug) { return []; }
-   const res = await fetch(`${window.location.origin}/api/keywords?domain=${router.query.slug}`, { method: 'GET' });
+export const fetchKeywords = async (router: NextRouter, domain: string) => {
+   if (!domain) { return []; }
+   const res = await fetch(`${window.location.origin}/api/keywords?domain=${domain}`, { method: 'GET' });
    return res.json();
 };
 
-export function useFetchKeywords(router: NextRouter, setKeywordSPollInterval?:Function, keywordSPollInterval:undefined|number = undefined) {
+export function useFetchKeywords(
+   router: NextRouter,
+   domain: string,
+   setKeywordSPollInterval?:Function,
+   keywordSPollInterval:undefined|number = undefined,
+) {
    const { data: keywordsData, isLoading: keywordsLoading, isError } = useQuery(
-      ['keywords', router.query.slug],
-      () => fetchKeywords(router),
+      ['keywords', domain],
+      () => fetchKeywords(router, domain),
       {
          refetchInterval: keywordSPollInterval,
          onSuccess: (data) => {

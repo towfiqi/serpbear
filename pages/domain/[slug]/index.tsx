@@ -27,10 +27,6 @@ const SingleDomain: NextPage = () => {
    const [keywordSPollInterval, setKeywordSPollInterval] = useState<undefined|number>(undefined);
    const { data: appSettings } = useFetchSettings();
    const { data: domainsData } = useFetchDomains(router);
-   const { keywordsData, keywordsLoading } = useFetchKeywords(router, setKeywordSPollInterval, keywordSPollInterval);
-
-   const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
-   const theKeywords: KeywordType[] = keywordsData && keywordsData.keywords;
 
    const activDomain: DomainType|null = useMemo(() => {
       let active:DomainType|null = null;
@@ -40,6 +36,10 @@ const SingleDomain: NextPage = () => {
       return active;
    }, [router.query.slug, domainsData]);
 
+   const { keywordsData, keywordsLoading } = useFetchKeywords(router, activDomain?.domain || '', setKeywordSPollInterval, keywordSPollInterval);
+   const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
+   const theKeywords: KeywordType[] = keywordsData && keywordsData.keywords;
+
    useEffect(() => {
       // console.log('appSettings.settings: ', appSettings && appSettings.settings);
       if (appSettings && appSettings.settings && (!appSettings.settings.scraper_type || (appSettings.settings.scraper_type === 'none'))) {
@@ -47,7 +47,7 @@ const SingleDomain: NextPage = () => {
       }
    }, [appSettings]);
 
-   // console.log('Domains Data:', router, activDomain, theKeywords);
+   // console.log('Websites Data:', router, activDomain, theKeywords);
 
    return (
       <div className="Domain ">

@@ -31,7 +31,7 @@ const SCKeywordsTable = ({ domain, keywords = [], isLoading = true, isConsoleInt
    const [filterParams, setFilterParams] = useState<KeywordFilters>({ countries: [], tags: [], search: '' });
    const [sortBy, setSortBy] = useState<string>('imp_desc');
    const [SCListHeight, setSCListHeight] = useState(500);
-   const { keywordsData } = useFetchKeywords(router);
+   const { keywordsData } = useFetchKeywords(router, domain?.domain || '');
    const addedkeywords: string[] = keywordsData?.keywords?.map((key: KeywordType) => `${key.keyword}:${key.country}:${key.device}`) || [];
    const { mutate: addKeywords } = useAddKeywords(() => { if (domain && domain.slug) router.push(`/domain/${domain.slug}`); });
    const [isMobile] = useIsMobile();

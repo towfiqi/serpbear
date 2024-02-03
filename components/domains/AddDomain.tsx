@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import { useAddDomain } from '../../services/domains';
-import { isValidDomain } from '../../utils/client/validators';
+import { isValidUrl } from '../../utils/client/validators';
 
 type AddDomainProps = {
    domains: DomainType[],
@@ -16,24 +16,30 @@ const AddDomain = ({ closeModal, domains = [] }: AddDomainProps) => {
    const addDomain = () => {
       setNewDomainError('');
       const existingDomains = domains.map((d) => d.domain);
-      const insertedDomains = newDomain.split('\n');
+      const insertedURLs = newDomain.split('\n');
       const domainsTobeAdded:string[] = [];
       const invalidDomains:string[] = [];
-      insertedDomains.forEach((dom) => {
-        const domain = dom.trim();
-        if (isValidDomain(domain)) {
-         if (!existingDomains.includes(domain)) {
-            domainsTobeAdded.push(domain);
+      insertedURLs.forEach((url) => {
+        const theURL = url.trim();
+        if (isValidUrl(theURL)) {
+         const domURL = new URL(theURL);
+         const isDomain = domURL.pathname === '/';
+         if (isDomain && !existingDomains.includes(domURL.host)) {
+            domainsTobeAdded.push(domURL.host);
+         }
+         if (!isDomain && !existingDomains.includes(domURL.href)) {
+            const cleanedURL = domURL.href.replace('https://', '').replace('http://', '').replace(/^\/+|\/+$/g, '');
+            domainsTobeAdded.push(cleanedURL);
          }
         } else {
-         invalidDomains.push(domain);
+         invalidDomains.push(theURL);
         }
       });
       if (invalidDomains.length > 0) {
-         setNewDomainError(`Please Insert Valid Domain names. Invalid Domains: ${invalidDomains.join(', ')}`);
+         setNewDomainError(`Please Insert Valid Domain URL. Invalid URLs: ${invalidDomains.join(', ')}`);
       } else if (domainsTobeAdded.length > 0) {
-         // TODO: Domain Action
-          addMutate(domainsTobeAdded);
+            console.log('domainsTobeAdded :', domainsTobeAdded);
+         addMutate(domainsTobeAdded);
       }
    };
 
@@ -45,11 +51,11 @@ const AddDomain = ({ closeModal, domains = [] }: AddDomainProps) => {
    return (
       <Modal closeModal={() => { closeModal(false); }} title={'Add New Domain'}>
          <div data-testid="adddomain_modal">
-            <h4 className='text-sm mt-4'>Domain Names</h4>
+            <h4 className='text-sm mt-4'>Domain URL</h4>
             <textarea
                className={`w-full h-40 border rounded border-gray-200 p-4 outline-none
                 focus:border-indigo-300 ${newDomainError ? ' border-red-400 focus:border-red-400' : ''}`}
-               placeholder="Type or Paste Domains here. Insert Each Domain in a New line."
+               placeholder="Type or Paste URLs here. Insert Each URL in a New line."
                value={newDomain}
                autoFocus={true}
                onChange={handleDomainInput}>

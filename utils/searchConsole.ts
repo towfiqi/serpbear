@@ -139,9 +139,9 @@ export const integrateKeywordSCData = (keyword: KeywordType, SCData:SCDomainData
    const ctr:any = { yesterday: 0, threeDays: 0, sevenDays: 0, thirtyDays: 0, avgSevenDays: 0, avgThreeDays: 0, avgThirtyDays: 0 };
    const position:any = { yesterday: 0, threeDays: 0, sevenDays: 0, thirtyDays: 0, avgSevenDays: 0, avgThreeDays: 0, avgThirtyDays: 0 };
 
-   const threeDaysData = SCData.threeDays.find((item:SearchAnalyticsItem) => item.uid === kuid) || {};
-   const SevenDaysData = SCData.sevenDays.find((item:SearchAnalyticsItem) => item.uid === kuid) || {};
-   const ThirdyDaysData = SCData.thirtyDays.find((item:SearchAnalyticsItem) => item.uid === kuid) || {};
+   const threeDaysData = SCData?.threeDays?.find((item:SearchAnalyticsItem) => item.uid === kuid) || {};
+   const SevenDaysData = SCData?.sevenDays?.find((item:SearchAnalyticsItem) => item.uid === kuid) || {};
+   const ThirdyDaysData = SCData?.thirtyDays?.find((item:SearchAnalyticsItem) => item.uid === kuid) || {};
    const totalData:any = { threeDays: threeDaysData, sevenDays: SevenDaysData, thirtyDays: ThirdyDaysData };
 
    Object.keys(totalData).forEach((dataKey) => {
@@ -169,11 +169,15 @@ export const integrateKeywordSCData = (keyword: KeywordType, SCData:SCDomainData
  * @param {string} domain - The `domain` parameter is a string that represents the domain for which the SC data is being read.
  * @returns {Promise<SCDomainDataType>}
  */
-export const readLocalSCData = async (domain:string): Promise<SCDomainDataType> => {
-   const filePath = `${process.cwd()}/data/SC_${domain}.json`;
-   const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch(async () => { await updateLocalSCData(domain); return '{}'; });
-   const domainSCData = JSON.parse(currentQueueRaw);
-   return domainSCData;
+export const readLocalSCData = async (domain:string): Promise<SCDomainDataType|false> => {
+   try {
+      const filePath = `${process.cwd()}/data/SC_${domain.replaceAll('/', '-')}.json`;
+      const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch(async () => { await updateLocalSCData(domain); return '{}'; });
+      const domainSCData = JSON.parse(currentQueueRaw);
+      return domainSCData;
+   } catch (error) {
+      return false;
+   }
 };
 
 /**
@@ -183,10 +187,14 @@ export const readLocalSCData = async (domain:string): Promise<SCDomainDataType> 
  * @returns {Promise<SCDomainDataType|false>}
  */
 export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDataType): Promise<SCDomainDataType|false> => {
-   const filePath = `${process.cwd()}/data/SC_${domain}.json`;
-   const emptyData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '' };
-   await writeFile(filePath, JSON.stringify(scDomainData || emptyData), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
-   return scDomainData || emptyData;
+   try {
+      const filePath = `${process.cwd()}/data/SC_${domain.replaceAll('/', '-')}.json`;
+      const emptyData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '' };
+      await writeFile(filePath, JSON.stringify(scDomainData || emptyData), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
+      return scDomainData || emptyData;
+   } catch (error) {
+      return false;
+   }
 };
 
 /**
@@ -195,7 +203,7 @@ export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDat
  * @returns {Promise<boolean>} - Returns true if file was removed, else returns false.
  */
 export const removeLocalSCData = async (domain:string): Promise<boolean> => {
-   const filePath = `${process.cwd()}/data/SC_${domain}.json`;
+   const filePath = `${process.cwd()}/data/SC_${domain.replaceAll('/', '-')}.json`;
    try {
       await unlink(filePath);
       return true;

@@ -187,15 +187,17 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
 
 /**
  * Find in the domain's position from the extracted search result.
- * @param {string} domain - Domain Name to look for.
+ * @param {string} domainURL - URL Name to look for.
  * @param {SearchResult[]} result - The search result array extracted from the Google Search result.
  * @returns {SERPObject}
  */
-export const getSerp = (domain:string, result:SearchResult[]) : SERPObject => {
-   if (result.length === 0 || !domain) { return { postion: 0, url: '' }; }
+export const getSerp = (domainURL:string, result:SearchResult[]) : SERPObject => {
+   if (result.length === 0 || !domainURL) { return { postion: 0, url: '' }; }
+   const URLToFind = new URL(domainURL.includes('https://') ? domainURL : `https://${domainURL}`);
+   const theURL = URLToFind.hostname + URLToFind.pathname;
    const foundItem = result.find((item) => {
-      const itemDomain = item.url.replace('www.', '').match(/^(?:https?:)?(?:\/\/)?([^/?]+)/i);
-      return itemDomain && itemDomain.includes(domain.replace('www.', ''));
+      const itemURL = new URL(item.url.includes('https://') ? item.url : `https://${item.url}`);
+      return theURL === itemURL.hostname + itemURL.pathname || `${theURL}/` === itemURL.hostname + itemURL.pathname;
    });
    return { postion: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
 };
