@@ -16,12 +16,14 @@ type thumbImages = { [domain:string] : string }
 
 const Domains: NextPage = () => {
    const router = useRouter();
-   const [noScrapprtError, setNoScrapprtError] = useState(false);
+   // const [noScrapprtError, setNoScrapprtError] = useState(false);
    const [showSettings, setShowSettings] = useState(false);
    const [showAddDomain, setShowAddDomain] = useState(false);
    const [domainThumbs, setDomainThumbs] = useState<thumbImages>({});
-   const { data: appSettings } = useFetchSettings();
+   const { data: appSettingsData, isLoading: isAppSettingsLoading } = useFetchSettings();
    const { data: domainsData, isLoading } = useFetchDomains(router, true);
+   const appSettings:SettingsType = appSettingsData?.settings || {};
+   const { scraper_type = '' } = appSettings;
 
    const totalKeywords = useMemo(() => {
       let keywords = 0;
@@ -34,28 +36,21 @@ const Domains: NextPage = () => {
    }, [domainsData]);
 
    useEffect(() => {
-      if (domainsData?.domains && domainsData.domains.length > 0 && appSettings?.settings?.screenshot_key) {
+      if (domainsData?.domains && domainsData.domains.length > 0 && appSettings.screenshot_key) {
          domainsData.domains.forEach(async (domain:DomainType) => {
             if (domain.domain) {
-               const domainThumb = await fetchDomainScreenshot(domain.domain, appSettings.settings.screenshot_key);
+               const domainThumb = await fetchDomainScreenshot(domain.domain, appSettings.screenshot_key || '');
                if (domainThumb) {
                   setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain.domain]: domainThumb }));
                }
             }
          });
       }
-   }, [domainsData, appSettings]);
-
-   useEffect(() => {
-      // console.log('appSettings.settings: ', appSettings && appSettings.settings);
-      if (appSettings && appSettings.settings && (!appSettings.settings.scraper_type || (appSettings.settings.scraper_type === 'none'))) {
-         setNoScrapprtError(true);
-      }
-   }, [appSettings]);
+   }, [domainsData, appSettings.screenshot_key]);
 
    const manuallyUpdateThumb = async (domain: string) => {
-      if (domain && appSettings?.settings?.screenshot_key) {
-         const domainThumb = await fetchDomainScreenshot(domain, appSettings.settings.screenshot_key, true);
+      if (domain && appSettings.screenshot_key) {
+         const domainThumb = await fetchDomainScreenshot(domain, appSettings.screenshot_key, true);
          if (domainThumb) {
             toast(`${domain} Screenshot Updated Successfully!`, { icon: '✔️' });
             setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain]: domainThumb }));
@@ -67,7 +62,7 @@ const Domains: NextPage = () => {
 
    return (
       <div data-testid="domains" className="Domain flex flex-col min-h-screen">
-         {noScrapprtError && (
+         {((!scraper_type || (scraper_type === 'none')) && !isAppSettingsLoading) && (
                <div className=' p-3 bg-red-600 text-white text-sm text-center'>
                   A Scrapper/Proxy has not been set up Yet. Open Settings to set it up and start using the app.
                </div>
@@ -99,7 +94,7 @@ const Domains: NextPage = () => {
                            key={domain.ID}
                            domain={domain}
                            selected={false}
-                           isConsoleIntegrated={!!(appSettings && appSettings?.settings?.search_console_integrated) }
+                           isConsoleIntegrated={!!(appSettings && appSettings.search_console_integrated) }
                            thumb={domainThumbs[domain.domain]}
                            updateThumb={manuallyUpdateThumb}
                            // isConsoleIntegrated={false}
@@ -125,7 +120,7 @@ const Domains: NextPage = () => {
              <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
          <footer className='text-center flex flex-1 justify-center pb-5 items-end'>
-            <span className='text-gray-500 text-xs'><a href='https://github.com/towfiqi/serpbear' target="_blank" rel='noreferrer'>SerpBear v{appSettings?.settings?.version || '0.0.0'}</a></span>
+            <span className='text-gray-500 text-xs'><a href='https://github.com/towfiqi/serpbear' target="_blank" rel='noreferrer'>SerpBear v{appSettings.version || '0.0.0'}</a></span>
          </footer>
          <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>
