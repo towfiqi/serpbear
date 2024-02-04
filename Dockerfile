@@ -30,13 +30,17 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # setup the cron
 COPY --from=builder --chown=nextjs:nodejs /app/cron.js ./
 COPY --from=builder --chown=nextjs:nodejs /app/email ./email
+COPY --from=builder --chown=nextjs:nodejs /app/database ./database
+COPY --from=builder --chown=nextjs:nodejs /app/.sequelizerc ./.sequelizerc
+COPY --from=builder --chown=nextjs:nodejs /app/entrypoint.sh ./entrypoint.sh
 RUN rm package.json
 RUN npm init -y 
-RUN npm i cryptr dotenv croner @googleapis/searchconsole
+RUN npm i cryptr dotenv croner @googleapis/searchconsole sequelize-cli
 RUN npm i -g concurrently
 
 USER nextjs
 
 EXPOSE 3000
 
+ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["concurrently","node server.js", "node cron.js"]

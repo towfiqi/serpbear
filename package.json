@@ -7,12 +7,15 @@
     "build": "next build",
     "start": "next start",
     "cron": "node cron.js",
+    "prestart": "npm run db:migrate",
     "start:all": "concurrently npm:start npm:cron",
     "lint": "next lint",
     "lint:css": "stylelint styles/*.css",
     "test": "jest --watch --verbose",
     "test:ci": "jest --ci",
     "test:cv": "jest --coverage --coverageDirectory='coverage'",
+    "db:migrate": "sequelize-cli db:migrate --env production",
+    "db:revert": "sequelize-cli db:migrate:undo --env production",
     "release": "standard-version"
   },
   "dependencies": {
@@ -73,6 +76,7 @@
     "prettier": "^2.7.1",
     "resize-observer-polyfill": "^1.5.1",
     "sass": "^1.55.0",
+    "sequelize-cli": "^6.6.2",
     "standard-version": "^9.5.0",
     "stylelint-config-standard": "^29.0.0",
     "tailwindcss": "^3.1.8",
