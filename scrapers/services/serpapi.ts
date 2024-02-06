@@ -1,3 +1,5 @@
+import countries from '../../utils/countries';
+
 interface SerpApiResult {
    title: string,
    link: string,
@@ -8,6 +10,7 @@ const serpapi:ScraperSettings = {
    id: 'serpapi',
    name: 'SerpApi.com',
    website: 'serpapi.com',
+   allowsCity: true,
    headers: (keyword, settings) => {
       return {
          'Content-Type': 'application/json',
@@ -15,7 +18,9 @@ const serpapi:ScraperSettings = {
       };
    },
    scrapeURL: (keyword, settings) => {
-      return `https://serpapi.com/search?q=${encodeURI(keyword.keyword)}&num=100&gl=${keyword.country}&device=${keyword.device}&api_key=${settings.scaping_api}`;
+      const countryName = countries[keyword.country || 'US'][0];
+      const location = keyword.city && keyword.country ? `&location=${encodeURI(`${keyword.city},${countryName}`)}` : '';
+      return `https://serpapi.com/search?q=${encodeURI(keyword.keyword)}&num=100&gl=${keyword.country}&device=${keyword.device}${location}&api_key=${settings.scaping_api}`;
    },
    resultObjectKey: 'organic_results',
    serpExtractor: (content) => {

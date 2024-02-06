@@ -253,6 +253,17 @@ const Icon = ({ type, color = 'currentColor', size = 16, title = '', classes = '
                   <path d="M15.75 9h3v2.25h-3z" fill={color} />
                </svg>
          }
+         {type === 'city'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 48 48">
+                  <g fill="none">
+                     <path stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M4 42h40"></path>
+                     <rect width={8} height={16} x={8} y={26} stroke={color} strokeLinejoin="round" strokeWidth={4} rx={2}></rect>
+                     <path stroke={color} strokeLinecap="square" strokeLinejoin="round" strokeWidth={4} d="M12 34h1"></path>
+                     <rect width={24} height={38} x={16} y={4} stroke={color} strokeLinejoin="round" strokeWidth={4} rx={2}></rect>
+                     <path fill={color} d="M22 10h4v4h-4zm8 0h4v4h-4zm-8 7h4v4h-4zm8 0h4v4h-4zm0 7h4v4h-4zm0 7h4v4h-4z"></path>
+                  </g>
+               </svg>
+         }
        </span>
    );
  };

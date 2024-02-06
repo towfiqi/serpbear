@@ -1,7 +1,16 @@
+import countries from '../../utils/countries';
+
+interface SearchApiResult {
+   title: string,
+   link: string,
+   position: number,
+ }
+
 const searchapi:ScraperSettings = {
   id: 'searchapi',
   name: 'SearchApi.io',
   website: 'searchapi.io',
+  allowsCity: true,
   headers: (keyword, settings) => {
      return {
         'Content-Type': 'application/json',
@@ -9,7 +18,10 @@ const searchapi:ScraperSettings = {
      };
   },
   scrapeURL: (keyword) => {
-     return `https://www.searchapi.io/api/v1/search?engine=google&q=${encodeURI(keyword.keyword)}&num=100&gl=${keyword.country}&device=${keyword.device}`;
+   const country = keyword.country || 'US';
+   const countryName = countries[country][0];
+   const location = keyword.city && countryName ? `&location=${encodeURI(`${keyword.city},${countryName}`)}` : '';
+     return `https://www.searchapi.io/api/v1/search?engine=google&q=${encodeURI(keyword.keyword)}&num=100&gl=${country}&device=${keyword.device}${location}`;
   },
   resultObjectKey: 'organic_results',
   serpExtractor: (content) => {
@@ -28,11 +40,5 @@ const searchapi:ScraperSettings = {
      return extractedResult;
   },
 };
-
-interface SearchApiResult {
-  title: string,
-  link: string,
-  position: number,
-}
 
 export default searchapi;

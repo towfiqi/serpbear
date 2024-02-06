@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { CSSTransition } from 'react-transition-group';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
-import AddKeywords from './AddKeywords';
 import { filterKeywords, keywordsByDevice, sortKeywords } from '../../utils/client/sortFilter';
 import Icon from '../common/Icon';
 import Keyword from './Keyword';
@@ -25,7 +23,7 @@ type KeywordsTableProps = {
 }
 
 const KeywordsTable = (props: KeywordsTableProps) => {
-   const { domain, keywords = [], isLoading = true, showAddModal = false, setShowAddModal, isConsoleIntegrated = false } = props;
+   const { keywords = [], isLoading = true, isConsoleIntegrated = false } = props;
    const showSCData = isConsoleIntegrated;
    const [device, setDevice] = useState<string>('desktop');
    const [selectedKeywords, setSelectedKeywords] = useState<number[]>([]);
@@ -243,13 +241,6 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                   </div>
             </Modal>
          )}
-         <CSSTransition in={showAddModal} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
-            <AddKeywords
-               domain={domain?.domain || ''}
-               keywords={keywords}
-               closeModal={() => setShowAddModal(false)}
-               />
-         </CSSTransition>
          {showTagManager && (
             <KeywordTagManager
                allTags={allDomainTags}

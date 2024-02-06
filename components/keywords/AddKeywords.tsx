@@ -7,6 +7,8 @@ import { useAddKeywords } from '../../services/keywords';
 
 type AddKeywordsProps = {
    keywords: KeywordType[],
+   scraperName: string,
+   allowsCity: boolean,
    closeModal: Function,
    domain: string
 }
@@ -17,9 +19,10 @@ type KeywordsInput = {
    country: string,
    domain: string,
    tags: string,
+   city?:string,
 }
 
-const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
+const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCity = false }: AddKeywordsProps) => {
    const [error, setError] = useState<string>('');
    const defCountry = localStorage.getItem('default_country') || 'US';
    const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '' });
@@ -29,14 +32,16 @@ const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
    const addKeywords = () => {
       if (newKeywordsData.keywords) {
          const keywordsArray = [...new Set(newKeywordsData.keywords.split('\n').map((item) => item.trim()).filter((item) => !!item))];
-         const currentKeywords = keywords.map((k) => `${k.keyword}-${k.device}-${k.country}`);
-         const keywordExist = keywordsArray.filter((k) => currentKeywords.includes(`${k}-${newKeywordsData.device}-${newKeywordsData.country}`));
+         const currentKeywords = keywords.map((k) => `${k.keyword}-${k.device}-${k.country}${k.city ? `-${k.city}` : ''}`);
+         const keywordExist = keywordsArray.filter((k) => currentKeywords.includes(
+            `${k}-${newKeywordsData.device}-${newKeywordsData.country}${newKeywordsData.city ? `-${newKeywordsData.city}` : ''}`,
+         ));
          if (keywordExist.length > 0) {
             setError(`Keywords ${keywordExist.join(',')} already Exist`);
             setTimeout(() => { setError(''); }, 3000);
          } else {
-            const { device, country, domain: kDomain, tags } = newKeywordsData;
-            const newKeywordsArray = keywordsArray.map((nItem) => ({ keyword: nItem, device, country, domain: kDomain, tags }));
+            const { device, country, domain: kDomain, tags, city } = newKeywordsData;
+            const newKeywordsArray = keywordsArray.map((nItem) => ({ keyword: nItem, device, country, domain: kDomain, tags, city }));
             addMutate(newKeywordsArray);
          }
       } else {
@@ -85,16 +90,27 @@ const AddKeywords = ({ closeModal, domain, keywords }: AddKeywordsProps) => {
                         ><Icon type='mobile' /> <i className='not-italic hidden lg:inline-block'>Mobile</i></li>
                   </ul>
                </div>
-
                <div className='relative'>
                   {/* TODO:  Insert Existing Tags as Suggestions */}
                   <input
                      className='w-full border rounded border-gray-200 py-2 px-4 pl-8 outline-none focus:border-indigo-300'
-                     placeholder='Insert Tags'
+                     placeholder='Insert Tags (Optional)'
                      value={newKeywordsData.tags}
                      onChange={(e) => setNewKeywordsData({ ...newKeywordsData, tags: e.target.value })}
                   />
                   <span className='absolute text-gray-400 top-2 left-2'><Icon type="tags" size={16} /></span>
+               </div>
+               <div className='relative mt-2'>
+                  <input
+                     className={`w-full border rounded border-gray-200 py-2 px-4 pl-8 
+                     outline-none focus:border-indigo-300 ${!allowsCity ? ' cursor-not-allowed' : ''} `}
+                     disabled={!allowsCity}
+                     title={!allowsCity ? `Your scraper ${scraperName} doesn't have city level scraping feature.` : ''}
+                     placeholder={`City (Optional)${!allowsCity ? `. Not avaialable for ${scraperName}.` : ''}`}
+                     value={newKeywordsData.city}
+                     onChange={(e) => setNewKeywordsData({ ...newKeywordsData, city: e.target.value })}
+                  />
+                  <span className='absolute text-gray-400 top-2 left-2'><Icon type="city" size={16} /></span>
                </div>
             </div>
             {error && <div className='w-full mt-4 p-3 text-sm bg-red-50 text-red-700'>{error}</div>}

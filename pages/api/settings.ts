@@ -72,7 +72,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             scaping_api,
             smtp_password,
             search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL),
-            available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
+            available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id, allowsCity: !!scraper.allowsCity })),
             failed_queue: failedQueue,
             screenshot_key: screenshotAPIKey,
          };
