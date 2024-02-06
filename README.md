@@ -42,6 +42,7 @@ The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, Searc
 | serpapi.com | From $50/mo** | From 5,000/mo** | Yes |
 | spaceserp.com | $59/lifetime | 15,000/mo | Yes |
 | SearchApi.io | From $40/mo | From 10,000/mo | Yes |
+| valueserp.com | Pay As You Go | $2.50/1000 req | No |
 
 (*) Free upto a limit. If you are using ScrapingAnt you can lookup 10,000 times per month for free.
 (**) Free up to 100 per month. Paid from 5,000 to 10,000,000+ per month.

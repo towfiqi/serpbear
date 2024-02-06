@@ -55,7 +55,7 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
             minWidth={270}
             />
          </div>
-         {['scrapingant', 'scrapingrobot', 'serply', 'serpapi', 'spaceSerp', 'searchapi'].includes(settings.scraper_type) && (
+         {settings.scraper_type !== 'none' && settings.scraper_type !== 'proxy' && (
             <SecretField
             label='Scraper API Key or Token'
             placeholder={'API Key/Token'}
