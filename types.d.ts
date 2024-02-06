@@ -15,6 +15,7 @@ type DomainType = {
    scVisits?: number,
    scImpressions?: number,
    scPosition?: number,
+   search_console?: string,
 }
 
 type KeywordHistory = {
@@ -62,9 +63,15 @@ type countryCodeData = {
    [ISO:string] : string
 }
 
+type DomainSearchConsole = {
+   property_type?: 'domain' | 'url',
+   url?: string
+}
+
 type DomainSettings = {
    notification_interval: string,
    notification_emails: string,
+   search_console?: DomainSearchConsole
 }
 
 type SettingsType = {

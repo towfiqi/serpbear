@@ -3,6 +3,7 @@ import db from '../../database/database';
 import { getCountryInsight, getKeywordsInsight, getPagesInsight } from '../../utils/insight';
 import { fetchDomainSCData, readLocalSCData } from '../../utils/searchConsole';
 import verifyUser from '../../utils/verifyUser';
+import Domain from '../../database/models/domain';
 
 type SCInsightRes = {
    data: InsightDataType | null,
@@ -49,7 +50,11 @@ const getDomainSearchConsoleInsight = async (req: NextApiRequest, res: NextApiRe
 
    // If the Local SC Domain Data file does not exist, fetch from Googel Search Console.
    try {
-      const scData = await fetchDomainSCData(domainname);
+      const query = { domain: domainname };
+      const foundDomain:Domain| null = await Domain.findOne({ where: query });
+      const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
+
+      const scData = await fetchDomainSCData(domainObj);
       const response = getInsightFromSCData(scData);
       return res.status(200).json({ data: response });
    } catch (error) {

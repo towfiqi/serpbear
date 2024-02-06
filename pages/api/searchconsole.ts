@@ -42,7 +42,10 @@ const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiRespo
       return res.status(200).json({ data: localSCData });
    }
    try {
-      const scData = await fetchDomainSCData(domainname);
+      const query = { domain: domainname };
+      const foundDomain:Domain| null = await Domain.findOne({ where: query });
+      const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
+      const scData = await fetchDomainSCData(domainObj);
       return res.status(200).json({ data: scData });
    } catch (error) {
       console.log('[ERROR] Getting Search Console Data for: ', domainname, error);
@@ -53,9 +56,9 @@ const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiRespo
 const cronRefreshSearchConsoleData = async (req: NextApiRequest, res: NextApiResponse<searchConsoleCRONRes>) => {
    try {
       const allDomainsRaw = await Domain.findAll();
-      const Domains: Domain[] = allDomainsRaw.map((el) => el.get({ plain: true }));
+      const Domains: DomainType[] = allDomainsRaw.map((el) => el.get({ plain: true }));
       for (const domain of Domains) {
-         await fetchDomainSCData(domain.domain);
+         await fetchDomainSCData(domain);
       }
       return res.status(200).json({ status: 'completed' });
    } catch (error) {

@@ -38,6 +38,9 @@ class Domain extends Model {
 
    @Column({ type: DataType.STRING, allowNull: true, defaultValue: '' })
    notification_emails!: string;
+
+   @Column({ type: DataType.STRING, allowNull: true })
+   search_console!: string;
 }
 
 export default Domain;

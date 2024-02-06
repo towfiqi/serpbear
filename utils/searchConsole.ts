@@ -11,13 +11,15 @@ type fetchConsoleDataResponse = SearchAnalyticsItem[] | SearchAnalyticsStat[] | 
 
 /**
  * function that retrieves data from the Google Search Console API based on the provided domain name, number of days, and optional type.
- * @param {string} domainName - The domain name for which you want to fetch search console data.
+ * @param {DomainType} domain - The domain for which you want to fetch search console data.
  * @param {number} days - The `days` parameter is the number of days of data you want to fetch from the Search Console.
  * @param {string} [type] - The `type` parameter is an optional parameter that specifies the type of data to fetch from the Search Console API.
  * @returns {Promise<fetchConsoleDataResponse>}
  */
-const fetchSearchConsoleData = async (domainName:string, days:number, type?:string): Promise<fetchConsoleDataResponse> => {
-   if (!domainName) return { error: true, errorMsg: 'Domain Not Provided!' };
+const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:string): Promise<fetchConsoleDataResponse> => {
+   if (!domain) return { error: true, errorMsg: 'Domain Not Provided!' };
+   const domainName = domain.domain;
+   const domainSettings = domain.search_console ? JSON.parse(domain.search_console) : { property_type: 'domain', url: '' };
    try {
    const authClient = new auth.GoogleAuth({
       credentials: {
@@ -51,7 +53,8 @@ const fetchSearchConsoleData = async (domainName:string, days:number, type?:stri
       };
    }
 
-      const res = client.searchanalytics.query({ siteUrl: `sc-domain:${domainName}`, requestBody });
+      const siteUrl = domainSettings.property_type === 'url' && domainSettings.url ? domainSettings.url : `sc-domain:${domainName}`;
+      const res = client.searchanalytics.query({ siteUrl, requestBody });
       const resData:any = (await res).data;
       let finalRows = resData.rows ? resData.rows.map((item:SearchAnalyticsRawItem) => parseSearchConsoleItem(item, domainName)) : [];
 
@@ -79,15 +82,15 @@ const fetchSearchConsoleData = async (domainName:string, days:number, type?:stri
 
 /**
  * The function fetches search console data for a given domain and returns it in a structured format.
- * @param {string} domain - The `domain` parameter is a string that represents the domain for which we
+ * @param {DomainType} domain - The `domain` parameter is a Domain object that represents the domain for which we
  * want to fetch search console data.
  * @returns The function `fetchDomainSCData` is returning a Promise that resolves to an object of type
  * `SCDomainDataType`.
  */
-export const fetchDomainSCData = async (domain:string): Promise<SCDomainDataType> => {
+export const fetchDomainSCData = async (domain:DomainType): Promise<SCDomainDataType> => {
    const days = [3, 7, 30];
    const scDomainData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '', stats: [] };
-   if (domain) {
+   if (domain.domain) {
       for (const day of days) {
          const items = await fetchSearchConsoleData(domain, day);
           scDomainData.lastFetched = new Date().toJSON();
@@ -103,7 +106,7 @@ export const fetchDomainSCData = async (domain:string): Promise<SCDomainDataType
       if (stats && Array.isArray(stats) && stats.length > 0) {
          scDomainData.stats = stats as SearchAnalyticsStat[];
       }
-      await updateLocalSCData(domain, scDomainData);
+      await updateLocalSCData(domain.domain, scDomainData);
    }
 
    return scDomainData;
