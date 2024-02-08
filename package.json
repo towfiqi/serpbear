@@ -36,7 +36,7 @@
     "jsonwebtoken": "^9.0.2",
     "msw": "^0.49.0",
     "next": "^12.3.4",
-    "nodemailer": "^6.8.0",
+    "nodemailer": "^6.9.9",
     "react": "18.2.0",
     "react-chartjs-2": "^4.3.1",
     "react-dom": "18.2.0",
@@ -47,7 +47,7 @@
     "react-window": "^1.8.8",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.34.0",
-    "sequelize-typescript": "^2.1.5",
+    "sequelize-typescript": "^2.1.6",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
