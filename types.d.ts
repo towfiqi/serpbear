@@ -64,8 +64,10 @@ type countryCodeData = {
 }
 
 type DomainSearchConsole = {
-   property_type?: 'domain' | 'url',
-   url?: string
+   property_type: 'domain' | 'url',
+   url: string,
+   client_email:string,
+   private_key:string,
 }
 
 type DomainSettings = {
@@ -85,7 +87,6 @@ type SettingsType = {
    smtp_port: string,
    smtp_username?: string,
    smtp_password?: string,
-   search_console_integrated?: boolean,
    available_scapers?: { label: string, value: string, allowsCity?: boolean }[],
    scrape_interval?: string,
    scrape_delay?: string,
@@ -93,6 +94,10 @@ type SettingsType = {
    failed_queue?: string[]
    version?: string,
    screenshot_key?: string,
+   search_console: boolean,
+   search_console_client_email: string,
+   search_console_private_key: string,
+   search_console_integrated?: boolean,
 }
 
 type KeywordSCDataChild = {

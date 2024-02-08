@@ -37,6 +37,11 @@ const SingleDomain: NextPage = () => {
       return active;
    }, [router.query.slug, domainsData]);
 
+   const domainHasScAPI = useMemo(() => {
+      const doaminSc = activDomain?.search_console ? JSON.parse(activDomain.search_console) : {};
+      return !!(doaminSc?.client_email && doaminSc?.private_key);
+   }, [activDomain]);
+
    const { keywordsData, keywordsLoading } = useFetchKeywords(router, activDomain?.domain || '', setKeywordSPollInterval, keywordSPollInterval);
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
    const theKeywords: KeywordType[] = keywordsData && keywordsData.keywords;
@@ -72,7 +77,7 @@ const SingleDomain: NextPage = () => {
                keywords={theKeywords}
                showAddModal={showAddKeywords}
                setShowAddModal={setShowAddKeywords}
-               isConsoleIntegrated={!!(appSettings && appSettings.search_console_integrated) }
+               isConsoleIntegrated={!!(appSettings && appSettings.search_console_integrated) || domainHasScAPI }
                />
             </div>
          </div>

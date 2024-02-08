@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectField from '../common/SelectField';
 import SecretField from '../common/SecretField';
+import InputField from '../common/InputField';
 
 type NotificationSettingsProps = {
    settings: SettingsType,
@@ -18,8 +19,8 @@ const NotificationSettings = ({ settings, settingsError, updateSettings }:Notifi
       <div>
          <div className='settings__content styled-scrollbar p-6 text-sm'>
             <div className="settings__section__input mb-5">
-               <label className={labelStyle}>Notification Frequency</label>
                <SelectField
+               label='Notification Frequency'
                   multiple={false}
                   selected={[settings.notification_interval]}
                   options={[
@@ -32,68 +33,61 @@ const NotificationSettings = ({ settings, settingsError, updateSettings }:Notifi
                   updateField={(updated:string[]) => updated[0] && updateSettings('notification_interval', updated[0])}
                   rounded='rounded'
                   maxHeight={48}
-                  minWidth={270}
+                  minWidth={220}
                />
             </div>
             {settings.notification_interval !== 'never' && (
                <>
                   <div className="settings__section__input mb-5">
-                     <label className={labelStyle}>Notification Emails</label>
-                     <input
-                        className={`w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200 
-                        ${settingsError?.type === 'no_email' ? ' border-red-400 focus:border-red-400' : ''} `}
-                        type="text"
-                        value={settings?.notification_email}
-                        placeholder={'test@gmail.com'}
-                        onChange={(event) => updateSettings('notification_email', event.target.value)}
+                     <InputField
+                     label='Notification Emails'
+                     hasError={settingsError?.type === 'no_email'}
+                     value={settings?.notification_email}
+                     placeholder={'test@gmail.com, test2@test.com'}
+                     onChange={(value:string) => updateSettings('notification_email', value)}
                      />
                   </div>
                   <div className="settings__section__input mb-5">
-                     <label className={labelStyle}>SMTP Server</label>
-                     <input
-                        className={`w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200 
-                        ${settingsError?.type === 'no_smtp_server' ? ' border-red-400 focus:border-red-400' : ''} `}
-                        type="text"
-                        value={settings?.smtp_server || ''}
-                        onChange={(event) => updateSettings('smtp_server', event.target.value)}
+                     <InputField
+                     label='SMTP Server'
+                     hasError={settingsError?.type === 'no_smtp_server'}
+                     value={settings?.smtp_server || ''}
+                     placeholder={'test@gmail.com, test2@test.com'}
+                     onChange={(value:string) => updateSettings('smtp_server', value)}
                      />
                   </div>
                   <div className="settings__section__input mb-5">
-                     <label className={labelStyle}>SMTP Port</label>
-                     <input
-                        className={`w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200 
-                        ${settingsError && settingsError.type === 'no_smtp_port' ? ' border-red-400 focus:border-red-400' : ''} `}
-                        type="text"
-                        value={settings?.smtp_port || ''}
-                        onChange={(event) => updateSettings('smtp_port', event.target.value)}
+                     <InputField
+                     label='SMTP Port'
+                     hasError={settingsError?.type === 'no_smtp_port'}
+                     value={settings?.smtp_port || ''}
+                     placeholder={'2234'}
+                     onChange={(value:string) => updateSettings('smtp_port', value)}
                      />
                   </div>
                   <div className="settings__section__input mb-5">
-                     <label className={labelStyle}>SMTP Username</label>
-                     <input
-                        className={'w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200'}
-                        type="text"
+                     <InputField
+                        label='SMTP Username'
+                        hasError={settingsError?.type === 'no_smtp_port'}
                         value={settings?.smtp_username || ''}
-                        onChange={(event) => updateSettings('smtp_username', event.target.value)}
+                        onChange={(value:string) => updateSettings('smtp_username', value)}
+                        />
+                  </div>
+                  <div className="settings__section__input mb-5">
+                     <SecretField
+                     label='SMTP Password'
+                     value={settings?.smtp_password || ''}
+                     onChange={(value:string) => updateSettings('smtp_password', value)}
                      />
                   </div>
-
-                  <SecretField
-                  label='SMTP Password'
-                  value={settings?.smtp_password || ''}
-                  onChange={(value:string) => updateSettings('smtp_password', value)}
-                  />
-
                   <div className="settings__section__input mb-5">
-                     <label className={labelStyle}>From Email Address</label>
-                     <input
-                        className={`w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none  focus:border-blue-200 
-                        ${settingsError?.type === 'no_smtp_from' ? ' border-red-400 focus:border-red-400' : ''} `}
-                        type="text"
+                        <InputField
+                        label='From Email Address'
+                        hasError={settingsError?.type === 'no_smtp_from'}
                         value={settings?.notification_email_from || ''}
                         placeholder="no-reply@mydomain.com"
-                        onChange={(event) => updateSettings('notification_email_from', event.target.value)}
-                     />
+                        onChange={(value:string) => updateSettings('notification_email_from', value)}
+                        />
                   </div>
                </>
             )}

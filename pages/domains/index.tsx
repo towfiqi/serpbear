@@ -35,6 +35,17 @@ const Domains: NextPage = () => {
       return keywords;
    }, [domainsData]);
 
+   const domainSCAPiObj = useMemo(() => {
+      const domainsSCAPI:{ [ID:string] : boolean } = {};
+      if (domainsData?.domains) {
+         domainsData.domains.forEach(async (domain:DomainType) => {
+            const doaminSc = domain?.search_console ? JSON.parse(domain.search_console) : {};
+            domainsSCAPI[domain.ID] = doaminSc.client_email && doaminSc.private_key;
+         });
+      }
+      return domainsSCAPI;
+   }, [domainsData]);
+
    useEffect(() => {
       if (domainsData?.domains && domainsData.domains.length > 0 && appSettings.screenshot_key) {
          domainsData.domains.forEach(async (domain:DomainType) => {
@@ -94,7 +105,7 @@ const Domains: NextPage = () => {
                            key={domain.ID}
                            domain={domain}
                            selected={false}
-                           isConsoleIntegrated={!!(appSettings && appSettings.search_console_integrated) }
+                           isConsoleIntegrated={!!(appSettings && appSettings.search_console_integrated) || !!domainSCAPiObj[domain.ID] }
                            thumb={domainThumbs[domain.domain]}
                            updateThumb={manuallyUpdateThumb}
                            // isConsoleIntegrated={false}

@@ -19,6 +19,19 @@ export async function fetchDomains(router: NextRouter, withStats:boolean): Promi
    return res.json();
 }
 
+export async function fetchDomain(router: NextRouter, domainName: string): Promise<{domain: DomainType}> {
+   if (!domainName) { throw new Error('No Domain Name Provided!'); }
+   const res = await fetch(`${window.location.origin}/api/domain?domain=${domainName}`, { method: 'GET' });
+   if (res.status >= 400 && res.status < 600) {
+      if (res.status === 401) {
+         console.log('Unauthorized!!');
+         router.push('/login');
+      }
+      throw new Error('Bad response from server');
+   }
+   return res.json();
+}
+
 export async function fetchDomainScreenshot(domain: string, screenshot_key:string, forceFetch = false): Promise<string | false> {
    const domainThumbsRaw = localStorage.getItem('domainThumbs');
    const domThumbs = domainThumbsRaw ? JSON.parse(domainThumbsRaw) : {};
@@ -51,6 +64,14 @@ export async function fetchDomainScreenshot(domain: string, screenshot_key:strin
 
 export function useFetchDomains(router: NextRouter, withStats:boolean = false) {
    return useQuery('domains', () => fetchDomains(router, withStats));
+}
+
+export function useFetchDomain(router: NextRouter, domainName:string, onSuccess: Function) {
+   return useQuery('domain', () => fetchDomain(router, domainName), {
+      onSuccess: async (data) => {
+         console.log('Domain Loaded!!!', data.domain);
+         onSuccess(data.domain);
+      } });
 }
 
 export function useAddDomain(onSuccess:Function) {
@@ -89,10 +110,11 @@ export function useUpdateDomain(onSuccess:Function) {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify(domainSettings) };
       const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, fetchOpts);
+      const responseObj = await res.json();
       if (res.status >= 400 && res.status < 600) {
-         throw new Error('Bad response from server');
+         throw new Error(responseObj?.error || 'Bad response from server');
       }
-      return res.json();
+      return responseObj;
    }, {
       onSuccess: async () => {
          console.log('Settings Updated!!!');
@@ -100,8 +122,8 @@ export function useUpdateDomain(onSuccess:Function) {
          onSuccess();
          queryClient.invalidateQueries(['domains']);
       },
-      onError: () => {
-         console.log('Error Updating Domain Settings!!!');
+      onError: (error) => {
+         console.log('Error Updating Domain Settings!!!', error);
          toast('Error Updating Domain Settings', { icon: '⚠️' });
       },
    });

@@ -6,10 +6,11 @@ type ModalProps = {
    children: React.ReactNode,
    width?: string,
    title?: string,
+   verticalCenter?: boolean,
    closeModal: Function,
 }
 
-const Modal = ({ children, width = '1/2', closeModal, title }:ModalProps) => {
+const Modal = ({ children, width = '1/2', closeModal, title, verticalCenter = false }:ModalProps) => {
    useOnKey('Escape', closeModal);
 
    const closeOnBGClick = (e:React.SyntheticEvent) => {
@@ -21,8 +22,9 @@ const Modal = ({ children, width = '1/2', closeModal, title }:ModalProps) => {
    return (
       <div className='modal fixed top-0 left-0 bg-white/[.7] w-full h-screen z-50' onClick={closeOnBGClick}>
          <div
-         className={`modal__content max-w-[340px] absolute top-1/4 left-0 right-0 ml-auto mr-auto w-${width} 
-         lg:max-w-md bg-white shadow-md rounded-md p-5 border-t-[1px] border-gray-100 text-base`}>
+         className={`modal__content max-w-[340px] absolute left-0 right-0 ml-auto mr-auto w-${width} 
+         lg:max-w-md bg-white shadow-md rounded-md p-5 border-t-[1px] border-gray-100 text-base 
+         ${verticalCenter ? ' top-1/2 translate-y-[-50%]' : 'top-1/4'}`}>
             {title && <h3 className=' font-semibold mb-3'>{title}</h3>}
             <button
             className='modal-close absolute right-2 top-2 p-2 cursor-pointer text-gray-400 transition-all

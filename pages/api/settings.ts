@@ -42,9 +42,11 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
    }
    try {
       const cryptr = new Cryptr(process.env.SECRET as string);
-      const scaping_api = settings.scaping_api ? cryptr.encrypt(settings.scaping_api) : '';
-      const smtp_password = settings.smtp_password ? cryptr.encrypt(settings.smtp_password) : '';
-      const securedSettings = { ...settings, scaping_api, smtp_password };
+      const scaping_api = settings.scaping_api ? cryptr.encrypt(settings.scaping_api.trim()) : '';
+      const smtp_password = settings.smtp_password ? cryptr.encrypt(settings.smtp_password.trim()) : '';
+      const search_console_client_email = settings.search_console_client_email ? cryptr.encrypt(settings.search_console_client_email.trim()) : '';
+      const search_console_private_key = settings.search_console_private_key ? cryptr.encrypt(settings.search_console_private_key.trim()) : '';
+      const securedSettings = { ...settings, scaping_api, smtp_password, search_console_client_email, search_console_private_key };
 
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(securedSettings), { encoding: 'utf-8' });
       return res.status(200).json({ settings });
@@ -67,11 +69,16 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          const cryptr = new Cryptr(process.env.SECRET as string);
          const scaping_api = settings.scaping_api ? cryptr.decrypt(settings.scaping_api) : '';
          const smtp_password = settings.smtp_password ? cryptr.decrypt(settings.smtp_password) : '';
+         const search_console_client_email = settings.search_console_client_email ? cryptr.decrypt(settings.search_console_client_email) : '';
+         const search_console_private_key = settings.search_console_private_key ? cryptr.decrypt(settings.search_console_private_key) : '';
          decryptedSettings = {
             ...settings,
             scaping_api,
             smtp_password,
-            search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL),
+            search_console_client_email,
+            search_console_private_key,
+            search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL)
+            || !!(search_console_client_email && search_console_private_key),
             available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id, allowsCity: !!scraper.allowsCity })),
             failed_queue: failedQueue,
             screenshot_key: screenshotAPIKey,
@@ -94,6 +101,9 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          smtp_password: '',
          scrape_retry: false,
          screenshot_key: screenshotAPIKey,
+         search_console: true,
+         search_console_client_email: '',
+         search_console_private_key: '',
       };
       const otherSettings = {
          available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),

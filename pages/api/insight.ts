@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../database/database';
 import { getCountryInsight, getKeywordsInsight, getPagesInsight } from '../../utils/insight';
-import { fetchDomainSCData, readLocalSCData } from '../../utils/searchConsole';
+import { fetchDomainSCData, getSearchConsoleApiInfo, readLocalSCData } from '../../utils/searchConsole';
 import verifyUser from '../../utils/verifyUser';
 import Domain from '../../database/models/domain';
 
@@ -24,9 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const getDomainSearchConsoleInsight = async (req: NextApiRequest, res: NextApiResponse<SCInsightRes>) => {
    if (!req.query.domain && typeof req.query.domain !== 'string') return res.status(400).json({ data: null, error: 'Domain is Missing.' });
-   if (!!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL) === false) {
-      return res.status(200).json({ data: null, error: 'Google Search Console Not Integrated' });
-   }
    const domainname = (req.query.domain as string).replaceAll('-', '.').replaceAll('_', '-');
    const getInsightFromSCData = (localSCData: SCDomainDataType): InsightDataType => {
       const { stats = [] } = localSCData;
@@ -53,8 +50,11 @@ const getDomainSearchConsoleInsight = async (req: NextApiRequest, res: NextApiRe
       const query = { domain: domainname };
       const foundDomain:Domain| null = await Domain.findOne({ where: query });
       const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
-
-      const scData = await fetchDomainSCData(domainObj);
+      const scDomainAPI = await getSearchConsoleApiInfo(domainObj);
+      if (!(scDomainAPI.client_email && scDomainAPI.private_key)) {
+         return res.status(200).json({ data: null, error: 'Google Search Console is not Integrated.' });
+      }
+      const scData = await fetchDomainSCData(domainObj, scDomainAPI);
       const response = getInsightFromSCData(scData);
       return res.status(200).json({ data: response });
    } catch (error) {

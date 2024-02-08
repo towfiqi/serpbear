@@ -39,6 +39,11 @@ const DiscoverPage: NextPage = () => {
       return active;
    }, [router.query.slug, domainsData]);
 
+   const domainHasScAPI = useMemo(() => {
+      const doaminSc = activDomain?.search_console ? JSON.parse(activDomain.search_console) : {};
+      return !!(doaminSc?.client_email && doaminSc?.private_key);
+   }, [activDomain]);
+
    return (
       <div className="Domain ">
          {activDomain && activDomain.domain
@@ -65,7 +70,7 @@ const DiscoverPage: NextPage = () => {
                isLoading={keywordsLoading || isFetching}
                domain={activDomain}
                keywords={theKeywords}
-               isConsoleIntegrated={scConnected}
+               isConsoleIntegrated={scConnected || domainHasScAPI}
                />
             </div>
          </div>

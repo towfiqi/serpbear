@@ -45,15 +45,15 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
       <div className='settings__content styled-scrollbar p-6 text-sm'>
 
          <div className="settings__section__select mb-5">
-            <label className={labelStyle}>Scraping Method</label>
             <SelectField
+            label='Scraping Method'
             options={scraperOptions}
             selected={[settings.scraper_type || 'none']}
             defaultLabel="Select Scraper"
             updateField={(updatedTime:[string]) => updateSettings('scraper_type', updatedTime[0])}
             multiple={false}
             rounded={'rounded'}
-            minWidth={270}
+            minWidth={220}
             />
          </div>
          {settings.scraper_type !== 'none' && settings.scraper_type !== 'proxy' && (
@@ -80,8 +80,8 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
          )}
          {settings.scraper_type !== 'none' && (
             <div className="settings__section__input mb-5">
-               <label className={labelStyle}>Scraping Frequency</label>
                <SelectField
+                  label='Scraping Frequency'
                   multiple={false}
                   selected={[settings?.scrape_interval || 'daily']}
                   options={scrapingOptions}
@@ -89,14 +89,14 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
                   updateField={(updated:string[]) => updated[0] && updateSettings('scrape_interval', updated[0])}
                   rounded='rounded'
                   maxHeight={48}
-                  minWidth={270}
+                  minWidth={220}
                />
                <small className=' text-gray-500 pt-2 block'>This option requires Server/Docker Instance Restart to take Effect.</small>
             </div>
          )}
             <div className="settings__section__input mb-5">
-               <label className={labelStyle}>Delay Between Each keyword Scrape</label>
                <SelectField
+                  label='keyword Scrape Delay'
                   multiple={false}
                   selected={[settings?.scrape_delay || '0']}
                   options={delayOptions}
@@ -104,7 +104,7 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
                   updateField={(updated:string[]) => updated[0] && updateSettings('scrape_delay', updated[0])}
                   rounded='rounded'
                   maxHeight={48}
-                  minWidth={270}
+                  minWidth={220}
                />
                <small className=' text-gray-500 pt-2 block'>This option requires Server/Docker Instance Restart to take Effect.</small>
             </div>

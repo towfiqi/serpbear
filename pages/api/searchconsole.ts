@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../database/database';
 import Domain from '../../database/models/domain';
-import { fetchDomainSCData, readLocalSCData } from '../../utils/searchConsole';
+import { fetchDomainSCData, getSearchConsoleApiInfo, readLocalSCData } from '../../utils/searchConsole';
 import verifyUser from '../../utils/verifyUser';
 
 type searchConsoleRes = {
@@ -31,13 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiResponse<searchConsoleRes>) => {
    if (!req.query.domain && typeof req.query.domain !== 'string') return res.status(400).json({ data: null, error: 'Domain is Missing.' });
-   if (!!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL) === false) {
-      return res.status(200).json({ data: null, error: 'Google Search Console Not Integrated' });
-   }
    const domainname = (req.query.domain as string).replaceAll('-', '.').replaceAll('_', '-');
    const localSCData = await readLocalSCData(domainname);
-   console.log(localSCData && localSCData.thirtyDays && localSCData.thirtyDays.length);
-
    if (localSCData && localSCData.thirtyDays && localSCData.thirtyDays.length) {
       return res.status(200).json({ data: localSCData });
    }
@@ -45,7 +40,11 @@ const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiRespo
       const query = { domain: domainname };
       const foundDomain:Domain| null = await Domain.findOne({ where: query });
       const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
-      const scData = await fetchDomainSCData(domainObj);
+      const scDomainAPI = await getSearchConsoleApiInfo(domainObj);
+      if (!(scDomainAPI.client_email && scDomainAPI.private_key)) {
+         return res.status(200).json({ data: null, error: 'Google Search Console is not Integrated.' });
+      }
+      const scData = await fetchDomainSCData(domainObj, scDomainAPI);
       return res.status(200).json({ data: scData });
    } catch (error) {
       console.log('[ERROR] Getting Search Console Data for: ', domainname, error);

@@ -1,4 +1,5 @@
 import { auth, searchconsole_v1 } from '@googleapis/searchconsole';
+import Cryptr from 'cryptr';
 import { readFile, writeFile, unlink } from 'fs/promises';
 import { getCountryCodeFromAlphaThree } from './countries';
 
@@ -7,24 +8,32 @@ export type SCDomainFetchError = {
    errorMsg: string,
 }
 
+type SCAPISettings = { client_email: string, private_key: string }
+
 type fetchConsoleDataResponse = SearchAnalyticsItem[] | SearchAnalyticsStat[] | SCDomainFetchError;
 
 /**
- * function that retrieves data from the Google Search Console API based on the provided domain name, number of days, and optional type.
+ * Retrieves data from the Google Search Console API based on the provided domain name, number of days, and optional type.
  * @param {DomainType} domain - The domain for which you want to fetch search console data.
- * @param {number} days - The `days` parameter is the number of days of data you want to fetch from the Search Console.
- * @param {string} [type] - The `type` parameter is an optional parameter that specifies the type of data to fetch from the Search Console API.
+ * @param {number} days - number of days of data you want to fetch from the Search Console.
+ * @param {string} [type] - (optional) specifies the type of data to fetch from the Search Console.
+ * @param {SCAPISettings} [api] - (optional) specifies the Seach Console API Information.
  * @returns {Promise<fetchConsoleDataResponse>}
  */
-const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:string): Promise<fetchConsoleDataResponse> => {
+const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:string, api?:SCAPISettings): Promise<fetchConsoleDataResponse> => {
    if (!domain) return { error: true, errorMsg: 'Domain Not Provided!' };
+   if (!api?.private_key || !api?.client_email) return { error: true, errorMsg: 'Search Console API Data Not Avaialable.' };
    const domainName = domain.domain;
-   const domainSettings = domain.search_console ? JSON.parse(domain.search_console) : { property_type: 'domain', url: '' };
+   const defaultSCSettings = { property_type: 'domain', url: '', client_email: '', private_key: '' };
+   const domainSettings = domain.search_console ? JSON.parse(domain.search_console) : defaultSCSettings;
+   const sCPrivateKey = api?.private_key || process.env.SEARCH_CONSOLE_PRIVATE_KEY || '';
+   const sCClientEmail = api?.client_email || process.env.SEARCH_CONSOLE_CLIENT_EMAIL || '';
+
    try {
    const authClient = new auth.GoogleAuth({
       credentials: {
-        private_key: process.env.SEARCH_CONSOLE_PRIVATE_KEY ? process.env.SEARCH_CONSOLE_PRIVATE_KEY.replaceAll('\\n', '\n') : '',
-        client_email: process.env.SEARCH_CONSOLE_CLIENT_EMAIL ? process.env.SEARCH_CONSOLE_CLIENT_EMAIL : '',
+        private_key: (sCPrivateKey).replaceAll('\\n', '\n'),
+        client_email: (sCClientEmail || '').trim(),
       },
       scopes: [
         'https://www.googleapis.com/auth/webmasters.readonly',
@@ -73,10 +82,12 @@ const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:stri
       }
 
       return finalRows;
-   } catch (error:any) {
+   } catch (err:any) {
       const qType = type === 'stats' ? '(stats)' : `(${days}days)`;
-      console.log(`[ERROR] Search Console API Error for ${domainName} ${qType} : `, error?.response?.status, error?.response?.statusText);
-      return { error: true, errorMsg: `${error?.response?.status}: ${error?.response?.statusText}` };
+      const errorMsg = err?.response?.status && `${err?.response?.statusText}. ${err?.response?.data?.error_description}`;
+      console.log(`[ERROR] Search Console API Error for ${domainName} ${qType} : `, errorMsg || err?.code);
+      // console.log('SC ERROR :', err);
+      return { error: true, errorMsg: errorMsg || err?.code };
    }
 };
 
@@ -87,12 +98,13 @@ const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:stri
  * @returns The function `fetchDomainSCData` is returning a Promise that resolves to an object of type
  * `SCDomainDataType`.
  */
-export const fetchDomainSCData = async (domain:DomainType): Promise<SCDomainDataType> => {
+export const fetchDomainSCData = async (domain:DomainType, scAPI?: SCAPISettings): Promise<SCDomainDataType> => {
    const days = [3, 7, 30];
    const scDomainData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '', stats: [] };
-   if (domain.domain) {
+   if (domain.domain && scAPI) {
+      const theDomain = domain;
       for (const day of days) {
-         const items = await fetchSearchConsoleData(domain, day);
+         const items = await fetchSearchConsoleData(theDomain, day, undefined, scAPI);
           scDomainData.lastFetched = new Date().toJSON();
          if (Array.isArray(items)) {
             if (day === 3) scDomainData.threeDays = items as SearchAnalyticsItem[];
@@ -102,7 +114,7 @@ export const fetchDomainSCData = async (domain:DomainType): Promise<SCDomainData
             scDomainData.lastFetchError = items.errorMsg;
          }
       }
-      const stats = await fetchSearchConsoleData(domain, 30, 'stat');
+      const stats = await fetchSearchConsoleData(theDomain, 30, 'stat', scAPI);
       if (stats && Array.isArray(stats) && stats.length > 0) {
          scDomainData.stats = stats as SearchAnalyticsStat[];
       }
@@ -165,6 +177,57 @@ export const integrateKeywordSCData = (keyword: KeywordType, SCData:SCDomainData
    const finalSCData = { impressions, visits, ctr, position };
 
    return { ...keyword, scData: finalSCData };
+};
+
+/**
+ * Retrieves the Search Console API information for a given domain.
+ * @param {DomainType} domain - The `domain` parameter is of type `DomainType`, which represents a
+ * domain object. It likely contains information about a specific domain, such as its name, search
+ * console settings, etc.
+ * @returns an object of type `SCAPISettings`.
+ */
+export const getSearchConsoleApiInfo = async (domain: DomainType): Promise<SCAPISettings> => {
+   const scAPIData = { client_email: '', private_key: '' };
+   // Check if the Domain Has the API Data
+   const domainSCSettings = domain.search_console && JSON.parse(domain.search_console);
+   if (domainSCSettings && domainSCSettings.private_key) {
+      if (!domainSCSettings.private_key.includes('BEGIN PRIVATE KEY')) {
+         const cryptr = new Cryptr(process.env.SECRET as string);
+         scAPIData.client_email = domainSCSettings.client_email ? cryptr.decrypt(domainSCSettings.client_email) : '';
+         scAPIData.private_key = domainSCSettings.private_key ? cryptr.decrypt(domainSCSettings.private_key) : '';
+      } else {
+         scAPIData.client_email = domainSCSettings.client_email;
+         scAPIData.private_key = domainSCSettings.private_key;
+      }
+   }
+   // Check if the App Settings Has the API Data
+   if (!scAPIData?.private_key) {
+      const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
+      const settings: SettingsType = settingsRaw ? JSON.parse(settingsRaw) : {};
+      const cryptr = new Cryptr(process.env.SECRET as string);
+      scAPIData.client_email = settings.search_console_client_email ? cryptr.decrypt(settings.search_console_client_email) : '';
+      scAPIData.private_key = settings.search_console_private_key ? cryptr.decrypt(settings.search_console_private_key) : '';
+   }
+   if (!scAPIData?.private_key && process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL) {
+      scAPIData.client_email = process.env.SEARCH_CONSOLE_CLIENT_EMAIL;
+      scAPIData.private_key = process.env.SEARCH_CONSOLE_PRIVATE_KEY;
+   }
+
+   return scAPIData;
+};
+
+/**
+ * Checks if the provided domain level Google Search Console API info is valid.
+ * @param {DomainType} domain - The domain that represents the domain for which the SC API info is being checked.
+ * @returns an object of type `{ isValid: boolean, error: string }`.
+ */
+export const checkSerchConsoleIntegration = async (domain: DomainType): Promise<{ isValid: boolean, error: string }> => {
+   const res = { isValid: false, error: '' };
+   const { client_email = '', private_key = '' } = domain?.search_console ? JSON.parse(domain.search_console) : {};
+   const response = await fetchSearchConsoleData(domain, 3, undefined, { client_email, private_key });
+   if (Array.isArray(response)) { res.isValid = true; }
+   if ((response as SCDomainFetchError)?.errorMsg) { res.error = (response as SCDomainFetchError).errorMsg; }
+   return res;
 };
 
 /**
