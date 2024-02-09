@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/towfiqi/serpbear/compare/v0.3.4...v1.0.0) (2024-02-09)
+
+
+### Features
+
+* Adds Serper.dev integration ([b4ad69b](https://github.com/towfiqi/serpbear/commit/b4ad69baaa0f865938f8b0eace6732a9e6b1b381)), closes [#138](https://github.com/towfiqi/serpbear/issues/138)
+* Adds the ability for city level scraping for scapers that allow it. ([3719f21](https://github.com/towfiqi/serpbear/commit/3719f21d98d173219cef5656579fa0e5340ccdbf)), closes [#139](https://github.com/towfiqi/serpbear/issues/139) [#151](https://github.com/towfiqi/serpbear/issues/151)
+* adds the ability to add url as a domain. ([3c2a1b8](https://github.com/towfiqi/serpbear/commit/3c2a1b8a5b8a2a4a2179a5031582f8202c2e494a)), closes [#53](https://github.com/towfiqi/serpbear/issues/53) [#90](https://github.com/towfiqi/serpbear/issues/90) [#119](https://github.com/towfiqi/serpbear/issues/119)
+* Adds the Ability to set Search Console Property type via Domain Settings. ([b2e97b2](https://github.com/towfiqi/serpbear/commit/b2e97b2ebec380f0edf7ddc0640c2126eff006ac)), closes [#50](https://github.com/towfiqi/serpbear/issues/50)
+* Adds the ability to setup Search Console through the UI. ([f04b10c](https://github.com/towfiqi/serpbear/commit/f04b10cf6b065e3023965112a60e0aa702212a4b)), closes [#59](https://github.com/towfiqi/serpbear/issues/59) [#146](https://github.com/towfiqi/serpbear/issues/146)
+* Adds ValueSerp Integration. ([1041cb3](https://github.com/towfiqi/serpbear/commit/1041cb3c0bb69e9034696624e03433be28e83ac6)), closes [#105](https://github.com/towfiqi/serpbear/issues/105) [#106](https://github.com/towfiqi/serpbear/issues/106)
+
+
+### Bug Fixes
+
+* Resolves Keywords filter crashing issue. ([633ab2c](https://github.com/towfiqi/serpbear/commit/633ab2c467be5b7b86d4547ae0c59034e595a42d))
+* Resolves missing Keyword Loading Spinner issue. ([dbf540c](https://github.com/towfiqi/serpbear/commit/dbf540cfdb16ddb02c9d26618e3680d34799f57f))
+
 ### [0.3.4](https://github.com/towfiqi/serpbear/compare/v0.3.3...v0.3.4) (2024-01-15)
 
 
