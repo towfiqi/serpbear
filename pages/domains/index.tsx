@@ -7,7 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import TopBar from '../../components/common/TopBar';
 import AddDomain from '../../components/domains/AddDomain';
 import Settings from '../../components/settings/Settings';
-import { useFetchSettings } from '../../services/settings';
+import { useCheckMigrationStatus, useFetchSettings } from '../../services/settings';
 import { fetchDomainScreenshot, useFetchDomains } from '../../services/domains';
 import DomainItem from '../../components/domains/DomainItem';
 import Icon from '../../components/common/Icon';
@@ -22,6 +22,9 @@ const Domains: NextPage = () => {
    const [domainThumbs, setDomainThumbs] = useState<thumbImages>({});
    const { data: appSettingsData, isLoading: isAppSettingsLoading } = useFetchSettings();
    const { data: domainsData, isLoading } = useFetchDomains(router, true);
+   const { data: migrationStatus } = useCheckMigrationStatus();
+   // const { mutate: updateDatabaseMutate, isLoading: isUpdatingDB } = useMigrateDatabase((res:Object) => { window.location.reload(); });
+
    const appSettings:SettingsType = appSettingsData?.settings || {};
    const { scraper_type = '' } = appSettings;
 
@@ -76,6 +79,12 @@ const Domains: NextPage = () => {
          {((!scraper_type || (scraper_type === 'none')) && !isAppSettingsLoading) && (
                <div className=' p-3 bg-red-600 text-white text-sm text-center'>
                   A Scrapper/Proxy has not been set up Yet. Open Settings to set it up and start using the app.
+               </div>
+         )}
+         {migrationStatus?.hasMigrations && (
+               <div className=' p-3 bg-black text-white text-sm text-center'>
+                  You need to Update your database. Stop Serpbear and run this command to update your database:
+                  <code className=' bg-gray-700 px-2 py-0 ml-1'>npm run db:migrate</code>
                </div>
          )}
          <Head>

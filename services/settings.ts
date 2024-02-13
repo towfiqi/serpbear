@@ -60,3 +60,37 @@ export function useClearFailedQueue(onSuccess:Function) {
       },
    });
 }
+
+export async function fetchMigrationStatus() {
+   const res = await fetch(`${window.location.origin}/api/dbmigrate`, { method: 'GET' });
+   return res.json();
+}
+
+export function useCheckMigrationStatus() {
+   return useQuery('dbmigrate', () => fetchMigrationStatus());
+}
+
+export const useMigrateDatabase = (onSuccess:Function|undefined) => {
+   const queryClient = useQueryClient();
+
+   return useMutation(async () => {
+      // console.log('settings: ', JSON.stringify(settings));
+      const res = await fetch(`${window.location.origin}/api/dbmigrate`, { method: 'POST' });
+      if (res.status >= 400 && res.status < 600) {
+         throw new Error('Bad response from server');
+      }
+      return res.json();
+   }, {
+      onSuccess: async (res) => {
+         if (onSuccess) {
+            onSuccess(res);
+         }
+         toast('Database Updated!', { icon: '✔️' });
+         queryClient.invalidateQueries(['settings']);
+      },
+      onError: () => {
+         console.log('Error Updating Database!!!');
+         toast('Error Updating Database.', { icon: '⚠️' });
+      },
+   });
+};

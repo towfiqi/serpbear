@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "cron": "node cron.js",
-    "prestart": "npm run db:migrate",
     "start:all": "concurrently npm:start npm:cron",
     "lint": "next lint",
     "lint:css": "stylelint styles/*.css",
@@ -48,7 +47,8 @@
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.34.0",
     "sequelize-typescript": "^2.1.6",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "umzug": "^3.6.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.4",
