@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/towfiqi/serpbear/compare/v1.0.0...v1.0.1) (2024-02-13)
+
+
+### Bug Fixes
+
+* Resolves the app crash issue when there is no database. ([e5dd411](https://github.com/towfiqi/serpbear/commit/e5dd411aa9aef58ebb226f2b793a2632ab9069a7)), closes [#161](https://github.com/towfiqi/serpbear/issues/161) [#162](https://github.com/towfiqi/serpbear/issues/162)
+
 ## [1.0.0](https://github.com/towfiqi/serpbear/compare/v0.3.4...v1.0.0) (2024-02-09)
 
 
