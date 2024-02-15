@@ -195,9 +195,13 @@ export const getSerp = (domainURL:string, result:SearchResult[]) : SERPObject =>
    if (result.length === 0 || !domainURL) { return { postion: 0, url: '' }; }
    const URLToFind = new URL(domainURL.includes('https://') ? domainURL : `https://${domainURL}`);
    const theURL = URLToFind.hostname + URLToFind.pathname;
+   const isURL = URLToFind.pathname !== '/';
    const foundItem = result.find((item) => {
       const itemURL = new URL(item.url.includes('https://') ? item.url : `https://${item.url}`);
-      return theURL === itemURL.hostname + itemURL.pathname || `${theURL}/` === itemURL.hostname + itemURL.pathname;
+      if (isURL && `${theURL}/` === itemURL.hostname + itemURL.pathname) {
+         return true;
+      }
+      return URLToFind.hostname === itemURL.hostname;
    });
    return { postion: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
 };
