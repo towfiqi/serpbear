@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/towfiqi/serpbear/compare/v1.0.1...v1.0.2) (2024-02-15)
+
+
+### Bug Fixes
+
+* Resolves Incorrect Position issue. ([0e64b95](https://github.com/towfiqi/serpbear/commit/0e64b95cd5303525535ea84a77181281d7f5618e)), closes [#164](https://github.com/towfiqi/serpbear/issues/164)
+
 ### [1.0.1](https://github.com/towfiqi/serpbear/compare/v1.0.0...v1.0.1) (2024-02-13)
 
 
