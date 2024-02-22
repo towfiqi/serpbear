@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.3](https://github.com/towfiqi/serpbear/compare/v1.0.2...v1.0.3) (2024-02-22)
+
+
+### Bug Fixes
+
+* Resolves App not reloading on Scraper setup. ([56ffbf5](https://github.com/towfiqi/serpbear/commit/56ffbf59d1e459a6c7229d141ccc6774dc8055d0))
+* Resolves large keywords breaking the keywords table ui ([724d3c8](https://github.com/towfiqi/serpbear/commit/724d3c8d4309c7bd4f40e9db980ad54f99023d35))
+* Resolves scraper not able to scrape some keywords correctly. ([9a7a43f](https://github.com/towfiqi/serpbear/commit/9a7a43f051387cacc13116c0a7c21716b54e539b))
+
 ### [1.0.2](https://github.com/towfiqi/serpbear/compare/v1.0.1...v1.0.2) (2024-02-15)
 
 
