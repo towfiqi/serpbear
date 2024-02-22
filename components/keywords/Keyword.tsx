@@ -99,7 +99,7 @@ const Keyword = (props: KeywordProps) => {
                   <Icon type="check" size={10} />
             </button>
             <a
-            className='py-2 hover:text-blue-600 lg:flex lg:items-center lg:w-full'
+            className='py-2 hover:text-blue-600 lg:flex lg:items-center lg:w-full lg:max-w-[200px]'
             onClick={() => showKeywordDetails()}>
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />
                <span className=' text-ellipsis overflow-hidden whitespace-nowrap w-[calc(100%-30px)]'>{keyword}{city ? ` (${city})` : ''}</span>
