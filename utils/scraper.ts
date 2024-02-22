@@ -149,14 +149,13 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
 
    const $ = cheerio.load(content);
    const hasNumberofResult = $('body').find('#search  > div > div');
-   const searchResult = hasNumberofResult.children();
+   const searchResultItems = hasNumberofResult.find('h3');
    let lastPosition = 0;
 
-   for (let i = 0; i < searchResult.length; i += 1) {
-      if (searchResult[i]) {
-         const title = $(searchResult[i]).find('h3').html();
-         const url = $(searchResult[i]).find('a').attr('href');
-         // console.log(i, url?.slice(0, 40), title?.slice(0, 40));
+   for (let i = 0; i < searchResultItems.length; i += 1) {
+      if (searchResultItems[i]) {
+         const title = $(searchResultItems[i]).html();
+         const url = $(searchResultItems[i]).closest('a').attr('href');
          if (title && url) {
             lastPosition += 1;
             extractedResult.push({ title, url, position: lastPosition });
