@@ -82,6 +82,10 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       } else {
          // Perform Update
          updateMutate(settings);
+         // If Scraper is updated, refresh the page.
+         if (appSettings.settings === 'none' && scraper_type !== 'none') {
+            window.location.reload();
+         }
       }
    };
 
