@@ -8,9 +8,10 @@ type ChartProps ={
    labels: string[],
    sreies: number[],
    reverse? : boolean,
+   noMaxLimit?: boolean
 }
 
-const Chart = ({ labels, sreies, reverse = true }:ChartProps) => {
+const Chart = ({ labels, sreies, reverse = true, noMaxLimit = false }:ChartProps) => {
    const options = {
       responsive: true,
       maintainAspectRatio: false,
@@ -19,7 +20,7 @@ const Chart = ({ labels, sreies, reverse = true }:ChartProps) => {
          y: {
             reverse,
             min: 1,
-            max: reverse ? 100 : undefined,
+            max: !noMaxLimit && reverse ? 100 : undefined,
          },
       },
       plugins: {

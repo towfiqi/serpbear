@@ -14,7 +14,7 @@ const SecretField = ({ label = '', value = '', placeholder = '', onChange, hasEr
    const [showValue, setShowValue] = useState(false);
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700 capitalize';
    return (
-      <div className="settings__section__secret mb-5 relative flex justify-between items-center">
+      <div className="settings__section__secret w-full relative flex justify-between items-center">
          <label className={labelStyle}>{label}</label>
          <span
          className="absolute top-1 right-0 px-2 py-1 cursor-pointer text-gray-400 select-none"

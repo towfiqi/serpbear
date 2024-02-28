@@ -16,6 +16,7 @@ type DomainType = {
    scImpressions?: number,
    scPosition?: number,
    search_console?: string,
+   ideas_settings?: string,
 }
 
 type KeywordHistory = {
@@ -56,7 +57,7 @@ type KeywordFilters = {
 }
 
 type countryData = {
-   [ISO:string] : [countryName:string, cityName:string, language:string]
+   [ISO:string] : [countryName:string, cityName:string, language:string, AdWordsID: number]
 }
 
 type countryCodeData = {
@@ -98,6 +99,11 @@ type SettingsType = {
    search_console_client_email: string,
    search_console_private_key: string,
    search_console_integrated?: boolean,
+   adwords_client_id?: string,
+   adwords_client_secret?: string,
+   adwords_refresh_token?: string,
+   adwords_developer_token?: string,
+   adwords_account_id?: string,
 }
 
 type KeywordSCDataChild = {
@@ -184,6 +190,37 @@ type SCDomainDataType = {
 }
 
 type SCKeywordType = SearchAnalyticsItem;
+
+type DomainIdeasSettings = {
+   seedSCKeywords: boolean,
+   seedCurrentKeywords: boolean,
+   seedDomain: boolean,
+   language: string,
+   countries: string[],
+   keywords: string
+}
+
+type AdwordsCredentials = {
+   client_id: string,
+   client_secret: string,
+   developer_token: string,
+   account_id: string,
+   refresh_token: string,
+}
+
+type IdeaKeyword = {
+   uid: string,
+   keyword: string,
+   competition: 'UNSPECIFIED' | 'UNKNOWN' | 'HIGH' | 'LOW' | 'MEDIUM',
+   country: string,
+   domain: string,
+   competitionIndex : number,
+   monthlySearchVolumes: Record<string, string>,
+   avgMonthlySearches: number,
+   added: number,
+   updated: number,
+   position:number
+}
 
 type scraperExtractedItem = {
    title: string,

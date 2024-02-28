@@ -6,10 +6,11 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, 
 
 type ChartProps ={
    labels: string[],
-   sreies: number[]
+   sreies: number[],
+   noMaxLimit?: boolean
 }
 
-const ChartSlim = ({ labels, sreies }:ChartProps) => {
+const ChartSlim = ({ labels, sreies, noMaxLimit = false }:ChartProps) => {
    const options = {
       responsive: true,
       maintainAspectRatio: false,
@@ -19,7 +20,7 @@ const ChartSlim = ({ labels, sreies }:ChartProps) => {
             display: false,
             reverse: true,
             min: 1,
-            max: 100,
+            max: noMaxLimit ? undefined : 100,
          },
          x: {
             display: false,

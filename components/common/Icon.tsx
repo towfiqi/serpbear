@@ -131,13 +131,13 @@ const Icon = ({ type, color = 'currentColor', size = 16, title = '', classes = '
          }
          {type === 'star'
             && <svg width={size} viewBox="0 0 24 24" {...xmlnsProps}>
-               <path fill={color} d="M10 1L7 7l-6 .75l4.13 4.62L4 19l6-3l6 3l-1.12-6.63L19 7.75L13 7zm0 2.24l2.34 4.69l4.65.58l-3.18 3.56l.87 5.15L10 14.88l-4.68 2.34l.87-5.15l-3.18-3.56l4.65-.58z"/>
-            </svg>
+                  <path fill={color} d="m12 15.39l-3.76 2.27l.99-4.28l-3.32-2.88l4.38-.37L12 6.09l1.71 4.04l4.38.37l-3.32 2.88l.99 4.28M22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.45 4.73L5.82 21L12 17.27L18.18 21l-1.64-7.03z"></path>
+               </svg>
          }
          {type === 'star-filled'
             && <svg width={size} viewBox="0 0 24 24" {...xmlnsProps}>
-               <path fill={color} d="M10 1l3 6l6 .75l-4.12 4.62L16 19l-6-3l-6 3l1.13-6.63L1 7.75L7 7z"/>
-            </svg>
+                  <path fill={color} d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2L9.19 8.62L2 9.24l5.45 4.73L5.82 21z"></path>
+               </svg>
          }
          {type === 'link'
             && <svg width={size} viewBox="0 0 20 20" {...xmlnsProps}>
@@ -208,6 +208,26 @@ const Icon = ({ type, color = 'currentColor', size = 16, title = '', classes = '
                   <path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335" />
                </svg>
          }
+         {type === 'adwords'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 256 256">
+                  <g>
+                     <path d="M5.888,166.405103 L90.88,20.9 C101.676138,27.2558621 156.115862,57.3844138 164.908138,63.1135172 L79.9161379,208.627448 C70.6206897,220.906621 -5.888,185.040138 5.888,166.396276 L5.888,166.405103 Z" fill="#FBBC04"></path>
+                     <path d="M250.084224,166.401789 L165.092224,20.9055131 C153.210293,1.13172 127.619121,-6.05393517 106.600638,5.62496138 C85.582155,17.3038579 79.182155,42.4624786 91.0640861,63.1190303 L176.056086,208.632961 C187.938017,228.397927 213.52919,235.583582 234.547672,223.904686 C254.648086,212.225789 261.966155,186.175582 250.084224,166.419444 L250.084224,166.401789 Z" fill="#4285F4"></path>
+                     <ellipse fill="#34A853" cx="42.6637241" cy="187.924414" rx="42.6637241" ry="41.6044138"></ellipse>
+                  </g>
+               </svg>
+         }
+         {type === 'keywords'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <path fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 12h14M5 16h6"></path>
+               </svg>
+         }
+         {type === 'integration'
+            && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
+                  <path fill="none" stroke={color} strokeWidth={2} d="M10 21c-2.5 2.5-5 2-7 0s-2.5-4.5 0-7l3-3l7 7zm4-18c2.5-2.5 5-2 7.001 0c2.001 2 2.499 4.5 0 7l-3 3L11 6zm-3 7l-2.5 2.5zm3 3l-2.5 2.5z"></path>
+               </svg>
+         }
+
          {type === 'cursor'
             && <svg {...xmlnsProps} width={size} viewBox="0 0 24 24">
                   <path fill="none" stroke={color} strokeWidth="2" d="M6 3l12 11l-5 1l3 5.5l-3 1.5l-3-6l-4 3z"/>

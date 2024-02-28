@@ -1,5 +1,4 @@
 import React from 'react';
-import ToggleField from '../common/ToggleField';
 import InputField from '../common/InputField';
 
 type SearchConsoleSettingsProps = {
@@ -14,7 +13,7 @@ type SearchConsoleSettingsProps = {
 const SearchConsoleSettings = ({ settings, settingsError, updateSettings }:SearchConsoleSettingsProps) => {
    return (
       <div>
-      <div className='settings__content styled-scrollbar p-6 text-sm'>
+      <div>
 
          {/* <div className="settings__section__input mb-5">
             <ToggleField

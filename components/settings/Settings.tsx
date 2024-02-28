@@ -5,7 +5,7 @@ import Icon from '../common/Icon';
 import NotificationSettings from './NotificationSettings';
 import ScraperSettings from './ScraperSettings';
 import useOnKey from '../../hooks/useOnKey';
-import SearchConsoleSettings from './SearchConsoleSettings';
+import IntegrationSettings from './IntegrationSettings';
 
 type SettingsProps = {
    closeSettings: Function,
@@ -118,9 +118,9 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                         <Icon type='email' /> Notification
                      </li>
                      <li
-                     className={`${tabStyle} ${currentTab === 'searchconsole' ? tabStyleActive : 'border-transparent'}`}
-                     onClick={() => setCurrentTab('searchconsole')}>
-                       <Icon type='google' size={14} /> Search Console
+                     className={`${tabStyle} ${currentTab === 'integrations' ? tabStyleActive : 'border-transparent'}`}
+                     onClick={() => setCurrentTab('integrations')}>
+                       <Icon type='integration' size={14} /> Integrations
                      </li>
                   </ul>
                </div>
@@ -131,8 +131,14 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                {currentTab === 'notification' && settings && (
                   <NotificationSettings settings={settings} updateSettings={updateSettings} settingsError={settingsError} />
                )}
-               {currentTab === 'searchconsole' && settings && (
-                  <SearchConsoleSettings settings={settings} updateSettings={updateSettings} settingsError={settingsError} />
+               {currentTab === 'integrations' && settings && (
+                  <IntegrationSettings
+                  settings={settings}
+                  updateSettings={updateSettings}
+                  settingsError={settingsError}
+                  performUpdate={performUpdate}
+                  closeSettings={closeSettings}
+                   />
                )}
                <div className=' border-t-[1px] border-gray-200 p-2 px-3'>
                   <button

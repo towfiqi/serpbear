@@ -1,18 +1,18 @@
 type ToggleFieldProps = {
    label: string;
-   value: string;
+   value: boolean;
    onChange: (bool:boolean) => void ;
    classNames?: string;
 }
 
-const ToggleField = ({ label = '', value = '', onChange, classNames = '' }: ToggleFieldProps) => {
+const ToggleField = ({ label = '', value = false, onChange, classNames = '' }: ToggleFieldProps) => {
    return (
       <div className={`field--toggle w-full relative ${classNames}`}>
          <label className="relative inline-flex items-center cursor-pointer w-full justify-between">
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-300 w-56">{label}</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-300 w-auto">{label}</span>
             <input
             type="checkbox"
-            value={value}
+            value={value.toString()}
             checked={!!value}
             className="sr-only peer"
             onChange={() => onChange(!value)}

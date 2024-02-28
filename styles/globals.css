@@ -283,6 +283,24 @@ body {
    }
 }
 
+.idea_competiton{
+   color: #0000008c;
+}
+
+.idea_competiton--LOW span:last-child{
+   background-color: #ccf5ee;
+   color: #39a895;
+}
+.idea_competiton--MEDIUM span:last-child{
+   color: #6e5d1f;
+   background-color: #F6F0D8;
+}
+
+.idea_competiton--HIGH span:last-child{
+   color: #ae513c;
+   background-color: #f9ded7;
+}
+
 /* Disable LastPass Icon for Secret Field */
 [autocomplete="off"] + div[data-lastpass-icon-root="true"], [autocomplete="off"] + div[data-lastpass-infield="true"] {
    display: none;

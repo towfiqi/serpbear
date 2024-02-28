@@ -13,15 +13,19 @@ type DomainHeaderProps = {
    exportCsv:Function,
    scFilter?: string
    setScFilter?: Function
+   showIdeaUpdateModal?:Function
 }
 
-const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, domains, scFilter = 'thirtyDays', setScFilter }: DomainHeaderProps) => {
+const DomainHeader = (
+   { domain, showAddModal, showSettingsModal, exportCsv, domains, scFilter = 'thirtyDays', setScFilter, showIdeaUpdateModal }: DomainHeaderProps,
+) => {
    const router = useRouter();
    const [showOptions, setShowOptions] = useState<boolean>(false);
    const [ShowSCDates, setShowSCDates] = useState<boolean>(false);
    const { mutate: refreshMutate } = useRefreshKeywords(() => {});
    const isConsole = router.pathname === '/domain/console/[slug]';
    const isInsight = router.pathname === '/domain/insight/[slug]';
+   const isIdeas = router.pathname === '/domain/ideas/[slug]';
 
    const daysName = (dayKey:string) => dayKey.replace('three', '3').replace('seven', '7').replace('thirty', '30').replace('Days', ' Days');
    const buttonStyle = 'leading-6 inline-block px-2 py-2 text-gray-500 hover:text-gray-700';
@@ -45,8 +49,8 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
                />
             </div>
          </div>
-      <div className='flex w-full justify-between'>
-         <ul className=' flex items-end text-sm relative top-[2px]'>
+      <div className='flex w-full justify-between mt-4 lg:mt-0'>
+         <ul className=' max-w-[270px] overflow-auto flex items-end text-sm relative top-[2px] lg:max-w-none'>
             <li className={`${tabStyle} ${router.pathname === '/domain/[slug]' ? 'bg-white border border-b-0 font-semibold' : ''}`}>
                <Link href={`/domain/${domain.slug}`} passHref={true}>
                   <a className='px-4 py-2 inline-block'><Icon type="tracking" color='#999' classes='hidden lg:inline-block' />
@@ -70,8 +74,22 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
                   </a>
                </Link>
             </li>
+            <li className={`${tabStyle} ${router.pathname === '/domain/ideas/[slug]' ? 'bg-white border border-b-0 font-semibold' : ''}`}>
+               <Link href={`/domain/ideas/${domain.slug}`} passHref={true}>
+                  <a className='px-4 py-2 inline-block'><Icon type="adwords" size={13} classes='hidden lg:inline-block' />
+                     <span className='text-xs lg:text-sm lg:ml-2'>Ideas</span>
+                     <Icon
+                     type='help'
+                     size={14}
+                     color="#aaa"
+                     classes="ml-2 hidden lg:inline-block"
+                     title='Get Keyword Ideas for this domain from Google Adwords'
+                     />
+                  </a>
+               </Link>
+            </li>
          </ul>
-         <div className={'flex mt-3 mb-0 lg:mb-3'}>
+         <div className={'flex mb-0 lg:mb-1 lg:mt-3'}>
             {!isInsight && <button className={`${buttonStyle} lg:hidden`} onClick={() => setShowOptions(!showOptions)}>
                <Icon type='dots' size={20} />
             </button>
@@ -89,7 +107,7 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
                      <Icon type='download' size={20} /><i className={`${buttonLabelStyle}`}>Export as csv</i>
                   </button>
                )}
-               {!isConsole && !isInsight && (
+               {!isConsole && !isInsight && !isIdeas && (
                   <button
                   className={`domheader_action_button relative ${buttonStyle} lg:ml-3`}
                   aria-pressed="false"
@@ -105,10 +123,10 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
                   <i className={`${buttonLabelStyle}`}>Domain Settings</i>
                </button>
             </div>
-            {!isConsole && !isInsight && (
+            {!isConsole && !isInsight && !isIdeas && (
                <button
                data-testid="add_keyword"
-               className={'ml-2 inline-block px-4 py-2 text-blue-700 font-bold text-sm'}
+               className={'ml-2 inline-block text-blue-700 font-bold text-sm lg:px-4 lg:py-2'}
                onClick={() => showAddModal(true)}>
                   <span
                   className='text-center leading-4 mr-2 inline-block rounded-full w-7 h-7 pt-1 bg-blue-700 text-white font-bold text-lg'>+</span>
@@ -134,6 +152,18 @@ const DomainHeader = ({ domain, showAddModal, showSettingsModal, exportCsv, doma
                      </div>
                   )}
                </div>
+            )}
+            {isIdeas && (
+               <button
+               data-testid="load_ideas"
+               className={'ml-2 text-blue-700 font-bold text-sm flex items-center lg:px-4 lg:py-2'}
+               onClick={() => showIdeaUpdateModal && showIdeaUpdateModal()}>
+                  <span
+                  className='text-center leading-4 mr-2 inline-block rounded-full w-7 h-7 pt-1 bg-blue-700 text-white font-bold text-lg'>
+                     <Icon type='reload' size={12} />
+                  </span>
+                  <i className=' not-italic hidden lg:inline-block'>Load Ideas</i>
+               </button>
             )}
          </div>
       </div>

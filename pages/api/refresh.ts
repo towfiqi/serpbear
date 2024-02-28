@@ -6,9 +6,20 @@ import refreshAndUpdateKeywords from '../../utils/refresh';
 import { getAppSettings } from './settings';
 import verifyUser from '../../utils/verifyUser';
 import parseKeywords from '../../utils/parseKeywords';
+import { scrapeKeywordFromGoogle } from '../../utils/scraper';
 
 type KeywordsRefreshRes = {
    keywords?: KeywordType[]
+   error?: string|null,
+}
+
+type KeywordSearchResultRes = {
+   searchResult?: {
+      results: { title: string, url: string, position: number }[],
+      keyword: string,
+      position: number,
+      country: string,
+   },
    error?: string|null,
 }
 
@@ -17,6 +28,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    const authorized = verifyUser(req, res);
    if (authorized !== 'authorized') {
       return res.status(401).json({ error: authorized });
+   }
+   if (req.method === 'GET') {
+      return getKeywordSearchResults(req, res);
    }
    if (req.method === 'POST') {
       return refresTheKeywords(req, res);
@@ -57,6 +71,49 @@ const refresTheKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywo
       }
 
       return res.status(200).json({ keywords });
+   } catch (error) {
+      console.log('ERROR refresThehKeywords: ', error);
+      return res.status(400).json({ error: 'Error refreshing keywords!' });
+   }
+};
+
+const getKeywordSearchResults = async (req: NextApiRequest, res: NextApiResponse<KeywordSearchResultRes>) => {
+   if (!req.query.keyword || !req.query.country || !req.query.device) {
+      return res.status(400).json({ error: 'A Valid keyword, Country Code, and device is Required!' });
+   }
+   try {
+      const settings = await getAppSettings();
+      if (!settings || (settings && settings.scraper_type === 'never')) {
+         return res.status(400).json({ error: 'Scraper has not been set up yet.' });
+      }
+      const dummyKeyword:KeywordType = {
+         ID: 99999999999999,
+         keyword: req.query.keyword as string,
+         device: 'desktop',
+         country: req.query.country as string,
+         domain: '',
+         lastUpdated: '',
+         added: '',
+         position: 111,
+         sticky: false,
+         history: {},
+         lastResult: [],
+         url: '',
+         tags: [],
+         updating: false,
+         lastUpdateError: false,
+      };
+      const scrapeResult = await scrapeKeywordFromGoogle(dummyKeyword, settings);
+      if (scrapeResult && !scrapeResult.error) {
+         const searchResult = {
+            results: scrapeResult.result,
+            keyword: scrapeResult.keyword,
+            position: scrapeResult.position !== 111 ? scrapeResult.position : 0,
+            country: req.query.country as string,
+         };
+         return res.status(200).json({ error: '', searchResult });
+      }
+      return res.status(400).json({ error: 'Error Scraping Search Results for the given keyword!' });
    } catch (error) {
       console.log('ERROR refresThehKeywords: ', error);
       return res.status(400).json({ error: 'Error refreshing keywords!' });

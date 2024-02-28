@@ -12,6 +12,7 @@ type SelectFieldProps = {
    label?: string,
    multiple?: boolean,
    updateField: Function,
+   fullWidth?: boolean,
    minWidth?: number,
    maxHeight?: number|string,
    rounded?: string,
@@ -27,6 +28,7 @@ const SelectField = (props: SelectFieldProps) => {
       updateField,
       minWidth = 180,
       maxHeight = 96,
+      fullWidth = false,
       rounded = 'rounded-3xl',
       flags = false,
       label = '',
@@ -71,8 +73,8 @@ const SelectField = (props: SelectFieldProps) => {
        <div className="select font-semibold text-gray-500 relative flex justify-between items-center">
          {label && <label className='mb-2 font-semibold inline-block text-sm text-gray-700 capitalize'>{label}</label>}
          <div
-         className={`selected flex border ${rounded} p-1.5 px-4 cursor-pointer select-none w-[210px] min-w-[${minWidth}px] 
-         ${showOptions ? 'border-indigo-200' : ''}`}
+         className={`selected flex border ${rounded} p-1.5 px-4 cursor-pointer select-none ${fullWidth ? 'w-full' : 'w-[210px]'} 
+         min-w-[${minWidth}px] ${showOptions ? 'border-indigo-200' : ''}`}
          onClick={() => setShowOptions(!showOptions)}>
             <span className={'w-full inline-block truncate mr-2 capitalize'}>
                {selected.length > 0 ? (selectedLabels.slice(0, 2).join(', ')) : defaultLabel}
@@ -83,7 +85,7 @@ const SelectField = (props: SelectFieldProps) => {
          </div>
          {showOptions && (
             <div
-            className={`select_list mt-1 border absolute min-w-[${minWidth}px] top-[30px] right-0 w-[210px]
+            className={`select_list mt-1 border absolute min-w-[${minWidth}px] top-[30px] right-0 ${fullWidth ? 'w-full' : 'w-[210px]'}
             ${rounded === 'rounded-3xl' ? 'rounded-lg' : rounded} max-h-${maxHeight} bg-white z-50 overflow-y-auto styled-scrollbar`}>
                {options.length > 20 && (
                   <div className=''>

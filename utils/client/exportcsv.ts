@@ -31,6 +31,23 @@ const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scD
       });
    }
 
+   downloadCSV(csvHeader, csvBody, fileName);
+};
+
+export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName:string) => {
+   const csvHeader = 'Keyword,Volume,Competition,CompetitionScore,Country,Added\r\n';
+   let csvBody = '';
+   const fileName = `${domainName}-keyword_ideas.csv`;
+   keywords.forEach((keywordData) => {
+      const { keyword, competition, country, domain, competitionIndex, avgMonthlySearches, added, updated, position } = keywordData;
+      // eslint-disable-next-line max-len
+      const addedDate = new Intl.DateTimeFormat('en-US').format(new Date(added));
+      csvBody += `${keyword}, ${avgMonthlySearches}, ${competition}, ${competitionIndex}, ${countries[country][0]}, ${addedDate}\r\n`;
+   });
+   downloadCSV(csvHeader, csvBody, fileName);
+};
+
+const downloadCSV = (csvHeader:string, csvBody:string, fileName:string) => {
    const blob = new Blob([csvHeader + csvBody], { type: 'text/csv;charset=utf-8;' });
    const url = URL.createObjectURL(blob);
    const link = document.createElement('a');

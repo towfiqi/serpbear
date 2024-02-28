@@ -46,7 +46,22 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
       const smtp_password = settings.smtp_password ? cryptr.encrypt(settings.smtp_password.trim()) : '';
       const search_console_client_email = settings.search_console_client_email ? cryptr.encrypt(settings.search_console_client_email.trim()) : '';
       const search_console_private_key = settings.search_console_private_key ? cryptr.encrypt(settings.search_console_private_key.trim()) : '';
-      const securedSettings = { ...settings, scaping_api, smtp_password, search_console_client_email, search_console_private_key };
+      const adwords_client_id = settings.adwords_client_id ? cryptr.encrypt(settings.adwords_client_id.trim()) : '';
+      const adwords_client_secret = settings.adwords_client_secret ? cryptr.encrypt(settings.adwords_client_secret.trim()) : '';
+      const adwords_developer_token = settings.adwords_developer_token ? cryptr.encrypt(settings.adwords_developer_token.trim()) : '';
+      const adwords_account_id = settings.adwords_account_id ? cryptr.encrypt(settings.adwords_account_id.trim()) : '';
+
+      const securedSettings = {
+         ...settings,
+         scaping_api,
+         smtp_password,
+         search_console_client_email,
+         search_console_private_key,
+         adwords_client_id,
+         adwords_client_secret,
+         adwords_developer_token,
+         adwords_account_id,
+      };
 
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(securedSettings), { encoding: 'utf-8' });
       return res.status(200).json({ settings });
@@ -71,6 +86,11 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          const smtp_password = settings.smtp_password ? cryptr.decrypt(settings.smtp_password) : '';
          const search_console_client_email = settings.search_console_client_email ? cryptr.decrypt(settings.search_console_client_email) : '';
          const search_console_private_key = settings.search_console_private_key ? cryptr.decrypt(settings.search_console_private_key) : '';
+         const adwords_client_id = settings.adwords_client_id ? cryptr.decrypt(settings.adwords_client_id) : '';
+         const adwords_client_secret = settings.adwords_client_secret ? cryptr.decrypt(settings.adwords_client_secret) : '';
+         const adwords_developer_token = settings.adwords_developer_token ? cryptr.decrypt(settings.adwords_developer_token) : '';
+         const adwords_account_id = settings.adwords_account_id ? cryptr.decrypt(settings.adwords_account_id) : '';
+
          decryptedSettings = {
             ...settings,
             scaping_api,
@@ -82,6 +102,10 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id, allowsCity: !!scraper.allowsCity })),
             failed_queue: failedQueue,
             screenshot_key: screenshotAPIKey,
+            adwords_client_id,
+            adwords_client_secret,
+            adwords_developer_token,
+            adwords_account_id,
          };
       } catch (error) {
          console.log('Error Decrypting Settings API Keys!');

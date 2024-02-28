@@ -178,3 +178,16 @@ export function useFetchSingleKeyword(keywordID:number) {
       },
    });
 }
+
+export async function fetchSearchResults(router:NextRouter, keywordData: Record<string, string>) {
+   const { keyword, country, device } = keywordData;
+   const res = await fetch(`${window.location.origin}/api/refresh?keyword=${keyword}&country=${country}&device=${device}`, { method: 'GET' });
+   if (res.status >= 400 && res.status < 600) {
+      if (res.status === 401) {
+         console.log('Unauthorized!!');
+         router.push('/login');
+      }
+      throw new Error('Bad response from server');
+   }
+   return res.json();
+}

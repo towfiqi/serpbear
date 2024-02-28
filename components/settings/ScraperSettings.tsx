@@ -57,13 +57,15 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
             />
          </div>
          {settings.scraper_type !== 'none' && settings.scraper_type !== 'proxy' && (
-            <SecretField
-            label='Scraper API Key or Token'
-            placeholder={'API Key/Token'}
-            value={settings?.scaping_api || ''}
-            hasError={settingsError?.type === 'no_api_key'}
-            onChange={(value:string) => updateSettings('scaping_api', value)}
-            />
+            <div className="settings__section__secret mb-5">
+               <SecretField
+               label='Scraper API Key or Token'
+               placeholder={'API Key/Token'}
+               value={settings?.scaping_api || ''}
+               hasError={settingsError?.type === 'no_api_key'}
+               onChange={(value:string) => updateSettings('scaping_api', value)}
+               />
+            </div>
          )}
          {settings.scraper_type === 'proxy' && (
             <div className="settings__section__input mb-5">
@@ -111,7 +113,7 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
             <div className="settings__section__input mb-5">
                <ToggleField
                label='Auto Retry Failed Keyword Scrape'
-               value={settings?.scrape_retry ? 'true' : '' }
+               value={!!settings?.scrape_retry }
                onChange={(val) => updateSettings('scrape_retry', val)}
                />
             </div>
