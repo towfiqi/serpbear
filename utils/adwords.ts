@@ -101,7 +101,7 @@ export const getAdwordsAccessToken = async (credentials:AdwordsCredentials) => {
       console.log('[Error] Getting Google Account Access Token:', error);
       return '';
    }
- };
+};
 
 /**
  * The function `getAdwordsKeywordIdeas` retrieves keyword ideas from Google AdWords API based on
@@ -225,24 +225,25 @@ const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], opt
          const { competition, competitionIndex = '0', avgMonthlySearches = '0', monthlySearchVolumes = [] } = keywordIdeaMetrics || {};
          if (keywordIdeaMetrics?.avgMonthlySearches) {
             const searchVolumeTrend: Record<string, string> = {};
-
+            const searchVolume = parseInt(avgMonthlySearches, 10);
             monthlySearchVolumes.forEach((item) => {
                searchVolumeTrend[`${item.month}-${item.year}`] = item.monthlySearches;
             });
-
-            keywords.push({
-               uid: `${country.toLowerCase()}:${text.replaceAll(' ', '-')}`,
-               keyword: text,
-               competition,
-               competitionIndex: competitionIndex !== null ? parseInt(competitionIndex, 10) : 0,
-               monthlySearchVolumes: searchVolumeTrend,
-               avgMonthlySearches: parseInt(avgMonthlySearches, 10),
-               added: new Date().getTime(),
-               updated: new Date().getTime(),
-               country,
-               domain,
-               position: 999,
-            });
+            if (searchVolume > 100) {
+               keywords.push({
+                  uid: `${country.toLowerCase()}:${text.replaceAll(' ', '-')}`,
+                  keyword: text,
+                  competition,
+                  competitionIndex: competitionIndex !== null ? parseInt(competitionIndex, 10) : 0,
+                  monthlySearchVolumes: searchVolumeTrend,
+                  avgMonthlySearches: searchVolume,
+                  added: new Date().getTime(),
+                  updated: new Date().getTime(),
+                  country,
+                  domain,
+                  position: 999,
+               });
+            }
          }
       });
    }

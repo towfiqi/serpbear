@@ -26,9 +26,9 @@ export function useTestAdwordsIntegration(onSuccess?: Function) {
    });
 }
 
-export async function fetchAdwordsKeywordIdeas(router: NextRouter) {
+export async function fetchAdwordsKeywordIdeas(router: NextRouter, domainSlug: string) {
    // if (!router.query.slug) { throw new Error('Invalid Domain Name'); }
-   const res = await fetch(`${window.location.origin}/api/ideas?domain=${router.query.slug}`, { method: 'GET' });
+   const res = await fetch(`${window.location.origin}/api/ideas?domain=${domainSlug}`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
          console.log('Unauthorized!!');
@@ -40,15 +40,15 @@ export async function fetchAdwordsKeywordIdeas(router: NextRouter) {
 }
 
 export function useFetchKeywordIdeas(router: NextRouter, adwordsConnected = false) {
-   return useQuery(
-            `keywordIdeas-${router.query.slug}`,
-            () => router.query.slug && fetchAdwordsKeywordIdeas(router),
-               { enabled: adwordsConnected, retry: false },
-            );
+   const isResearch = router.pathname === '/research';
+   const domainSlug = isResearch ? 'research' : (router.query.slug as string);
+   const enabled = !!(adwordsConnected && domainSlug);
+   return useQuery(`keywordIdeas-${domainSlug}`, () => domainSlug && fetchAdwordsKeywordIdeas(router, domainSlug), { enabled, retry: false });
 }
 
 export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
    const queryClient = useQueryClient();
+   const domainSlug = router.pathname === '/research' ? 'research' : router.query.slug as string;
    return useMutation(async (data:Record<string, any>) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ ...data }) };
@@ -64,7 +64,7 @@ export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
          if (onSuccess) {
             onSuccess(false);
          }
-         queryClient.invalidateQueries([`keywordIdeas-${router.query.slug}`]);
+         queryClient.invalidateQueries([`keywordIdeas-${domainSlug}`]);
       },
       onError: (error) => {
          console.log('Error Loading Keyword Ideas!!!', error);
@@ -75,6 +75,7 @@ export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
 
 export function useMutateFavKeywordIdeas(router:NextRouter, onSuccess?: Function) {
    const queryClient = useQueryClient();
+   const domainSlug = router.pathname === '/research' ? 'research' : router.query.slug as string;
    return useMutation(async (payload:Record<string, any>) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify({ ...payload }) };
@@ -90,7 +91,7 @@ export function useMutateFavKeywordIdeas(router:NextRouter, onSuccess?: Function
          if (onSuccess) {
             onSuccess(false);
          }
-         queryClient.invalidateQueries([`keywordIdeas-${router.query.slug}`]);
+         queryClient.invalidateQueries([`keywordIdeas-${domainSlug}`]);
       },
       onError: (error) => {
          console.log('Error Favorating Keywords', error);

@@ -37,7 +37,7 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
             <span className=' relative top-[3px] mr-1'><Icon type="logo" size={24} color="#364AFF" /></span> SerpBear
             <button className='px-3 py-1 font-bold text-blue-700  lg:hidden ml-3 text-lg' onClick={() => showAddModal()}>+</button>
          </h3>
-         {!isDomainsPage && (
+         {!isDomainsPage && router.asPath !== '/research' && (
             <Link href={'/domains'} passHref={true}>
                <a className=' right-14 top-2 px-2 py-1 cursor-pointer bg-[#ecf2ff] hover:bg-indigo-100 transition-all
                absolute lg:top-3 lg:right-auto lg:left-8 lg:px-3 lg:py-2 rounded-full'>
@@ -52,14 +52,28 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
             <ul
             className={`text-sm font-semibold text-gray-500 absolute mt-[-10px] right-3 bg-white 
             border border-gray-200 lg:mt-2 lg:relative lg:block lg:border-0 lg:bg-transparent ${showMobileMenu ? 'block' : 'hidden'}`}>
-               <li className='block lg:inline-block lg:ml-5'>
-                  <a className='block px-3 py-2 cursor-pointer' href='https://docs.serpbear.com/' target="_blank" rel='noreferrer'>
-                     <Icon type="question" color={'#888'} size={14} /> Help
-                  </a>
+               <li className={`block lg:inline-block lg:ml-5 ${router.asPath === '/domains' ? ' text-blue-700' : ''}`}>
+                  <Link href={'/domains'} passHref={true}>
+                     <a className='block px-3 py-2 cursor-pointer'>
+                        <Icon type="domains" color={router.asPath === '/domains' ? '#1d4ed8' : '#888'} size={14} /> Domains
+                     </a>
+                  </Link>
+               </li>
+               <li className={`block lg:inline-block lg:ml-5 ${router.asPath === '/research' ? ' text-blue-700' : ''}`}>
+                  <Link href={'/research'} passHref={true}>
+                     <a className='block px-3 py-2 cursor-pointer'>
+                        <Icon type="research" color={router.asPath === '/research' ? '#1d4ed8' : '#888'} size={14} /> Research
+                     </a>
+                  </Link>
                </li>
                <li className='block lg:inline-block lg:ml-5'>
                   <a className='block px-3 py-2 cursor-pointer' onClick={() => showSettings()}>
                      <Icon type="settings-alt" color={'#888'} size={14} /> Settings
+                  </a>
+               </li>
+               <li className='block lg:inline-block lg:ml-5'>
+                  <a className='block px-3 py-2 cursor-pointer' href='https://docs.serpbear.com/' target="_blank" rel='noreferrer'>
+                     <Icon type="question" color={'#888'} size={14} /> Help
                   </a>
                </li>
                <li className='block lg:inline-block lg:ml-5'>

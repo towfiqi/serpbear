@@ -7,6 +7,7 @@ import countries from '../countries';
    * @returns {void}
    */
 const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scDataDuration = 'lastThreeDays') => {
+   if (!keywords || (keywords && Array.isArray(keywords) && keywords.length === 0)) { return; }
    const isSCKeywords = !!(keywords && keywords[0] && keywords[0].uid);
    let csvHeader = 'ID,Keyword,Position,URL,Country,Device,Updated,Added,Tags\r\n';
    let csvBody = '';
@@ -34,7 +35,14 @@ const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scD
    downloadCSV(csvHeader, csvBody, fileName);
 };
 
+/**
+* Generates CSV File form the given keyword Ideas, and automatically downloads it.
+* @param {IdeaKeyword[]}  keywords - The keyword Ideas to export
+* @param {string} domainName - The domain name.
+* @returns {void}
+*/
 export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName:string) => {
+   if (!keywords || (keywords && Array.isArray(keywords) && keywords.length === 0)) { return; }
    const csvHeader = 'Keyword,Volume,Competition,CompetitionScore,Country,Added\r\n';
    let csvBody = '';
    const fileName = `${domainName}-keyword_ideas.csv`;
@@ -47,6 +55,12 @@ export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName:string) =
    downloadCSV(csvHeader, csvBody, fileName);
 };
 
+/**
+ * generates a CSV file with a specified header and body content and automatically downloads it.
+ * @param {string} csvHeader - The `csvHeader` file header. A comma speperated csv header.
+ * @param {string} csvBody - The content of the csv file.
+ * @param {string} fileName - The file Name for the downlaoded csv file.
+ */
 const downloadCSV = (csvHeader:string, csvBody:string, fileName:string) => {
    const blob = new Blob([csvHeader + csvBody], { type: 'text/csv;charset=utf-8;' });
    const url = URL.createObjectURL(blob);

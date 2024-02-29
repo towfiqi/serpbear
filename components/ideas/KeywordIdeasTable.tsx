@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useMemo } from 'react';
 import { Toaster } from 'react-hot-toast';
+import { useQuery } from 'react-query';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import { useAddKeywords } from '../../services/keywords';
 import Icon from '../common/Icon';
@@ -11,6 +12,8 @@ import { IdeasSortKeywords, IdeasfilterKeywords } from '../../utils/client/Ideas
 import IdeasFilters from './IdeasFilter';
 import { useMutateFavKeywordIdeas } from '../../services/adwords';
 import IdeaDetails from './IdeaDetails';
+import { fetchDomains } from '../../services/domains';
+import SelectField from '../common/SelectField';
 
 type IdeasKeywordsTableProps = {
    domain: DomainType | null,
@@ -33,9 +36,15 @@ const IdeasKeywordsTable = ({
    const [sortBy, setSortBy] = useState<string>('imp_desc');
    const [listHeight, setListHeight] = useState(500);
    const [addKeywordDevice, setAddKeywordDevice] = useState<'desktop'|'mobile'>('desktop');
+   const [addKeywordDomain, setAddKeywordDomain] = useState('');
    const { mutate: addKeywords } = useAddKeywords(() => { if (domain && domain.slug) router.push(`/domain/${domain.slug}`); });
    const { mutate: faveKeyword, isLoading: isFaving } = useMutateFavKeywordIdeas(router);
    const [isMobile] = useIsMobile();
+   const isResearchPage = router.pathname === '/research';
+
+   const { data: domainsData } = useQuery('domains', () => fetchDomains(router, false), { enabled: selectedKeywords.length > 0, retry: false });
+   const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
+
    useWindowResize(() => setListHeight(window.innerHeight - (isMobile ? 200 : 400)));
 
    const finalKeywords: IdeaKeyword[] = useMemo(() => {
@@ -78,7 +87,7 @@ const IdeasKeywordsTable = ({
 
    const favoriteKeyword = (keywordID: string) => {
       if (!isFaving) {
-         faveKeyword({ keywordID, domain: domain?.slug });
+         faveKeyword({ keywordID, domain: isResearchPage ? 'research' : domain?.slug });
       }
    };
 
@@ -87,7 +96,13 @@ const IdeasKeywordsTable = ({
       keywords.forEach((kitem:IdeaKeyword) => {
          if (selectedKeywords.includes(kitem.uid)) {
             const { keyword, country } = kitem;
-            selectedkeywords.push({ keyword, device: addKeywordDevice, country, domain: domain?.domain || '', tags: '' });
+            selectedkeywords.push({
+               keyword,
+               device: addKeywordDevice,
+               country,
+               domain: isResearchPage ? addKeywordDomain : (domain?.domain || ''),
+               tags: '',
+            });
          }
       });
       addKeywords(selectedkeywords);
@@ -118,7 +133,19 @@ const IdeasKeywordsTable = ({
          <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-8'>
             {selectedKeywords.length > 0 && (
                <div className='font-semibold text-sm py-4 px-8 text-gray-500 '>
-                  <div className='inline-block'>Add Keywords to Tracker</div>
+                  <div className={`inline-block ${isResearchPage ? ' mr-2' : ''}`}>Add Keywords to Tracker</div>
+                  {isResearchPage && (
+                     <SelectField
+                     selected={[]}
+                     options={theDomains.map((d) => ({ label: d.domain, value: d.domain }))}
+                     defaultLabel={'Select a Domain'}
+                     updateField={(updated:string[]) => updated[0] && setAddKeywordDomain(updated[0])}
+                     emptyMsg="No Domains Found"
+                     multiple={false}
+                     inline={true}
+                     rounded='rounded'
+                     />
+                  )}
                   <div className='inline-block ml-2'>
                      <button
                      className={`inline-block px-2 py-1 rounded-s 

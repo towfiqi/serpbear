@@ -87,9 +87,10 @@ const favoriteKeywords = async (req: NextApiRequest, res: NextApiResponse<keywor
 
    try {
       const keywordsDatabase = await getLocalKeywordIdeas(domain);
-      if (keywordsDatabase && keywordsDatabase.keywords && keywordsDatabase.favorites) {
+      if (keywordsDatabase && keywordsDatabase.keywords) {
          const theKeyword = keywordsDatabase.keywords.find((kw) => kw.uid === keywordID);
-         const newFavorites = [...keywordsDatabase.favorites];
+         const existingKeywords = keywordsDatabase.favorites || [];
+         const newFavorites = [...existingKeywords];
          const existingKeywordIndex = newFavorites.findIndex((kw) => kw.uid === keywordID);
          if (existingKeywordIndex > -1) {
             newFavorites.splice(existingKeywordIndex, 1);
@@ -98,7 +99,7 @@ const favoriteKeywords = async (req: NextApiRequest, res: NextApiResponse<keywor
          const updated = await updateLocalKeywordIdeas(domain, { favorites: newFavorites });
 
          if (updated) {
-            return res.status(200).json({ keywords: keywordsDatabase.favorites, error: '' });
+            return res.status(200).json({ keywords: newFavorites, error: '' });
          }
       }
 

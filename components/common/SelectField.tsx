@@ -17,6 +17,7 @@ type SelectFieldProps = {
    maxHeight?: number|string,
    rounded?: string,
    flags?: boolean,
+   inline?: boolean,
    emptyMsg?: string
 }
 const SelectField = (props: SelectFieldProps) => {
@@ -30,6 +31,7 @@ const SelectField = (props: SelectFieldProps) => {
       maxHeight = 96,
       fullWidth = false,
       rounded = 'rounded-3xl',
+      inline = false,
       flags = false,
       label = '',
       emptyMsg = '' } = props;
@@ -70,7 +72,7 @@ const SelectField = (props: SelectFieldProps) => {
    };
 
    return (
-       <div className="select font-semibold text-gray-500 relative flex justify-between items-center">
+       <div className={`select font-semibold text-gray-500 relative ${inline ? 'inline-block' : 'flex'} justify-between items-center"`}>
          {label && <label className='mb-2 font-semibold inline-block text-sm text-gray-700 capitalize'>{label}</label>}
          <div
          className={`selected flex border ${rounded} p-1.5 px-4 cursor-pointer select-none ${fullWidth ? 'w-full' : 'w-[210px]'} 
@@ -104,7 +106,7 @@ const SelectField = (props: SelectFieldProps) => {
                      return (
                         <li
                         key={opt.value}
-                        className={`select-none cursor-pointer px-3 py-2 hover:bg-[#FCFCFF] capitalize
+                        className={`select-none cursor-pointer px-3 py-2 hover:bg-[#FCFCFF] capitalize text-ellipsis overflow-hidden
                         ${itemActive ? ' bg-indigo-50 text-indigo-600 hover:bg-indigo-50' : ''} `}
                         onClick={() => selectItem(opt)}
                         >
