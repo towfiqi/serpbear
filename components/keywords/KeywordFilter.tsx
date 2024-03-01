@@ -76,6 +76,8 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       { value: 'date_desc', label: 'Oldest' },
       { value: 'alpha_asc', label: 'Alphabetically(A-Z)' },
       { value: 'alpha_desc', label: 'Alphabetically(Z-A)' },
+      { value: 'vol_asc', label: 'Lowest Search Volume' },
+      { value: 'vol_desc', label: 'Highest Search Volume' },
    ];
    if (integratedConsole) {
       sortOptionChoices.push({ value: 'imp_desc', label: `Most Viewed${isConsole ? ' (Default)' : ''}` });
@@ -170,8 +172,8 @@ const KeywordFilters = (props: KeywordFilterProps) => {
                   {sortOptions && (
                      <ul
                      data-testid="sort_options"
-                     className='sort_options mt-2 border absolute min-w-[0] right-0 rounded-lg
-                     max-h-96 bg-white z-[9999] w-44 overflow-y-auto styled-scrollbar'>
+                     className='sort_options mt-2 border absolute w-48 min-w-[0] right-0 rounded-lg
+                     max-h-96 bg-white z-[9999] overflow-y-auto styled-scrollbar'>
                         {sortOptionChoices.map((sortOption) => {
                            return <li
                                     key={sortOption.value}

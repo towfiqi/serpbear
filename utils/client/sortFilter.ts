@@ -28,6 +28,12 @@ export const sortKeywords = (theKeywords:KeywordType[], sortBy:string, scDataTyp
       case 'alpha_desc':
             sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => (a.keyword > b.keyword ? 1 : -1));
          break;
+      case 'vol_asc':
+            sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => (b.volume - a.volume));
+            break;
+      case 'vol_desc':
+            sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => (a.volume - b.volume));
+            break;
       case 'imp_desc':
             if (scDataType) {
                   sortedItems = theKeywords.sort((a: KeywordType, b: KeywordType) => {

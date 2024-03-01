@@ -22,6 +22,7 @@ export const dummyKeywords = [
        lastUpdated: '2022-11-15T10:49:53.113',
        added: '2022-11-11T10:01:06.951',
        position: 19,
+       volume: 10000,
        history: {
            '2022-11-11': 21,
            '2022-11-12': 24,
@@ -45,6 +46,7 @@ export const dummyKeywords = [
        lastUpdated: '2022-11-15T10:49:53.119',
        added: '2022-11-15T10:01:06.951',
        position: 29,
+       volume: 1200,
        history: {
            '2022-11-11': 33,
            '2022-11-12': 34,

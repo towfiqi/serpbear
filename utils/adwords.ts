@@ -1,6 +1,7 @@
 import { readFile, writeFile } from 'fs/promises';
 import Cryptr from 'cryptr';
 import TTLCache from '@isaacs/ttlcache';
+import { setTimeout as sleep } from 'timers/promises';
 import Keyword from '../database/models/keyword';
 import parseKeywords from './parseKeywords';
 import countries from './countries';
@@ -8,15 +9,17 @@ import { readLocalSCData } from './searchConsole';
 
 const memoryCache = new TTLCache({ max: 10000 });
 
+type keywordIdeasMetrics = {
+   competition: IdeaKeyword['competition'],
+   monthlySearchVolumes: {month : string, year : string, monthlySearches : string}[],
+   avgMonthlySearches: string,
+   competitionIndex: string,
+   lowTopOfPageBidMicros: string,
+   highTopOfPageBidMicros: string
+ }
+
 type keywordIdeasResponseItem = {
-   keywordIdeaMetrics: {
-     competition: IdeaKeyword['competition'],
-     monthlySearchVolumes: {month : string, year : string, monthlySearches : string}[],
-     avgMonthlySearches: string,
-     competitionIndex: string,
-     lowTopOfPageBidMicros: string,
-     highTopOfPageBidMicros: string
-   },
+   keywordIdeaMetrics: keywordIdeasMetrics,
    text: string,
    keywordAnnotations: Object
 };
@@ -248,6 +251,130 @@ const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], opt
       });
    }
    return keywords.sort((a: IdeaKeyword, b: IdeaKeyword) => (b.avgMonthlySearches > a.avgMonthlySearches ? 1 : -1));
+};
+
+/**
+ * Retrieves keyword search volumes from Google Adwords API based on provided keywords and their countries.
+ * @param {KeywordType[]} keywords - The keywords that you want to get the search volume data for.
+ * @returns returns a Promise that resolves to an object with a `volumes` and error `proprties`.
+ *  The `volumes` propery which outputs `false` if the request fails and outputs the volume data in `{[keywordID]: volume}` object if succeeds.
+ *  The `error` porperty that outputs the error message if any.
+ */
+export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error?: string, volumes: false | Record<number, number>}> => {
+   const credentials = await getAdwordsCredentials();
+   if (!credentials) { return { error: 'Cannot Load Adwords Credentials', volumes: false }; }
+   const { client_id, client_secret, developer_token, account_id } = credentials;
+   if (!client_id || !client_secret || !developer_token || !account_id) {
+      return { error: 'Adwords Not Integrated Properly', volumes: false };
+   }
+
+   // Generate Access Token
+   let accessToken = '';
+   const cachedAccessToken:string|false|undefined = memoryCache.get('adwords_token');
+   if (cachedAccessToken && !test) {
+      accessToken = cachedAccessToken;
+   } else {
+      accessToken = await getAdwordsAccessToken(credentials);
+      memoryCache.delete('adwords_token');
+      memoryCache.set('adwords_token', accessToken, { ttl: 3300000 });
+   }
+   const fetchedKeywords:Record<number, number> = {};
+
+   if (accessToken) {
+      // Group keywords based on their country.
+      const keywordRequests: Record<string, KeywordType[]> = {};
+      keywords.forEach((kw) => {
+         const kwCountry = kw.country;
+         if (keywordRequests[kwCountry]) {
+            keywordRequests[kwCountry].push(kw);
+         } else {
+            keywordRequests[kwCountry] = [kw];
+         }
+      });
+
+      // Send Requests to adwords based on grouped countries.
+      // Since adwords does not allow sending country data for each keyword we are making requests for.
+      for (const country in keywordRequests) {
+         if (Object.hasOwn(keywordRequests, country) && keywordRequests[country].length > 0) {
+            try {
+               // API: https://developers.google.com/google-ads/api/rest/reference/rest/v16/customers/generateKeywordHistoricalMetrics
+               const customerID = account_id.replaceAll('-', '');
+               const geoTargetConstants = countries[country][3]; // '2840';
+               const reqKeywords = keywordRequests[country].map((kw) => kw.keyword);
+               const reqPayload: Record<string, any> = {
+                  keywords: [...new Set(reqKeywords)],
+                  geoTargetConstants: `geoTargetConstants/${geoTargetConstants}`,
+                  // language: `languageConstants/${language}`,
+               };
+               const resp = await fetch(`https://googleads.googleapis.com/v16/customers/${customerID}:generateKeywordHistoricalMetrics`, {
+                  method: 'POST',
+                  headers: {
+                     'Content-Type': 'application/json',
+                     'developer-token': developer_token,
+                     Authorization: `Bearer ${accessToken}`,
+                     'login-customer-id': customerID,
+                  },
+                  body: JSON.stringify(reqPayload),
+               });
+               const ideaData = await resp.json();
+
+               if (resp.status !== 200) {
+                  console.log('[ERROR] Adwords Volume Request Response :', ideaData?.error?.details[0]?.errors[0]?.message);
+                  console.log('Response from AdWords :', JSON.stringify(ideaData, null, 2));
+               }
+
+               if (ideaData?.results) {
+                  if (Array.isArray(ideaData.results) && ideaData.results.length > 0) {
+                     const volumeDataObj:Map<string, number> = new Map();
+                     ideaData.results.forEach((item:{ keywordMetrics: keywordIdeasMetrics, text: string }) => {
+                        const kwVol = item?.keywordMetrics?.avgMonthlySearches;
+                        volumeDataObj.set(`${country}:${item.text}`, kwVol ? parseInt(kwVol, 10) : 0);
+                     });
+
+                     keywordRequests[country].forEach((keyword) => {
+                        const keywordKey = `${keyword.country}:${keyword.keyword}`;
+                        if (volumeDataObj.has(keywordKey)) {
+                           const volume = volumeDataObj.get(keywordKey);
+                           if (volume !== undefined) {
+                              fetchedKeywords[keyword.ID] = volume;
+                           }
+                        }
+                     });
+                     // console.log('fetchedKeywords :', fetchedKeywords);
+                  }
+               }
+            } catch (error) {
+               console.log('[ERROR] Fetching Keyword Volume from Adwords :', error);
+            }
+            if (Object.keys(keywordRequests).length > 1) {
+               await sleep(7000);
+            }
+         }
+      }
+   }
+
+   return { volumes: fetchedKeywords };
+};
+
+/**
+ * Updates volume data for keywords in the Keywords database using async/await and error handling.
+ * @param {false | Record<number, number>} volumesData - The `volumesData` parameter can either be `false` or an object containing
+ * keyword IDs as keys and corresponding volume data as values.
+ * @returns returns a Promise that resolves to `true` if `volumesData` is not `false` else it returns `false`.
+ */
+export const updateKeywordsVolumeData = async (volumesData: false | Record<number, number>) => {
+   if (volumesData === false) { return false; }
+
+   Object.keys(volumesData).forEach(async (keywordID) => {
+      const keyID = parseInt(keywordID, 10);
+      const volumeData = volumesData && volumesData[keyID] ? volumesData[keyID] : 0;
+      try {
+         await Keyword.update({ volume: volumeData }, { where: { ID: keyID } });
+      } catch (error) {
+         console.log('');
+      }
+   });
+   return true;
 };
 
 /**

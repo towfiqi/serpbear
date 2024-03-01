@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTestAdwordsIntegration } from '../../services/adwords';
+import { useMutateKeywordsVolume, useTestAdwordsIntegration } from '../../services/adwords';
 import Icon from '../common/Icon';
 import SecretField from '../common/SecretField';
 
@@ -24,7 +24,10 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
    } = settings || {};
 
    const { mutate: testAdWordsIntegration, isLoading: isTesting } = useTestAdwordsIntegration();
+   const { mutate: getAllVolumeData, isLoading: isUpdatingVolume } = useMutateKeywordsVolume();
+
    const cloudProjectIntegrated = adwords_client_id && adwords_client_secret && adwords_refresh_token;
+   const hasAllCredentials = adwords_client_id && adwords_client_secret && adwords_refresh_token && adwords_developer_token && adwords_account_id;
 
    const udpateAndAuthenticate = () => {
       if (adwords_client_id && adwords_client_secret) {
@@ -40,8 +43,14 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
    };
 
    const testIntegration = () => {
-      if (adwords_client_id && adwords_client_secret && adwords_refresh_token && adwords_developer_token && adwords_account_id) {
+      if (hasAllCredentials) {
          testAdWordsIntegration({ developer_token: adwords_developer_token, account_id: adwords_account_id });
+      }
+   };
+
+   const updateVolumeData = () => {
+      if (hasAllCredentials) {
+         getAllVolumeData({ domain: 'all' });
       }
    };
 
@@ -98,12 +107,30 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
                <div className="settings__section__input mb-4 flex justify-between items-center w-full">
                   <button
                   className={`py-2 px-5 w-full text-sm font-semibold rounded bg-indigo-50 text-blue-700 border border-indigo-100
-                  ${adwords_client_id && adwords_client_secret && adwords_refresh_token ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}
+                  ${hasAllCredentials ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}
                   hover:bg-blue-700 hover:text-white transition`}
-                  title='Insert All the data in the above fields to Authenticate'
+                  title={hasAllCredentials ? '' : 'Insert All the data in the above fields to Test the Integration'}
                   onClick={testIntegration}>
                      {isTesting && <Icon type='loading' />}
                      <Icon type='adwords' size={14} /> Test AdWords Integration
+                  </button>
+               </div>
+            </div>
+         </div>
+         <div className='mt-4 mb-4 border-b border-gray-100 pt-4 pb-0 relative'>
+            {!hasAllCredentials && <div className=' absolute w-full h-full z-50' />}
+            <h4 className=' mb-3 font-semibold text-blue-700'>Update Keyword Volume Data</h4>
+            <div className={!hasAllCredentials ? 'opacity-40' : ''}>
+               <div className="settings__section__input mb-4 flex justify-between items-center w-full">
+                  <p>Update Volume data for all your Tracked Keywords.</p>
+               </div>
+               <div className="settings__section__input mb-4 flex justify-between items-center w-full">
+                  <button
+                  className={`py-2 px-5 w-full text-sm font-semibold rounded bg-indigo-50 text-blue-700 border border-indigo-100
+                  ${hasAllCredentials ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}
+                  hover:bg-blue-700 hover:text-white transition`}
+                  onClick={updateVolumeData}>
+                     <Icon type={isUpdatingVolume ? 'loading' : 'reload'} size={isUpdatingVolume ? 16 : 12} /> Update Keywords Volume
                   </button>
                </div>
             </div>

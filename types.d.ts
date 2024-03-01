@@ -32,6 +32,7 @@ type KeywordType = {
    lastUpdated: string,
    added: string,
    position: number,
+   volume: number,
    sticky: boolean,
    history: KeywordHistory,
    lastResult: KeywordLastResult[],

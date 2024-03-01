@@ -6,6 +6,7 @@ import countries from '../../utils/countries';
 import ChartSlim from '../common/ChartSlim';
 import KeywordPosition from './KeywordPosition';
 import { generateTheChartData } from '../../utils/client/generateChartData';
+import { formattedNum } from '../../utils/client/helpers';
 
 type KeywordProps = {
    keywordData: KeywordType,
@@ -40,7 +41,7 @@ const Keyword = (props: KeywordProps) => {
       scDataType = 'threeDays',
    } = props;
    const {
-      keyword, domain, ID, city, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = false,
+      keyword, domain, ID, city, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = false, volume,
    } = keywordData;
    const [showOptions, setShowOptions] = useState(false);
    const [showPositionError, setPositionError] = useState(false);
@@ -99,7 +100,7 @@ const Keyword = (props: KeywordProps) => {
                   <Icon type="check" size={10} />
             </button>
             <a
-            className='py-2 hover:text-blue-600 lg:flex lg:items-center lg:w-full lg:max-w-[200px]'
+            className={`py-2 hover:text-blue-600 lg:flex lg:items-center lg:w-full ${showSCData ? 'lg:max-w-[180px]' : 'lg:max-w-[240px]'}`}
             onClick={() => showKeywordDetails()}>
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />
                <span className=' text-ellipsis overflow-hidden whitespace-nowrap w-[calc(100%-30px)]'>{keyword}{city ? ` (${city})` : ''}</span>
@@ -131,11 +132,17 @@ const Keyword = (props: KeywordProps) => {
 
          {chartData.labels.length > 0 && (
             <div
-               className='hidden basis-32 grow-0 cursor-pointer lg:block'
+               className='hidden basis-20 grow-0 cursor-pointer lg:block'
                onClick={() => showKeywordDetails()}>
                <ChartSlim labels={chartData.labels} sreies={chartData.sreies} />
             </div>
          )}
+
+         <div
+         className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
+          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-24 lg:grow-0 lg:right-0 text-center`}>
+            {formattedNum(volume)}
+         </div>
 
          <div
          className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 text-gray-400 lg:m-0 max-w-[70px] 

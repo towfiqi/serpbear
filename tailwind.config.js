@@ -16,6 +16,7 @@ module.exports = {
       'w-[240px]',
       'min-w-[270px]',
       'min-w-[180px]',
+      'max-w-[180px]',
     ],
    theme: {
      extend: {},

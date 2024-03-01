@@ -93,6 +93,7 @@ const getKeywordSearchResults = async (req: NextApiRequest, res: NextApiResponse
          country: req.query.country as string,
          domain: '',
          lastUpdated: '',
+         volume: 0,
          added: '',
          position: 111,
          sticky: false,

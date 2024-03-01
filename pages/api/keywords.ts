@@ -7,6 +7,7 @@ import verifyUser from '../../utils/verifyUser';
 import parseKeywords from '../../utils/parseKeywords';
 import { integrateKeywordSCData, readLocalSCData } from '../../utils/searchConsole';
 import refreshAndUpdateKeywords from '../../utils/refresh';
+import { getKeywordsVolume, updateKeywordsVolumeData } from '../../utils/adwords';
 
 type KeywordsGetResponse = {
    keywords?: KeywordType[],
@@ -103,8 +104,20 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
          const newKeywords:Keyword[] = await Keyword.bulkCreate(keywordsToAdd);
          const formattedkeywords = newKeywords.map((el) => el.get({ plain: true }));
          const keywordsParsed: KeywordType[] = parseKeywords(formattedkeywords);
+
+         // Queue the SERP Scraping Process
          const settings = await getAppSettings();
-         refreshAndUpdateKeywords(newKeywords, settings); // Queue the SERP Scraping Process
+         refreshAndUpdateKeywords(newKeywords, settings);
+
+         // Update the Keyword Volume
+         const { adwords_account_id, adwords_client_id, adwords_client_secret, adwords_developer_token } = settings;
+         if (adwords_account_id && adwords_client_id && adwords_client_secret && adwords_developer_token) {
+            const keywordsVolumeData = await getKeywordsVolume(keywordsParsed);
+            if (keywordsVolumeData.volumes !== false) {
+               await updateKeywordsVolumeData(keywordsVolumeData.volumes);
+            }
+         }
+
          return res.status(201).json({ keywords: keywordsParsed });
       } catch (error) {
          console.log('[ERROR] Adding New Keywords ', error);

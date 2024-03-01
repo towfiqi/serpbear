@@ -99,3 +99,30 @@ export function useMutateFavKeywordIdeas(router:NextRouter, onSuccess?: Function
       },
    });
 }
+
+export function useMutateKeywordsVolume(onSuccess?: Function) {
+   return useMutation(async (data:Record<string, any>) => {
+      const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
+      const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ ...data }) };
+      const res = await fetch(`${window.location.origin}/api/volume`, fetchOpts);
+      if (res.status >= 400 && res.status < 600) {
+         const errorData = await res.json();
+         throw new Error(errorData?.error ? errorData.error : 'Bad response from server');
+      }
+      return res.json();
+   }, {
+      onSuccess: async (data) => {
+         toast('Keyword Volume Data Loaded Successfully! Reloading Page...', { icon: '✔️' });
+         if (onSuccess) {
+            onSuccess(false);
+         }
+        setTimeout(() => {
+         window.location.reload();
+        }, 3000);
+      },
+      onError: (error) => {
+         console.log('Error Loading Keyword Volume Data!!!', error);
+         toast('Error Loading Keyword Volume Data', { icon: '⚠️' });
+      },
+   });
+}
