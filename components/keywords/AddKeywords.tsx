@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import Icon from '../common/Icon';
 import Modal from '../common/Modal';
 import SelectField from '../common/SelectField';
@@ -24,10 +24,16 @@ type KeywordsInput = {
 
 const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCity = false }: AddKeywordsProps) => {
    const [error, setError] = useState<string>('');
+   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+   const inputRef = useRef(null);
    const defCountry = localStorage.getItem('default_country') || 'US';
    const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '' });
    const { mutate: addMutate, isLoading: isAdding } = useAddKeywords(() => closeModal(false));
-   const deviceTabStyle = 'cursor-pointer px-3 py-2 rounded mr-2';
+
+   const existingTags: string[] = useMemo(() => {
+      const allTags = keywords.reduce((acc: string[], keyword) => [...acc, ...keyword.tags], []).filter((t) => t && t.trim() !== '');
+      return [...new Set(allTags)];
+   }, [keywords]);
 
    const addKeywords = () => {
       if (newKeywordsData.keywords) {
@@ -49,6 +55,8 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
          setTimeout(() => { setError(''); }, 3000);
       }
    };
+
+   const deviceTabStyle = 'cursor-pointer px-3 py-2 rounded mr-2';
 
    return (
       <Modal closeModal={() => { closeModal(false); }} title={'Add New Keywords'} width="[420px]">
@@ -91,14 +99,37 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                   </ul>
                </div>
                <div className='relative'>
-                  {/* TODO:  Insert Existing Tags as Suggestions */}
                   <input
-                     className='w-full border rounded border-gray-200 py-2 px-4 pl-8 outline-none focus:border-indigo-300'
+                     className='w-full border rounded border-gray-200 py-2 px-4 pl-12 outline-none focus:border-indigo-300'
                      placeholder='Insert Tags (Optional)'
                      value={newKeywordsData.tags}
                      onChange={(e) => setNewKeywordsData({ ...newKeywordsData, tags: e.target.value })}
                   />
-                  <span className='absolute text-gray-400 top-2 left-2'><Icon type="tags" size={16} /></span>
+                  <span className='absolute text-gray-400 top-3 left-2 cursor-pointer' onClick={() => setShowTagSuggestions(!showTagSuggestions)}>
+                     <Icon type="tags" size={16} color={showTagSuggestions ? '#777' : '#aaa'} />
+                     <Icon type={showTagSuggestions ? 'caret-up' : 'caret-down'} size={14} color={showTagSuggestions ? '#666' : '#aaa'} />
+                  </span>
+                  {showTagSuggestions && (
+                     <ul className={`absolute z-50
+                     bg-white border border-t-0 border-gray-200 rounded rounded-t-none w-full`}>
+                        {existingTags.length > 0 && existingTags.map((tag, index) => {
+                           return newKeywordsData.tags.split(',').map((t) => t.trim()).includes(tag) === false && <li
+                                    className=' p-2 cursor-pointer hover:text-indigo-600 hover:bg-indigo-50 transition'
+                                    key={index}
+                                    onClick={() => {
+                                       const tagInput = newKeywordsData.tags;
+                                       // eslint-disable-next-line no-nested-ternary
+                                       const tagToInsert = tagInput + (tagInput.trim().slice(-1) === ',' ? '' : (tagInput.trim() ? ', ' : '')) + tag;
+                                       setNewKeywordsData({ ...newKeywordsData, tags: tagToInsert });
+                                       setShowTagSuggestions(false);
+                                       if (inputRef?.current) (inputRef.current as HTMLInputElement).focus();
+                                    }}>
+                                       <Icon type='tags' size={14} color='#bbb' /> {tag}
+                                    </li>;
+                        })}
+                        {existingTags.length === 0 && <p>No Existing Tags Found... </p>}
+                     </ul>
+                  )}
                </div>
                <div className='relative mt-2'>
                   <input

@@ -10,7 +10,7 @@ type keywordTagManagerProps = {
    allTags: string[]
 }
 
-const KeywordTagManager = ({ keyword, closeModal }: keywordTagManagerProps) => {
+const KeywordTagManager = ({ keyword, allTags = [], closeModal }: keywordTagManagerProps) => {
    const [showAddTag, setShowAddTag] = useState<boolean>(false);
    const { mutate: updateMutate } = useUpdateKeywordTags(() => { });
 
@@ -51,6 +51,7 @@ const KeywordTagManager = ({ keyword, closeModal }: keywordTagManagerProps) => {
          </div>
          {showAddTag && keyword && (
             <AddTags
+               existingTags={allTags}
                keywords={[keyword]}
                closeModal={() => setShowAddTag(false)}
                />

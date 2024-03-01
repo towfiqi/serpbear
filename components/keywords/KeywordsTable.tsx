@@ -59,7 +59,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    }, [keywords, device, sortBy, filterParams, scDataType]);
 
    const allDomainTags: string[] = useMemo(() => {
-      const allTags = keywords.reduce((acc: string[], keyword) => [...acc, ...keyword.tags], []);
+      const allTags = keywords.reduce((acc: string[], keyword) => [...acc, ...keyword.tags], []).filter((t) => t && t.trim() !== '');
       return [...new Set(allTags)];
    }, [keywords]);
 
@@ -251,6 +251,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
          )}
          {showAddTags && (
             <AddTags
+               existingTags={allDomainTags}
                keywords={keywords.filter((k) => selectedKeywords.includes(k.ID))}
                closeModal={() => setShowAddTags(false)}
                />
