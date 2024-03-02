@@ -16,6 +16,7 @@ import { useFetchDomains } from '../../../../services/domains';
 import { useFetchSCKeywords } from '../../../../services/searchConsole';
 import SCKeywordsTable from '../../../../components/keywords/SCKeywordsTable';
 import { useFetchSettings } from '../../../../services/settings';
+import Footer from '../../../../components/common/Footer';
 
 const DiscoverPage: NextPage = () => {
    const router = useRouter();
@@ -88,6 +89,7 @@ const DiscoverPage: NextPage = () => {
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
              <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
+         <Footer currentVersion={appSettings?.settings?.version ? appSettings.settings.version : ''} />
       </div>
    );
 };

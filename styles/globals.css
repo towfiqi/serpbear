@@ -1,5 +1,5 @@
 @import url("./fflag.css");
-
+@import url("./changelog.css");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -11,6 +11,7 @@ import { useCheckMigrationStatus, useFetchSettings } from '../../services/settin
 import { fetchDomainScreenshot, useFetchDomains } from '../../services/domains';
 import DomainItem from '../../components/domains/DomainItem';
 import Icon from '../../components/common/Icon';
+import Footer from '../../components/common/Footer';
 
 type thumbImages = { [domain:string] : string }
 
@@ -23,7 +24,6 @@ const Domains: NextPage = () => {
    const { data: appSettingsData, isLoading: isAppSettingsLoading } = useFetchSettings();
    const { data: domainsData, isLoading } = useFetchDomains(router, true);
    const { data: migrationStatus } = useCheckMigrationStatus();
-   // const { mutate: updateDatabaseMutate, isLoading: isUpdatingDB } = useMigrateDatabase((res:Object) => { window.location.reload(); });
 
    const appSettings:SettingsType = appSettingsData?.settings || {};
    const { scraper_type = '' } = appSettings;
@@ -139,9 +139,7 @@ const Domains: NextPage = () => {
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
              <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
-         <footer className='text-center flex flex-1 justify-center pb-5 items-end'>
-            <span className='text-gray-500 text-xs'><a href='https://github.com/towfiqi/serpbear' target="_blank" rel='noreferrer'>SerpBear v{appSettings.version || '0.0.0'}</a></span>
-         </footer>
+         <Footer currentVersion={appSettings?.version ? appSettings.version : ''} />
          <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>
    );

@@ -16,6 +16,7 @@ import { useFetchDomains } from '../../../../services/domains';
 import { useFetchSCInsight } from '../../../../services/searchConsole';
 import SCInsight from '../../../../components/insight/Insight';
 import { useFetchSettings } from '../../../../services/settings';
+import Footer from '../../../../components/common/Footer';
 
 const InsightPage: NextPage = () => {
    const router = useRouter();
@@ -88,6 +89,7 @@ const InsightPage: NextPage = () => {
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
              <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
+         <Footer currentVersion={appSettings?.settings?.version ? appSettings.settings.version : ''} />
       </div>
    );
 };

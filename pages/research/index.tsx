@@ -12,6 +12,7 @@ import { useFetchSettings } from '../../services/settings';
 import Settings from '../../components/settings/Settings';
 import SelectField from '../../components/common/SelectField';
 import allCountries, { adwordsLanguages } from '../../utils/countries';
+import Footer from '../../components/common/Footer';
 
 const Research: NextPage = () => {
    const router = useRouter();
@@ -141,6 +142,7 @@ const Research: NextPage = () => {
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
              <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
+         <Footer currentVersion={appSettings?.settings?.version ? appSettings.settings.version : ''} />
       </div>
    );
 };

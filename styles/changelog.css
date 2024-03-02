@@ -1,0 +1,52 @@
+.changelog-body{
+   max-height: calc(100vh - 60px);
+}
+
+.changelog-content h1{ 
+   margin: 1.2rem 0;
+   font-size: 2rem;
+   font-weight: 600;
+}
+
+.changelog-content h2{ 
+   margin: 1.2rem 0;
+   font-size: 1.6rem;
+   font-weight: bold;
+   margin-top: 0;
+}
+
+.changelog-content h2:after {
+   content: "🌟";
+   font-size: 1.2rem;
+   position: relative;
+   top: -2px;
+}
+
+.changelog-content h3{ 
+   margin: 1.2rem 0;
+   font-size: 1rem;
+   font-weight: 600;
+   margin-top: 0;
+}
+
+.changelog-content h4{ 
+   font-size: 1rem;
+   font-weight: 600;
+}
+
+
+.changelog-content ul{
+   margin: 0;
+   padding: 0;
+   margin-bottom: 20px;
+   padding-left: 20px;
+   list-style-type: disc;
+   line-height: 1.7em;
+}
+
+.changelog-content a:link{
+   color: rgb(75, 75, 241)
+}
+.changelog-content a:visited{
+   color: rgb(116, 116, 121)
+}

@@ -16,6 +16,7 @@ import KeywordIdeasTable from '../../../../components/ideas/KeywordIdeasTable';
 import { useFetchKeywordIdeas } from '../../../../services/adwords';
 import KeywordIdeasUpdater from '../../../../components/ideas/KeywordIdeasUpdater';
 import Modal from '../../../../components/common/Modal';
+import Footer from '../../../../components/common/Footer';
 
 const DiscoverPage: NextPage = () => {
    const router = useRouter();
@@ -104,7 +105,7 @@ const DiscoverPage: NextPage = () => {
                />
             </Modal>
          )}
-
+         <Footer currentVersion={appSettings?.settings?.version ? appSettings.settings.version : ''} />
       </div>
    );
 };

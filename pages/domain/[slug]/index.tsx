@@ -15,6 +15,7 @@ import { useFetchDomains } from '../../../services/domains';
 import { useFetchKeywords } from '../../../services/keywords';
 import { useFetchSettings } from '../../../services/settings';
 import AddKeywords from '../../../components/keywords/AddKeywords';
+import Footer from '../../../components/common/Footer';
 
 const SingleDomain: NextPage = () => {
    const router = useRouter();
@@ -104,6 +105,7 @@ const SingleDomain: NextPage = () => {
                closeModal={() => setShowAddKeywords(false)}
                />
          </CSSTransition>
+         <Footer currentVersion={appSettings?.version ? appSettings.version : ''} />
       </div>
    );
 };
