@@ -64,13 +64,14 @@ const SingleDomain: NextPage = () => {
             <Sidebar domains={theDomains} showAddModal={() => setShowAddDomain(true)} />
             <div className="domain_kewywords px-5 pt-10 lg:px-0 lg:pt-8 w-full">
                {activDomain && activDomain.domain
-               && <DomainHeader
+               ? <DomainHeader
                   domain={activDomain}
                   domains={theDomains}
                   showAddModal={setShowAddKeywords}
                   showSettingsModal={setShowDomainSettings}
                   exportCsv={() => exportCSV(theKeywords, activDomain.domain)}
                   />
+                  : <div className='w-full lg:h-[100px]'></div>
                }
                <KeywordsTable
                isLoading={keywordsLoading}

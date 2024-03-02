@@ -153,7 +153,7 @@ const Keyword = (props: KeywordProps) => {
          </div>
 
          <div
-         className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0'>
+         className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0 lg:top-0'>
             <span className='mr-2 lg:hidden'><Icon type="clock" size={14} color="#999" /></span>
             <TimeAgo title={dayjs(lastUpdated).format('DD-MMM-YYYY, hh:mm:ss A')} date={lastUpdated} />
          </div>

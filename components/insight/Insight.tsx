@@ -51,7 +51,7 @@ const SCInsight = ({ insight, isLoading = true, isConsoleIntegrated = true, doma
 
    return (
       <div>
-         <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-8'>
+         <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-5'>
             <div className='domKeywords_filters py-4 px-6 flex flex-col justify-between
             text-sm text-gray-500 font-semibold border-b-[1px] lg:border-0 lg:flex-row'>
                <div>

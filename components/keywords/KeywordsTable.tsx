@@ -97,7 +97,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
 
    return (
       <div>
-         <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-8'>
+         <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-5'>
             {selectedKeywords.length > 0 && (
                <div className='font-semibold text-sm py-4 px-8 text-gray-500 '>
                   <ul className=''>
