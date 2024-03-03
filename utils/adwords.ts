@@ -171,7 +171,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
             language: `languageConstants/${language}`,
             pageSize: test ? '1' : '1000',
          };
-         if (seedType === 'custom' && seedKeywords.length > 0) {
+         if (['custom', 'searchconsole', 'tracking'].includes(seedType) && seedKeywords.length > 0) {
             reqPayload.keywordSeed = { keywords: seedKeywords.slice(0, 20) };
          }
          if (seedType === 'auto' && domain) {
