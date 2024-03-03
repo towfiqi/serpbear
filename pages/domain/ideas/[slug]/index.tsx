@@ -95,7 +95,7 @@ const DiscoverPage: NextPage = () => {
          </CSSTransition>
 
          {showUpdateModal && activDomain?.domain && (
-            <Modal closeModal={() => setShowUpdateModal(false) } title={'Load Keyword Ideas from Google Adwords'} verticalCenter={true}>
+            <Modal closeModal={() => setShowUpdateModal(false) } title={'Load Keyword Ideas from Google Ads'} verticalCenter={true}>
                <KeywordIdeasUpdater
                domain={activDomain}
                onUpdate={() => setShowUpdateModal(false)}

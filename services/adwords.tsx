@@ -14,14 +14,14 @@ export function useTestAdwordsIntegration(onSuccess?: Function) {
    }, {
       onSuccess: async (data) => {
          console.log('Ideas Added:', data);
-         toast('Google Adwords has been integrated successfully!', { icon: '✔️' });
+         toast('Google Ads has been integrated successfully!', { icon: '✔️' });
          if (onSuccess) {
             onSuccess(false);
          }
       },
       onError: (error) => {
          console.log('Error Loading Keyword Ideas!!!', error);
-         toast('Failed to connect to Google Adwords. Please make sure you have provided the correct API info.', { icon: '⚠️' });
+         toast('Failed to connect to Google Ads. Please make sure you have provided the correct API info.', { icon: '⚠️' });
       },
    });
 }

@@ -55,7 +55,7 @@ const updatekeywordVolume = async (req: NextApiRequest, res: NextApiResponse<Key
                }
             }
          } else {
-            return res.status(400).json({ error: 'Error Fetching Keywords Volume Data from Google Adwords' });
+            return res.status(400).json({ error: 'Error Fetching Keywords Volume Data from Google Ads' });
          }
       }
 

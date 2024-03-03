@@ -48,7 +48,7 @@ export type KeywordIdeasDatabase = {
 }
 
 /**
- * The function `getAdwordsCredentials` reads and decrypts Adwords credentials from the App settings file.
+ * The function `getAdwordsCredentials` reads and decrypts Google Ads credentials from the App settings file.
  * @returns {Promise<false | AdwordsCredentials>} returns either a decrypted `AdwordsCredentials` object if the settings are successfully decrypted,
  * or `false` if the decryption process fails.
  */
@@ -86,7 +86,7 @@ export const getAdwordsCredentials = async (): Promise<false | AdwordsCredential
 };
 
 /**
- * retrieves an access token using Adwords credentials for Google API authentication.
+ * retrieves an access token using Google Ads credentials for Google API authentication.
  * @param {AdwordsCredentials} credentials - The `credentials` to use to generate the access token,
  * @returns {Promise<string>} the fetched access token or an empty string if failed.
  */
@@ -107,15 +107,15 @@ export const getAdwordsAccessToken = async (credentials:AdwordsCredentials) => {
 };
 
 /**
- * The function `getAdwordsKeywordIdeas` retrieves keyword ideas from Google AdWords API based on
+ * The function `getAdwordsKeywordIdeas` retrieves keyword ideas from Google Ads API based on
  * provided credentials and settings.
- * @param {AdwordsCredentials} credentials - an object containing Adwords credentials needed to authenticate
+ * @param {AdwordsCredentials} credentials - an object containing Google Ads credentials needed to authenticate
  * the API request.
  * @param {IdeaSettings} adwordsDomainOptions - an object that contains settings and options for fetching
- * keyword ideas from Google AdWords.
+ * keyword ideas from Google Ads.
  * @param {boolean} [test=false] - a boolean flag that indicates whether the function is being run in a test mode or not.
  * When `test` is set to `true`, only 1 keyword is requested from adwords.
- * @returns returns an array of fetched keywords (`fetchedKeywords`) after processing the Adwords API response.
+ * @returns returns an array of fetched keywords (`fetchedKeywords`) after processing the Google Ads API response.
  */
 export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adwordsDomainOptions:IdeaSettings, test:boolean = false) => {
    if (!credentials) { return false; }
@@ -191,8 +191,8 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
          const ideaData = await resp.json();
 
          if (resp.status !== 200) {
-            console.log('[ERROR] Adwords Response :', ideaData?.error?.details[0]?.errors[0]?.message);
-            // console.log('Response from AdWords :', JSON.stringify(ideaData, null, 2));
+            console.log('[ERROR] Google Ads Response :', ideaData?.error?.details[0]?.errors[0]?.message);
+            // console.log('Response from Ads :', JSON.stringify(ideaData, null, 2));
          }
 
          if (ideaData?.results) {
@@ -203,7 +203,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
             await updateLocalKeywordIdeas(domain, { keywords: fetchedKeywords, settings: adwordsDomainOptions });
          }
       } catch (error) {
-         console.log('[ERROR] Fetching Keyword Ideas from Adwords :', error);
+         console.log('[ERROR] Fetching Keyword Ideas from Google Ads :', error);
       }
    }
 
@@ -254,7 +254,7 @@ const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], opt
 };
 
 /**
- * Retrieves keyword search volumes from Google Adwords API based on provided keywords and their countries.
+ * Retrieves keyword search volumes from Google Ads API based on provided keywords and their countries.
  * @param {KeywordType[]} keywords - The keywords that you want to get the search volume data for.
  * @returns returns a Promise that resolves to an object with a `volumes` and error `proprties`.
  *  The `volumes` propery which outputs `false` if the request fails and outputs the volume data in `{[keywordID]: volume}` object if succeeds.
@@ -262,10 +262,10 @@ const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], opt
  */
 export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error?: string, volumes: false | Record<number, number>}> => {
    const credentials = await getAdwordsCredentials();
-   if (!credentials) { return { error: 'Cannot Load Adwords Credentials', volumes: false }; }
+   if (!credentials) { return { error: 'Cannot Load Google Ads Credentials', volumes: false }; }
    const { client_id, client_secret, developer_token, account_id } = credentials;
    if (!client_id || !client_secret || !developer_token || !account_id) {
-      return { error: 'Adwords Not Integrated Properly', volumes: false };
+      return { error: 'Google Ads Not Integrated Properly', volumes: false };
    }
 
    // Generate Access Token
@@ -319,8 +319,8 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
                const ideaData = await resp.json();
 
                if (resp.status !== 200) {
-                  console.log('[ERROR] Adwords Volume Request Response :', ideaData?.error?.details[0]?.errors[0]?.message);
-                  console.log('Response from AdWords :', JSON.stringify(ideaData, null, 2));
+                  console.log('[ERROR] Google Ads Volume Request Response :', ideaData?.error?.details[0]?.errors[0]?.message);
+                  // console.log('Response from Google Ads :', JSON.stringify(ideaData, null, 2));
                }
 
                if (ideaData?.results) {
@@ -344,7 +344,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
                   }
                }
             } catch (error) {
-               console.log('[ERROR] Fetching Keyword Volume from Adwords :', error);
+               console.log('[ERROR] Fetching Keyword Volume from Google Ads :', error);
             }
             if (Object.keys(keywordRequests).length > 1) {
                await sleep(7000);

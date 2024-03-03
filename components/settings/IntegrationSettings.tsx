@@ -28,7 +28,7 @@ const IntegrationSettings = ({ settings, settingsError, updateSettings, performU
                <li
                className={`${tabStyle} ${currentTab === 'adwords' ? ' bg-blue-50 text-blue-600' : ''}`}
                onClick={() => setCurrentTab('adwords')}>
-                  <Icon type='adwords' size={14} /> Adwords
+                  <Icon type='adwords' size={14} /> Google Ads
                </li>
             </ul>
          </div>

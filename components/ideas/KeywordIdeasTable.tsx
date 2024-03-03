@@ -229,7 +229,7 @@ const IdeasKeywordsTable = ({
                      )}
                      {!isAdwordsIntegrated && (
                         <p className=' p-9 pt-[10%] text-center text-gray-500'>
-                           Google Adwords has not been Integrated yet. Please follow <a className='text-indigo-600 underline' href='https://docs.serpbear.com/miscellaneous/integrate-google-adwords' target="_blank" rel='noreferrer'>These Steps</a> to integrate Google Adwords.
+                           Google Ads has not been Integrated yet. Please follow <a className='text-indigo-600 underline' href='https://docs.serpbear.com/miscellaneous/integrate-google-ads' target="_blank" rel='noreferrer'>These Steps</a> to integrate Google Ads.
                         </p>
                      )}
                   </div>

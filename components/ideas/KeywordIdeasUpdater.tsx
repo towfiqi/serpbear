@@ -127,7 +127,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
                <button
                   className={`w-full py-2 px-5 mt-2 rounded bg-blue-700 text-white 
                   font-semibold ${!adwordsConnected ? ' cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
-                  title={!adwordsConnected ? 'Please Connect Adwords account to generate Keyword Ideas..' : ''}
+                  title={!adwordsConnected ? 'Please Connect Ads account to generate Keyword Ideas..' : ''}
                   onClick={() => !isUpdatingIdeas && adwordsConnected && reloadKeywordIdeas()}>
                      <Icon type={isUpdatingIdeas ? 'loading' : 'reload'} size={12} /> {isUpdatingIdeas ? 'Loading....' : 'Load Keyword Ideas'}
                </button>

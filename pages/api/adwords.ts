@@ -43,31 +43,31 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<
             if (r?.tokens?.refresh_token) {
                const adwords_refresh_token = cryptr.encrypt(r.tokens.refresh_token);
                await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify({ ...settings, adwords_refresh_token }), { encoding: 'utf-8' });
-               return res.status(200).send('Adwords Intergrated Successfully! You can close this window.');
+               return res.status(200).send('Google Ads Intergrated Successfully! You can close this window.');
             }
-            return res.status(200).send('Error Getting the Adwords Refresh Token. Please Try Again!');
+            return res.status(200).send('Error Getting the Google Ads Refresh Token. Please Try Again!');
          } catch (error) {
-            console.log('[Error] Getting Adwords Refresh Token!');
+            console.log('[Error] Getting Google Ads Refresh Token!');
             console.log('error :', error);
-            return res.status(200).send('Error Saving the Adwords Refresh Token. Please Try Again!');
+            return res.status(200).send('Error Saving the Google Ads Refresh Token. Please Try Again!');
          }
       } else {
          return res.status(200).send('No Code Provided By Google. Please Try Again!');
       }
    } catch (error) {
       console.log('[ERROR] CRON Refreshing Keywords: ', error);
-      return res.status(400).send('Error Getting Adwords Refresh Token. Please Try Again!');
+      return res.status(400).send('Error Getting Google Ads Refresh Token. Please Try Again!');
    }
 };
 
 const validateAdwordsIntegration = async (req: NextApiRequest, res: NextApiResponse<adwordsValidateResp>) => {
-   const errMsg = 'Error Validating Adwords Integration. Please make sure your provided data are correct!';
+   const errMsg = 'Error Validating Google Ads Integration. Please make sure your provided data are correct!';
    const { developer_token, account_id } = req.body;
    if (!developer_token || !account_id) {
-      return res.status(400).json({ valid: false, error: 'Please Provide the Adwords Developer Token and Test Account ID' });
+      return res.status(400).json({ valid: false, error: 'Please Provide the Google Ads Developer Token and Test Account ID' });
    }
    try {
-      // Save the Adwords Developer Token & Adwords Test Account ID in App Settings
+      // Save the Adwords Developer Token & Google Ads Test Account ID in App Settings
       const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
       const settings: SettingsType = settingsRaw ? JSON.parse(settingsRaw) : {};
       const cryptr = new Cryptr(process.env.SECRET as string);
@@ -76,7 +76,7 @@ const validateAdwordsIntegration = async (req: NextApiRequest, res: NextApiRespo
       const securedSettings = { ...settings, adwords_developer_token, adwords_account_id };
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(securedSettings), { encoding: 'utf-8' });
 
-      // Make a test Request to Google Adwords
+      // Make a test Request to Google Ads
       const adwordsCreds = await getAdwordsCredentials();
       const { client_id, client_secret, refresh_token } = adwordsCreds || {};
       if (adwordsCreds && client_id && client_secret && developer_token && account_id && refresh_token) {
@@ -91,7 +91,7 @@ const validateAdwordsIntegration = async (req: NextApiRequest, res: NextApiRespo
       }
       return res.status(400).json({ valid: false, error: errMsg });
    } catch (error) {
-      console.log('[ERROR] Validating AdWords Integration: ', error);
+      console.log('[ERROR] Validating Google Ads Integration: ', error);
       return res.status(400).json({ valid: false, error: errMsg });
    }
 };

@@ -86,7 +86,7 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
          </div>
          <div className='mt-4 border-t mb-4 border-b border-gray-100 pt-4 pb-0 relative'>
             {!cloudProjectIntegrated && <div className=' absolute w-full h-full z-50' />}
-            <h4 className=' mb-3 font-semibold text-blue-700'>Step 2: Connect Google AdWords</h4>
+            <h4 className=' mb-3 font-semibold text-blue-700'>Step 2: Connect Google Ads</h4>
             <div className={!cloudProjectIntegrated ? 'opacity-40' : ''}>
                <div className="settings__section__input mb-4 flex justify-between items-center w-full">
                   <SecretField
@@ -98,7 +98,7 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
                </div>
                <div className="settings__section__input mb-4 flex justify-between items-center w-full">
                   <SecretField
-                  label='AdWords Test Account ID'
+                  label='Test Account ID'
                   onChange={(account_id:string) => updateSettings('adwords_account_id', account_id)}
                   value={adwords_account_id}
                   placeholder='590-948-9101'
@@ -112,7 +112,7 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
                   title={hasAllCredentials ? '' : 'Insert All the data in the above fields to Test the Integration'}
                   onClick={testIntegration}>
                      {isTesting && <Icon type='loading' />}
-                     <Icon type='adwords' size={14} /> Test AdWords Integration
+                     <Icon type='adwords' size={14} /> Test Google Ads Integration
                   </button>
                </div>
             </div>
@@ -130,13 +130,13 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
                   ${hasAllCredentials ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}
                   hover:bg-blue-700 hover:text-white transition`}
                   onClick={updateVolumeData}>
-                     <Icon type={isUpdatingVolume ? 'loading' : 'reload'} size={isUpdatingVolume ? 16 : 12} /> Update Keywords Volume
+                     <Icon type={isUpdatingVolume ? 'loading' : 'reload'} size={isUpdatingVolume ? 16 : 12} /> Update Keywords Volume Data
                   </button>
                </div>
             </div>
          </div>
          <p className='mb-4 text-xs'>
-            <a target='_blank' rel='noreferrer' href='https://docs.serpbear.com/keyword-research' className=' underline text-blue-600'>Integrate Google Adwords</a> to get Keyword Ideas & Search Volume.{' '}
+            Relevant Documentation: <a target='_blank' rel='noreferrer' href='https://docs.serpbear.com/miscellaneous/integrate-google-ads' className=' underline text-blue-600'>Integrate Google Ads</a>.
          </p>
       </div>
    </div>

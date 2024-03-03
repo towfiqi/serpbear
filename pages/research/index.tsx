@@ -108,7 +108,7 @@ const Research: NextPage = () => {
                   <button
                   className={`w-full py-2 px-5 mt-2 rounded bg-blue-700 text-white 
                   font-semibold ${!adwordsConnected ? ' cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
-                  title={!adwordsConnected ? 'Please Connect Adwords account to generate Keyword Ideas..' : ''}
+                  title={!adwordsConnected ? 'Please Connect Google Ads account to generate Keyword Ideas..' : ''}
                   onClick={() => !isUpdatingIdeas && adwordsConnected && reloadKeywordIdeas()}>
                         <Icon type={isUpdatingIdeas ? 'loading' : 'download'} size={14} /> {isUpdatingIdeas ? 'Loading....' : 'Load Ideas'}
                   </button>

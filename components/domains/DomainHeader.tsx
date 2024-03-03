@@ -83,7 +83,7 @@ const DomainHeader = (
                      size={14}
                      color="#aaa"
                      classes="ml-2 hidden lg:inline-block"
-                     title='Get Keyword Ideas for this domain from Google Adwords'
+                     title='Get Keyword Ideas for this domain from Google Ads'
                      />
                   </a>
                </Link>
