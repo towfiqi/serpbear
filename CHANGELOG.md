@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/towfiqi/serpbear/compare/v1.0.3...v2.0.0) (2024-03-05)
+
+
+### Features
+
+* Adds a Keyword Research Section. ([4d15989](https://github.com/towfiqi/serpbear/commit/4d15989b2832c3514fca18f3178a967c1fc9ad18))
+* Adds ability to pick existing tags when applying keyword tags. ([407ab8d](https://github.com/towfiqi/serpbear/commit/407ab8db831b26a5d45ccd7455c39f82fef1e438)), closes [#171](https://github.com/towfiqi/serpbear/issues/171)
+* Adds Google Adwords Integration to allow generating Keyword Ideas. ([5650645](https://github.com/towfiqi/serpbear/commit/5650645b58638e91bd5772415234fdda8cc8de1a))
+* Adds keyword search volume data feature for tracked keywords. ([2a1fc0e](https://github.com/towfiqi/serpbear/commit/2a1fc0e43d31f215b815a9d8b312da080209ae3a))
+* Adds the ability to view the changelog and displays the latest version number. ([bb4a684](https://github.com/towfiqi/serpbear/commit/bb4a6844b522067b69a007fda427d16d25bae3a3))
+
+
+### Bug Fixes
+
+* Resolves Domain keyword Ideas generation issue. ([252ae9a](https://github.com/towfiqi/serpbear/commit/252ae9aa84177909f5658d954ca1231c70cb9145))
+* Resolves minor UI bugs. ([50160f5](https://github.com/towfiqi/serpbear/commit/50160f5b234fc783802efae34db4a8f959745998))
+
 ### [1.0.3](https://github.com/towfiqi/serpbear/compare/v1.0.2...v1.0.3) (2024-02-22)
 
 
