@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/towfiqi/serpbear/compare/v2.0.0...v2.0.1) (2024-03-06)
+
+
+### Bug Fixes
+
+* Resolves broken doc links ([d48ae76](https://github.com/towfiqi/serpbear/commit/d48ae76103615ab82a32cbd8ffa62e27d17999de))
+* Resolves keyword loading issue in Docker instances. ([4a87d22](https://github.com/towfiqi/serpbear/commit/4a87d229fee7aa5e0ca8b2042c168465c7c5d67f)), closes [#178](https://github.com/towfiqi/serpbear/issues/178)
+
 ## [2.0.0](https://github.com/towfiqi/serpbear/compare/v1.0.3...v2.0.0) (2024-03-05)
 
 
