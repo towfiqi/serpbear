@@ -24,9 +24,9 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 
 The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SearchApi, SerpApi or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword.
 
-The Keyword Research and keyword generation feature works by integrating your Google Ads test accounts into SerpBear. You can also view the added keyword's monthly search volume data once you [integrate Google Ads](/miscellaneous/integrate-google-ads).
+The Keyword Research and keyword generation feature works by integrating your Google Ads test accounts into SerpBear. You can also view the added keyword's monthly search volume data once you [integrate Google Ads](https://docs.serpbear.com/miscellaneous/integrate-google-ads).
 
-When you [integrate Google Search Console](/miscellaneous/integrate-google-search-console), the app shows actual search visits for each tracked keywords. You can also discover new keywords, and find the most performing keywords, countries, pages.you will be able to view the actual visits count from Google Search for the tracked keywords.
+When you [integrate Google Search Console](https://docs.serpbear.com/miscellaneous/integrate-google-search-console), the app shows actual search visits for each tracked keywords. You can also discover new keywords, and find the most performing keywords, countries, pages.you will be able to view the actual visits count from Google Search for the tracked keywords.
 
 #### Getting Started
 
