@@ -29,7 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<string>) => {
    try {
       const code = (req.query.code as string);
-      // console.log('code :', code);
+      const https = req.headers.host?.includes('localhost:') ? 'http://' : 'https://';
+      const redirectURL = `${https}${req.headers.host}/api/adwords`;
+
       if (code) {
          try {
             const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
@@ -37,7 +39,6 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<
             const cryptr = new Cryptr(process.env.SECRET as string);
             const adwords_client_id = settings.adwords_client_id ? cryptr.decrypt(settings.adwords_client_id) : '';
             const adwords_client_secret = settings.adwords_client_secret ? cryptr.decrypt(settings.adwords_client_secret) : '';
-            const redirectURL = `${process.env.NEXT_PUBLIC_APP_URL}/api/adwords`;
             const oAuth2Client = new OAuth2Client(adwords_client_id, adwords_client_secret, redirectURL);
             const r = await oAuth2Client.getToken(code);
             if (r?.tokens?.refresh_token) {
@@ -45,17 +46,17 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<
                await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify({ ...settings, adwords_refresh_token }), { encoding: 'utf-8' });
                return res.status(200).send('Google Ads Intergrated Successfully! You can close this window.');
             }
-            return res.status(200).send('Error Getting the Google Ads Refresh Token. Please Try Again!');
-         } catch (error) {
-            console.log('[Error] Getting Google Ads Refresh Token!');
-            console.log('error :', error);
-            return res.status(200).send('Error Saving the Google Ads Refresh Token. Please Try Again!');
+            return res.status(400).send('Error Getting the Google Ads Refresh Token. Please Try Again!');
+         } catch (error:any) {
+            const errorMsg = error?.response?.data?.error;
+            console.log('[Error] Getting Google Ads Refresh Token! Reason: ', errorMsg);
+            return res.status(400).send(`Error Saving the Google Ads Refresh Token ${errorMsg ? `. Details: ${errorMsg}` : ''}. Please Try Again!`);
          }
       } else {
-         return res.status(200).send('No Code Provided By Google. Please Try Again!');
+         return res.status(400).send('No Code Provided By Google. Please Try Again!');
       }
    } catch (error) {
-      console.log('[ERROR] CRON Refreshing Keywords: ', error);
+      console.log('[ERROR] Getting Google Ads Refresh Token: ', error);
       return res.status(400).send('Error Getting Google Ads Refresh Token. Please Try Again!');
    }
 };
