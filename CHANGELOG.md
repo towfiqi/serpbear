@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.2](https://github.com/towfiqi/serpbear/compare/v2.0.1...v2.0.2) (2024-03-13)
+
+
+### Bug Fixes
+
+* Resolves Broken Google Adwords Authentication in Docker containers. ([1d0a788](https://github.com/towfiqi/serpbear/commit/1d0a78881039b3ebd4b1e00fb067016886d49c31)), closes [#179](https://github.com/towfiqi/serpbear/issues/179)
+
 ### [2.0.1](https://github.com/towfiqi/serpbear/compare/v2.0.0...v2.0.1) (2024-03-06)
 
 
