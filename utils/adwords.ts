@@ -270,6 +270,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
 
    // Generate Access Token
    let accessToken = '';
+   let test = false;
    const cachedAccessToken:string|false|undefined = memoryCache.get('adwords_token');
    if (cachedAccessToken && !test) {
       accessToken = cachedAccessToken;
