@@ -271,7 +271,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
    // Generate Access Token
    let accessToken = '';
    const cachedAccessToken:string|false|undefined = memoryCache.get('adwords_token');
-   if (cachedAccessToken && !test) {
+   if (cachedAccessToken) {
       accessToken = cachedAccessToken;
    } else {
       accessToken = await getAdwordsAccessToken(credentials);
