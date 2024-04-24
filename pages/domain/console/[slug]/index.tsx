@@ -30,7 +30,49 @@ const DiscoverPage: NextPage = () => {
    const { data: keywordsData, isLoading: keywordsLoading, isFetching } = useFetchSCKeywords(router, !!(domainsData?.domains?.length) && scConnected);
 
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
-   const theKeywords: SearchAnalyticsItem[] = keywordsData?.data && keywordsData.data[scDateFilter] ? keywordsData.data[scDateFilter] : [];
+   const theKeywords: SearchAnalyticsItem[] = useMemo(() => {
+      return keywordsData?.data && keywordsData.data[scDateFilter] ? keywordsData.data[scDateFilter] : [];
+   }, [keywordsData, scDateFilter]);
+
+   const theKeywordsCount = useMemo(() => {
+      return theKeywords.reduce<Map<string, number>>((r, o) => {
+         const key = `${o.device}-${o.country}-${o.keyword}`;
+         const item = r.get(key) || 0;
+         return r.set(key, item + 1);
+      }, new Map()) || [];
+   }, [theKeywords]);
+
+   const theKeywordsReduced : SearchAnalyticsItem[] = useMemo(() => {
+      return [...theKeywords.reduce<Map<string, SearchAnalyticsItem>>((r, o) => {
+         const key = `${o.device}-${o.country}-${o.keyword}`;
+         const item = r.get(key) || { ...o,
+            ...{
+            clicks: 0,
+            impressions: 0,
+            ctr: 0,
+            position: 0,
+            },
+         };
+         item.clicks += o.clicks;
+         item.impressions += o.impressions;
+         item.ctr = o.ctr + item.ctr;
+         item.position = o.position + item.position;
+         return r.set(key, item);
+      }, new Map()).values()];
+   }, [theKeywords]);
+
+   const theKeywordsGrouped : SearchAnalyticsItem[] = useMemo(() => {
+      return [...theKeywordsReduced.map<SearchAnalyticsItem>((o: SearchAnalyticsItem) => {
+         const key = `${o.device}-${o.country}-${o.keyword}`;
+         const count = theKeywordsCount?.get(key) || 0;
+         return { ...o,
+            ...{
+            ctr: Math.round((o.ctr / count) * 100) / 100,
+            position: Math.round(o.position / count),
+            },
+         };
+      })];
+   }, [theKeywordsReduced, theKeywordsCount]);
 
    const activDomain: DomainType|null = useMemo(() => {
       let active:DomainType|null = null;
@@ -62,7 +104,7 @@ const DiscoverPage: NextPage = () => {
                   domains={theDomains}
                   showAddModal={() => console.log('XXXXX')}
                   showSettingsModal={setShowDomainSettings}
-                  exportCsv={() => exportCSV(theKeywords, activDomain.domain, scDateFilter)}
+                  exportCsv={() => exportCSV(theKeywordsGrouped, activDomain.domain, scDateFilter)}
                   scFilter={scDateFilter}
                   setScFilter={(item:string) => setSCDateFilter(item)}
                   />
@@ -71,7 +113,7 @@ const DiscoverPage: NextPage = () => {
                <SCKeywordsTable
                isLoading={keywordsLoading || isFetching}
                domain={activDomain}
-               keywords={theKeywords}
+               keywords={theKeywordsGrouped}
                isConsoleIntegrated={scConnected || domainHasScAPI}
                />
             </div>
