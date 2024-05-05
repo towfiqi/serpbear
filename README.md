@@ -43,16 +43,16 @@ When you [integrate Google Search Console](https://docs.serpbear.com/miscellaneo
 If you don't want to use proxies, you can use third party Scraping services to scrape Google Search results.
 
 
-| Service          | Cost          | SERP Lookup    | API |
-| ---------------- | ------------- | -------------- | --- |
-| scraingrobot.com | Free          | 5000/mo        | Yes |
-| serply.io        | $49/mo        | 5000/mo        | Yes |
-| serpapi.com      | From $50/mo   | From 5,000/mo  | Yes |
-| spaceserp.com    | $59/lifetime  | 15,000/mo      | Yes |
-| SearchApi.io     | From $40/mo   | From 10,000/mo | Yes |
-| valueserp.com    | Pay As You Go | $2.50/1000 req | No  |
-| serper.dev       | Pay As You Go | $1.00/1000 req | No  |
-| hasdata.com      | From $29/mo   | From 10,000/mo | Yes |
+| Service           | Cost          | SERP Lookup    | API |
+| ----------------- | ------------- | -------------- | --- |
+| scrapingrobot.com | Free          | 5000/mo        | Yes |
+| serply.io         | $49/mo        | 5000/mo        | Yes |
+| serpapi.com       | From $50/mo   | From 5,000/mo  | Yes |
+| spaceserp.com     | $59/lifetime  | 15,000/mo      | Yes |
+| SearchApi.io      | From $40/mo   | From 10,000/mo | Yes |
+| valueserp.com     | Pay As You Go | $2.50/1000 req | No  |
+| serper.dev        | Pay As You Go | $1.00/1000 req | No  |
+| hasdata.com       | From $29/mo   | From 10,000/mo | Yes |
 
 **Tech Stack**
 
