@@ -72,14 +72,13 @@ export const updateKeywordPosition = async (keywordRaw:Keyword, udpatedkeyword: 
 
       if (udpatedkeyword && keyword) {
          const newPos = udpatedkeyword.position;
-         const newPosition = newPos !== 0 ? newPos : keyword.position;
          const { history } = keyword;
          const theDate = new Date();
          const dateKey = `${theDate.getFullYear()}-${theDate.getMonth() + 1}-${theDate.getDate()}`;
-         history[dateKey] = newPosition;
+         history[dateKey] = newPos;
 
          const updatedVal = {
-            position: newPosition,
+            position: newPos,
             updating: false,
             url: udpatedkeyword.url,
             lastResult: udpatedkeyword.result,
