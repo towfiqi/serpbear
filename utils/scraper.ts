@@ -114,6 +114,13 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
       const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
       if (res && scrapeResult) {
+
+	     console.log('[DEBUG scrapeKeywordFromGoogle]');
+   		 console.log('res:');
+   		 console.log(res);
+   		 console.log('scrapeResult:');
+   		 console.log(scrapeResult);
+
          const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
          // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
          const serp = getSerp(keyword.domain, extracted);
@@ -146,6 +153,16 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
  */
 export const extractScrapedResult = (content: string, device: string): SearchResult[] => {
    const extractedResult = [];
+
+   console.log('[DEBUG extractScrapedResult]');
+   console.log('content:');
+   console.log(content);
+
+   console.log('typeof(content):');
+   console.log(typeof(content));
+
+   console.log('content.length:');
+   console.log(content.length);
 
    const $ = cheerio.load(content);
    const hasNumberofResult = $('body').find('#search  > div > div');
