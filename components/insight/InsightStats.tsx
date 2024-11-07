@@ -13,16 +13,20 @@ type InsightStatsProps = {
 }
 
 const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }:InsightStatsProps) => {
-   const totalStat = useMemo(() => {
-      return stats.reduce((acc, item) => {
-         return {
+    const totalStat = useMemo(() => {
+      const totals = stats.reduce((acc, item) => {
+          return {
             impressions: item.impressions + acc.impressions,
             clicks: item.clicks + acc.clicks,
-            ctr: item.ctr + acc.ctr,
             position: item.position + acc.position,
-         };
-      }, { impressions: 0, clicks: 0, ctr: 0, position: 0 });
-   }, [stats]);
+          };
+      }, { impressions: 0, clicks: 0, position: 0 });
+    
+      return {
+          ...totals,
+          ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0
+      };
+    }, [stats]);
 
    const chartData = useMemo(() => {
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
