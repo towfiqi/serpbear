@@ -62,9 +62,10 @@ const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => 
       smtp_password = '',
       notification_email = '',
       notification_email_from = '',
+      notification_email_from_name = 'SerpBear',
      } = settings;
 
-   const fromEmail = `SerpBear <${notification_email_from || 'no-reply@serpbear.com'}>`;
+   const fromEmail = `${notification_email_from_name} <${notification_email_from || 'no-reply@serpbear.com'}>`;
    const mailerSettings:any = { host: smtp_server, port: parseInt(smtp_port, 10) };
    if (smtp_username || smtp_password) {
       mailerSettings.auth = {};

@@ -89,6 +89,15 @@ const NotificationSettings = ({ settings, settingsError, updateSettings }:Notifi
                         onChange={(value:string) => updateSettings('notification_email_from', value)}
                         />
                   </div>
+                  <div className="settings__section__input mb-5">
+                        <InputField
+                        label='Email From Name'
+                        hasError={settingsError?.type === 'no_smtp_from'}
+                        value={settings?.notification_email_from_name || 'Serpbear'}
+                        placeholder="Serpbear"
+                        onChange={(value:string) => updateSettings('notification_email_from_name', value)}
+                        />
+                  </div>
                </>
             )}
 
