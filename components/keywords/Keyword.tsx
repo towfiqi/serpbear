@@ -73,7 +73,7 @@ const Keyword = (props: KeywordProps) => {
       let bestPos;
       if (Object.keys(history).length > 0) {
          const historyArray = Object.keys(history).map((itemID) => ({ date: itemID, position: history[itemID] }))
-         .sort((a, b) => a.position - b.position);
+             .sort((a, b) => a.position - b.position).filter((el) => (el.position > 0));;
          if (historyArray[0]) {
             bestPos = { ...historyArray[0] };
          }
