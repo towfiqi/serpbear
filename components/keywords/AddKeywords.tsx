@@ -42,12 +42,15 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
          const keywordExist = keywordsArray.filter((k) => currentKeywords.includes(
             `${k}-${newKeywordsData.device}-${newKeywordsData.country}${newKeywordsData.city ? `-${newKeywordsData.city}` : ''}`,
          ));
-         if (keywordExist.length > 0) {
+         if ((keywordsArray.length === 1 || currentKeywords.length === keywordExist.length) && keywordExist.length > 0) {
             setError(`Keywords ${keywordExist.join(',')} already Exist`);
             setTimeout(() => { setError(''); }, 3000);
          } else {
+            const filteredKeywords = keywordsArray.filter((k) => !currentKeywords.includes(
+               `${k}-${newKeywordsData.device}-${newKeywordsData.country}${newKeywordsData.city ? `-${newKeywordsData.city}` : ''}`,
+            ));
             const { device, country, domain: kDomain, tags, city } = newKeywordsData;
-            const newKeywordsArray = keywordsArray.map((nItem) => ({ keyword: nItem, device, country, domain: kDomain, tags, city }));
+            const newKeywordsArray = filteredKeywords.map((nItem) => ({ keyword: nItem, device, country, domain: kDomain, tags, city }));
             addMutate(newKeywordsArray);
          }
       } else {
