@@ -46,9 +46,11 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
    if (!req.query.domain && typeof req.query.domain !== 'string') {
       return res.status(400).json({ error: 'Domain is Required!' });
    }
+   const settings = await getAppSettings();
    const domain = (req.query.domain as string);
    const integratedSC = process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL;
-   const domainSCData = integratedSC ? await readLocalSCData(domain) : false;
+   const { search_console_client_email, search_console_private_key } = settings;
+   const domainSCData = integratedSC || (search_console_client_email && search_console_private_key) ? await readLocalSCData(domain) : false;
 
    try {
       const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain } });
