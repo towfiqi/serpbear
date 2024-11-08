@@ -88,7 +88,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[]) : Promis
       const positionChange = getPositionChange(keyword.history, keyword.position);
       const deviceIconImg = keyword.device === 'desktop' ? desktopIcon : mobileIcon;
       const countryFlag = `<img class="flag" src="https://flagcdn.com/w20/${keyword.country.toLowerCase()}.png" alt="${keyword.country}" title="${keyword.country}" />`;
-      const deviceIcon = `<img class="device" src="${deviceIconImg}" alt="${keyword.device}" title="${keyword.device}" />`;
+      const deviceIcon = `<img class="device" src="${deviceIconImg}" alt="${keyword.device}" title="${keyword.device}" width="18" height="18" />`;
 
       if (positionChange > 0) { positionChangeIcon = '<span style="color:#5ed7c3;">▲</span>'; improved += 1; }
       if (positionChange < 0) { positionChangeIcon = '<span style="color:#fca5a5;">▼</span>'; declined += 1; }
@@ -104,7 +104,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[]) : Promis
    const stat = `${improved > 0 ? `${improved} Improved` : ''} 
                   ${improved > 0 && declined > 0 ? ', ' : ''} ${declined > 0 ? `${declined} Declined` : ''}`;
    const updatedEmail = emailTemplate
-         .replace('{{logo}}', `<img class="logo_img" src="${serpBearLogo}" alt="SerpBear" />`)
+         .replace('{{logo}}', `<img class="logo_img" src="${serpBearLogo}" alt="SerpBear" width="24" height="24" />`)
          .replace('{{currentDate}}', currentDate)
          .replace('{{domainName}}', domainName)
          .replace('{{keywordsCount}}', keywordsCount.toString())
@@ -172,7 +172,7 @@ const generateGoogeleConsoleStats = async (domainName:string): Promise<string> =
       let htmlWithSCStats = `<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="console_table">
                               <tr>
                                  <td style="font-weight:bold;">
-                                 <img class="google_icon" src="${googleIcon}" alt="Google"> Google Search Console Stats</h3>
+                                 <img class="google_icon" src="${googleIcon}" alt="Google" width="13" height="13"> Google Search Console Stats</h3>
                                  </td>
                                  <td class="stat" align="right" style="font-size: 12px;">
                                  ${startDate.getDate()} ${months[startDate.getMonth()]} -  ${endDate.getDate()} ${months[endDate.getMonth()]} 
