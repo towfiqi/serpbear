@@ -60,14 +60,19 @@ const KeywordFilters = (props: KeywordFilterProps) => {
    const countryOptions = useMemo(() => {
       const optionObject:{label:string, value:string}[] = [];
 
-      Object.keys(countries).forEach((countryISO:string) => {
-         if (!isConsole || (isConsole && SCcountries.includes(countryISO))) {
-            optionObject.push({ label: countries[countryISO][0], value: countryISO });
-         }
-      });
+      if (!isConsole) {
+         const allCountries = keywords.reduce((acc: string[], keyword) => [...acc, keyword.country], []).filter((t) => t && t.trim() !== '');
+         [...new Set(allCountries)].forEach((c) => optionObject.push({ label: countries[c][0], value: c }));
+      } else {
+         Object.keys(countries).forEach((countryISO:string) => {
+            if ((SCcountries.includes(countryISO))) {
+               optionObject.push({ label: countries[countryISO][0], value: countryISO });
+            }
+         });
+      }
 
       return optionObject;
-   }, [SCcountries, isConsole]);
+   }, [SCcountries, isConsole, keywords]);
 
    const sortOptionChoices: SelectionOption[] = [
       { value: 'pos_asc', label: 'Top Position' },
