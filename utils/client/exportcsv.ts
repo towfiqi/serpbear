@@ -9,7 +9,7 @@ import countries from '../countries';
 const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scDataDuration = 'lastThreeDays') => {
    if (!keywords || (keywords && Array.isArray(keywords) && keywords.length === 0)) { return; }
    const isSCKeywords = !!(keywords && keywords[0] && keywords[0].uid);
-   let csvHeader = 'ID,Keyword,Position,URL,Country,Device,Updated,Added,Tags\r\n';
+   let csvHeader = 'ID,Keyword,Position,URL,Country,City,Device,Updated,Added,Tags\r\n';
    let csvBody = '';
    let fileName = `${domain}-keywords_serp.csv`;
 
@@ -26,9 +26,9 @@ const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scD
       });
    } else {
       keywords.forEach((keywordData) => {
-         const { ID, keyword, position, url, country, device, lastUpdated, added, tags } = keywordData as KeywordType;
+         const { ID, keyword, position, url, country, city, device, lastUpdated, added, tags } = keywordData as KeywordType;
          // eslint-disable-next-line max-len
-         csvBody += `${ID}, ${keyword}, ${position === 0 ? '-' : position}, ${url || '-'}, ${countries[country][0]}, ${device}, ${lastUpdated}, ${added}, ${tags.join(',')}\r\n`;
+         csvBody += `${ID}, ${keyword}, ${position === 0 ? '-' : position}, ${url || '-'}, ${countries[country][0]}, ${city || '-'}, ${device}, ${lastUpdated}, ${added}, ${tags.join(',')}\r\n`;
       });
    }
 
