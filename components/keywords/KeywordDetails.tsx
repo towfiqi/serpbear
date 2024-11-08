@@ -54,11 +54,14 @@ const KeywordDetails = ({ keyword, closeDetails }:KeywordDetailsProps) => {
    return (
        <div className="keywordDetails fixed w-full h-screen top-0 left-0 z-[99999]" onClick={closeOnBGClick} data-testid="keywordDetails">
             <div className="keywordDetails absolute w-full lg:w-5/12 bg-white customShadow top-0 right-0 h-screen" >
-               <div className='keywordDetails__header p-6 border-b border-b-slate-200 text-slate-500'>
+               <div className='keywordDetails__header p-6 border-b border-b-slate-200 text-slate-600'>
                   <h3 className=' text-lg font-bold'>
                      <span title={countries[keyword.country][0]}
                      className={`fflag fflag-${keyword.country} w-[18px] h-[12px] mr-2`} /> {keyword.keyword}
-                     <span className='py-1 px-2 ml-2 rounded bg-blue-50 text-blue-700 text-xs font-bold'>{keyword.position}</span>
+                     <span
+                     className={`py-1 px-2 ml-2 rounded bg-blue-50 ${keyword.position === 0 ? 'text-gray-500' : 'text-blue-700'}  text-xs font-bold`}>
+                        {keyword.position === 0 ? 'Not in First 100' : keyword.position}
+                     </span>
                   </h3>
                   <button
                   className='absolute top-2 right-2 p-2 px-3 text-gray-400 hover:text-gray-700 transition-all hover:rotate-90'
