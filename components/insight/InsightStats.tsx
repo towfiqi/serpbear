@@ -21,10 +21,10 @@ const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }:InsightS
             position: item.position + acc.position,
           };
       }, { impressions: 0, clicks: 0, position: 0 });
-    
+
       return {
           ...totals,
-          ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0
+          ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
       };
     }, [stats]);
 
