@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import Icon from '../common/Icon';
 import Modal from '../common/Modal';
 import SelectField from '../common/SelectField';
@@ -23,10 +23,11 @@ type KeywordsInput = {
 }
 
 const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCity = false }: AddKeywordsProps) => {
-   const [error, setError] = useState<string>('');
-   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
    const inputRef = useRef(null);
    const defCountry = localStorage.getItem('default_country') || 'US';
+
+   const [error, setError] = useState<string>('');
+   const [showTagSuggestions, setShowTagSuggestions] = useState(false);
    const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '' });
    const { mutate: addMutate, isLoading: isAdding } = useAddKeywords(() => closeModal(false));
 
@@ -35,23 +36,45 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
       return [...new Set(allTags)];
    }, [keywords]);
 
+   const setDeviceType = useCallback((input:string) => {
+      let updatedDevice = '';
+      if (newKeywordsData.device.includes(input)) {
+         updatedDevice = newKeywordsData.device.replace(',', '').replace(input, '');
+      } else {
+         updatedDevice = newKeywordsData.device ? `${newKeywordsData.device},${input}` : input;
+      }
+      setNewKeywordsData({ ...newKeywordsData, device: updatedDevice });
+   }, [newKeywordsData]);
+
    const addKeywords = () => {
-      if (newKeywordsData.keywords) {
-         const keywordsArray = [...new Set(newKeywordsData.keywords.split('\n').map((item) => item.trim()).filter((item) => !!item))];
+      const nkwrds = newKeywordsData;
+      if (nkwrds.keywords) {
+         const devices = nkwrds.device.split(',');
+         const multiDevice = nkwrds.device.includes(',') && devices.length > 1;
+         const keywordsArray = [...new Set(nkwrds.keywords.split('\n').map((item) => item.trim()).filter((item) => !!item))];
          const currentKeywords = keywords.map((k) => `${k.keyword}-${k.device}-${k.country}${k.city ? `-${k.city}` : ''}`);
-         const keywordExist = keywordsArray.filter((k) => currentKeywords.includes(
-            `${k}-${newKeywordsData.device}-${newKeywordsData.country}${newKeywordsData.city ? `-${newKeywordsData.city}` : ''}`,
-         ));
-         if ((keywordsArray.length === 1 || currentKeywords.length === keywordExist.length) && keywordExist.length > 0) {
+
+         const keywordExist = keywordsArray.filter((k) =>
+            devices.some((device) => currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.city ? `-${nkwrds.city}` : ''}`)),
+         );
+
+         if (!multiDevice && (keywordsArray.length === 1 || currentKeywords.length === keywordExist.length) && keywordExist.length > 0) {
             setError(`Keywords ${keywordExist.join(',')} already Exist`);
             setTimeout(() => { setError(''); }, 3000);
          } else {
-            const filteredKeywords = keywordsArray.filter((k) => !currentKeywords.includes(
-               `${k}-${newKeywordsData.device}-${newKeywordsData.country}${newKeywordsData.city ? `-${newKeywordsData.city}` : ''}`,
-            ));
-            const { device, country, domain: kDomain, tags, city } = newKeywordsData;
-            const newKeywordsArray = filteredKeywords.map((nItem) => ({ keyword: nItem, device, country, domain: kDomain, tags, city }));
-            addMutate(newKeywordsArray);
+            const newKeywords = keywordsArray.flatMap((k) =>
+               devices.filter((device) =>
+                 !currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.city ? `-${nkwrds.city}` : ''}`),
+               ).map((device) => ({
+                 keyword: k,
+                 device,
+                 country: nkwrds.country,
+                 domain: nkwrds.domain,
+                 tags: nkwrds.tags,
+                 city: nkwrds.city,
+               })),
+             );
+            addMutate(newKeywords);
          }
       } else {
          setError('Please Insert a Keyword');
@@ -59,7 +82,7 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
       }
    };
 
-   const deviceTabStyle = 'cursor-pointer px-3 py-2 rounded mr-2';
+   const deviceTabStyle = 'cursor-pointer px-2 py-2 rounded';
 
    return (
       <Modal closeModal={() => { closeModal(false); }} title={'Add New Keywords'} width="[420px]">
@@ -92,13 +115,17 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                   </div>
                   <ul className='flex text-xs font-semibold text-gray-500'>
                      <li
-                        className={`${deviceTabStyle} ${newKeywordsData.device === 'desktop' ? '  bg-indigo-50 text-gray-700' : ''}`}
-                        onClick={() => setNewKeywordsData({ ...newKeywordsData, device: 'desktop' })}
-                        ><Icon type='desktop' classes={'top-[3px]'} size={15} /> <i className='not-italic hidden lg:inline-block'>Desktop</i></li>
+                        className={`${deviceTabStyle} mr-2 ${newKeywordsData.device.includes('desktop') ? '  bg-indigo-50 text-indigo-700' : ''}`}
+                        onClick={() => setDeviceType('desktop')}>
+                           <Icon type='desktop' classes={'top-[3px]'} size={15} /> <i className='not-italic hidden lg:inline-block'>Desktop</i>
+                           <Icon type='check' classes={'pl-1'} size={12} color={newKeywordsData.device.includes('desktop') ? '#4338ca' : '#bbb'} />
+                        </li>
                      <li
-                        className={`${deviceTabStyle} ${newKeywordsData.device === 'mobile' ? '  bg-indigo-50 text-gray-700' : ''}`}
-                        onClick={() => setNewKeywordsData({ ...newKeywordsData, device: 'mobile' })}
-                        ><Icon type='mobile' /> <i className='not-italic hidden lg:inline-block'>Mobile</i></li>
+                        className={`${deviceTabStyle} ${newKeywordsData.device.includes('mobile') ? '  bg-indigo-50 text-indigo-700' : ''}`}
+                        onClick={() => setDeviceType('mobile')}>
+                           <Icon type='mobile' /> <i className='not-italic hidden lg:inline-block'>Mobile</i>
+                           <Icon type='check' classes={'pl-1'} size={12} color={newKeywordsData.device.includes('mobile') ? '#4338ca' : '#bbb'} />
+                        </li>
                   </ul>
                </div>
                <div className='relative'>
