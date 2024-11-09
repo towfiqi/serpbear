@@ -78,7 +78,7 @@ const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => 
    const domainKeywords:Keyword[] = await Keyword.findAll(query);
    const keywordsArray = domainKeywords.map((el) => el.get({ plain: true }));
    const keywords: KeywordType[] = parseKeywords(keywordsArray);
-   const emailHTML = await generateEmail(domainName, keywords);
+   const emailHTML = await generateEmail(domainName, keywords, settings);
    await transporter.sendMail({
       from: fromEmail,
       to: domain.notification_emails || notification_email,

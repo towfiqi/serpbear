@@ -74,7 +74,7 @@ const getPositionChange = (history:KeywordHistory, position:number) : number => 
  * @param {keywords[]} keywords - Keywords to scrape
  * @returns {Promise}
  */
-const generateEmail = async (domainName:string, keywords:KeywordType[]) : Promise<string> => {
+const generateEmail = async (domainName:string, keywords:KeywordType[], settings: SettingsType) : Promise<string> => {
    const emailTemplate = await readFile(path.join(__dirname, '..', '..', '..', '..', 'email', 'email.html'), { encoding: 'utf-8' });
    const currentDate = dayjs(new Date()).format('MMMM D, YYYY');
    const keywordsCount = keywords.length;
@@ -113,7 +113,8 @@ const generateEmail = async (domainName:string, keywords:KeywordType[]) : Promis
          .replace('{{stat}}', stat)
          .replace('{{preheader}}', stat);
 
-      const isConsoleIntegrated = !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL);
+      const isConsoleIntegrated = !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL)
+      || (settings.search_console_client_email && settings.search_console_private_key);
       const htmlWithSCStats = isConsoleIntegrated ? await generateGoogeleConsoleStats(domainName) : '';
       const emailHTML = updatedEmail.replace('{{SCStatsTable}}', htmlWithSCStats);
 
