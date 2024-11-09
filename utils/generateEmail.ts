@@ -68,6 +68,19 @@ const getPositionChange = (history:KeywordHistory, position:number) : number => 
    return status;
 };
 
+const getBestKeywordPosition = (history: KeywordHistory) => {
+   let bestPos;
+   if (Object.keys(history).length > 0) {
+      const historyArray = Object.keys(history).map((itemID) => ({ date: itemID, position: history[itemID] }))
+          .sort((a, b) => a.position - b.position).filter((el) => (el.position > 0));
+      if (historyArray[0]) {
+         bestPos = { ...historyArray[0] };
+      }
+   }
+
+   return bestPos?.position || '-';
+};
+
 /**
  * Generate the Email HTML based on given domain name and its keywords
  * @param {string} domainName - Keywords to scrape
@@ -97,6 +110,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
       keywordsTable += `<tr class="keyword">
                            <td>${countryFlag} ${deviceIcon} ${keyword.keyword}</td>
                            <td>${keyword.position}${posChangeIcon}</td>
+                           <td>${getBestKeywordPosition(keyword.history)}</td>
                            <td>${timeSince(new Date(keyword.lastUpdated).getTime() / 1000)}</td>
                         </tr>`;
    });
