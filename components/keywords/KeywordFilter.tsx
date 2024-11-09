@@ -15,6 +15,8 @@ type KeywordFilterProps = {
    integratedConsole?: boolean,
    isConsole?: boolean,
    SCcountries?: string[];
+   updateColumns?: Function,
+   tableColumns?: string[]
 }
 
 const KeywordFilters = (props: KeywordFilterProps) => {
@@ -29,10 +31,13 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       filterParams,
       isConsole = false,
       integratedConsole = false,
+      updateColumns,
       SCcountries = [],
+      tableColumns = [],
     } = props;
    const [sortOptions, showSortOptions] = useState(false);
    const [filterOptions, showFilterOptions] = useState(false);
+   const [columnOptions, showColumnOptions] = useState(false);
 
    const keywordCounts = useMemo(() => {
       const counts = { desktop: 0, mobile: 0 };
@@ -83,6 +88,17 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       { value: 'alpha_desc', label: 'Alphabetically(Z-A)' },
       { value: 'vol_asc', label: 'Lowest Search Volume' },
       { value: 'vol_desc', label: 'Highest Search Volume' },
+   ];
+
+   const columnOptionChoices: {label: string, value: string, locked: boolean}[] = [
+      { value: 'Keyword', label: 'Keyword', locked: true },
+      { value: 'Position', label: 'Position', locked: true },
+      { value: 'URL', label: 'URL', locked: true },
+      { value: 'Updated', label: 'Updated', locked: true },
+      { value: 'Best', label: 'Best', locked: false },
+      { value: 'History', label: 'History', locked: false },
+      { value: 'Volume', label: 'Volume', locked: false },
+      { value: 'Search Console', label: 'Search Console', locked: false },
    ];
    if (integratedConsole) {
       sortOptionChoices.push({ value: 'imp_desc', label: `Most Viewed${isConsole ? ' (Default)' : ''}` });
@@ -190,6 +206,43 @@ const KeywordFilters = (props: KeywordFilterProps) => {
                      </ul>
                   )}
                </div>
+               {!isConsole && (
+                  <div className='relative'>
+                  <button
+                  data-testid="columns_button"
+                  className={`px-2 py-1 rounded ${columnOptions ? ' bg-indigo-100 text-blue-700' : ''}`}
+                  title='Show/Hide Columns'
+                  onClick={() => showColumnOptions(!columnOptions)}
+                  >
+                     <Icon type='eye-closed' size={18} />
+                  </button>
+                  {columnOptions && (
+                     <ul
+                     data-testid="sort_options"
+                     className='sort_options mt-2 border absolute w-48 min-w-[0] right-0 rounded-lg
+                     max-h-96 bg-white z-[9999] overflow-y-auto styled-scrollbar border-gray-200 '>
+                        {columnOptionChoices.map(({ value, label, locked }) => {
+                           return <li
+                                    key={value}
+                                    className={sortItemStyle(value) + (locked ? 'bg-gray-50 cursor-not-allowed pointer-events-none' : '') }
+                                    onClick={() => { if (updateColumns) { updateColumns(value); } showColumnOptions(false); }}
+                                    >
+                                       <span className={' inline-block px-[3px] border border-gray-200  rounded-[4px] w-5'}>
+                                          <Icon
+                                          title={locked ? 'Cannot be Hidden' : ''}
+                                          type={locked ? 'lock' : 'check'}
+                                          color={!tableColumns.includes(value) && !locked ? 'transparent' : '#999' }
+                                          size={12}
+                                          />
+                                        </span>
+                                       {' '}{label}
+
+                                    </li>;
+                        })}
+                     </ul>
+                  )}
+               </div>
+               )}
          </div>
       </div>
    );

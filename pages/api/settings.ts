@@ -129,6 +129,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          search_console: true,
          search_console_client_email: '',
          search_console_private_key: '',
+         keywordsColumns: ['Best', 'History', 'Volume', 'Search Console'],
       };
       const otherSettings = {
          available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import { filterKeywords, keywordsByDevice, sortKeywords } from '../../utils/client/sortFilter';
@@ -12,6 +12,8 @@ import KeywordTagManager from './KeywordTagManager';
 import AddTags from './AddTags';
 import useWindowResize from '../../hooks/useWindowResize';
 import useIsMobile from '../../hooks/useIsMobile';
+import { useUpdateSettings } from '../../services/settings';
+import { defaultSettings } from '../settings/Settings';
 
 type KeywordsTableProps = {
    domain: DomainType | null,
@@ -20,10 +22,12 @@ type KeywordsTableProps = {
    showAddModal: boolean,
    setShowAddModal: Function,
    isConsoleIntegrated: boolean,
+   settings?: SettingsType
 }
 
 const KeywordsTable = (props: KeywordsTableProps) => {
-   const { keywords = [], isLoading = true, isConsoleIntegrated = false } = props;
+   const titleColumnRef = useRef(null);
+   const { keywords = [], isLoading = true, isConsoleIntegrated = false, settings } = props;
    const showSCData = isConsoleIntegrated;
    const [device, setDevice] = useState<string>('desktop');
    const [selectedKeywords, setSelectedKeywords] = useState<number[]>([]);
@@ -36,11 +40,27 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    const [sortBy, setSortBy] = useState<string>('date_asc');
    const [scDataType, setScDataType] = useState<string>('threeDays');
    const [showScDataTypes, setShowScDataTypes] = useState<boolean>(false);
+   const [maxTitleColumnWidth, setMaxTitleColumnWidth] = useState(235);
    const { mutate: deleteMutate } = useDeleteKeywords(() => {});
    const { mutate: favoriteMutate } = useFavKeywords(() => {});
    const { mutate: refreshMutate } = useRefreshKeywords(() => {});
    const [isMobile] = useIsMobile();
-   useWindowResize(() => setSCListHeight(window.innerHeight - (isMobile ? 200 : 400)));
+
+   useWindowResize(() => {
+      setSCListHeight(window.innerHeight - (isMobile ? 200 : 400));
+      if (titleColumnRef.current) {
+         setMaxTitleColumnWidth((titleColumnRef.current as HTMLElement).clientWidth);
+      }
+   });
+
+   useEffect(() => {
+      if (titleColumnRef.current) {
+         setMaxTitleColumnWidth((titleColumnRef.current as HTMLElement).clientWidth);
+      }
+   }, [titleColumnRef]);
+
+   const tableColumns = settings?.keywordsColumns || ['Best', 'History', 'Volume', 'Search Console'];
+   const { mutate: updateMutate, isLoading: isUpdatingSettings } = useUpdateSettings(() => console.log(''));
 
    const scDataObject:{ [k:string] : string} = {
       threeDays: 'Last Three Days',
@@ -71,6 +91,16 @@ const KeywordsTable = (props: KeywordsTableProps) => {
       }
       setSelectedKeywords(updatedSelectd);
    };
+
+   const updateColumns = (column:string) => {
+      const newColumns = tableColumns.includes(column) ? tableColumns.filter((col) => col !== column) : [...tableColumns, column];
+      updateMutate({ ...defaultSettings, ...settings, keywordsColumns: newColumns });
+   };
+
+   const shouldHideColumn = useCallback((col:string) => {
+      return settings?.keywordsColumns && !settings?.keywordsColumns.includes(col) ? 'lg:hidden' : '';
+   }, [settings?.keywordsColumns]);
+
    const Row = ({ data, index, style }:ListChildComponentProps) => {
       const keyword = data[index];
       return (
@@ -89,6 +119,8 @@ const KeywordsTable = (props: KeywordsTableProps) => {
          lastItem={index === (processedKeywords[device].length - 1)}
          showSCData={showSCData}
          scDataType={scDataType}
+         tableColumns={tableColumns}
+         maxTitleColumnWidth={maxTitleColumnWidth}
          />
       );
    };
@@ -136,15 +168,19 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                   keywords={keywords}
                   device={device}
                   setDevice={setDevice}
+                  updateColumns={updateColumns}
+                  tableColumns={tableColumns}
                   integratedConsole={isConsoleIntegrated}
                />
             )}
-            <div className={`domkeywordsTable domkeywordsTable--keywords ${showSCData ? 'domkeywordsTable--hasSC' : ''} 
+            <div className={`domkeywordsTable domkeywordsTable--keywords 
+            ${showSCData && tableColumns.includes('Search Console') ? 'domkeywordsTable--hasSC' : ''} 
                styled-scrollbar w-full overflow-auto min-h-[60vh]`}>
                <div className=' lg:min-w-[800px]'>
                   <div className={`domKeywords_head domKeywords_head--${sortBy} hidden lg:flex p-3 px-6 bg-[#FCFCFF]
                    text-gray-600 justify-between items-center font-semibold border-y`}>
-                     <span className='domKeywords_head_keyword flex-1 basis-[4rem] w-auto '>
+                     <span ref={titleColumnRef} className={`domKeywords_head_keyword flex-1 basis-[4rem] w-auto lg:flex-1 
+                        ${showSCData && tableColumns.includes('Search Console') ? 'lg:basis-20' : 'lg:basis-10'} lg:w-auto lg:flex lg:items-center `}>
                      {processedKeywords[device].length > 0 && (
                         <button
                            className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px]  border border-slate-300 
@@ -154,16 +190,20 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                               <Icon type="check" size={10} />
                         </button>
                      )}
-                        Keyword
+                  {/* ${showSCData ? 'lg:min-w-[220px]' : 'lg:min-w-[280px]'} */}
+                        <span className={`inline-block lg:flex lg:items-center 
+                           ${showSCData && tableColumns.includes('Search Console') ? 'lg:max-w-[235px]' : ''}`}>
+                           Keyword
+                        </span>
                      </span>
                      <span className='domKeywords_head_position flex-1 basis-24 grow-0 text-center'>Position</span>
-                     <span className='domKeywords_head_best flex-1 basis-16 grow-0 text-center'>Best</span>
-                     <span className='domKeywords_head_history flex-1 basis-20 grow-0'>History (7d)</span>
-                     <span className='domKeywords_head_volume flex-1 basis-24 grow-0 text-center'>Volume</span>
+                     <span className={`domKeywords_head_best flex-1 basis-16 grow-0 text-center  ${shouldHideColumn('Best')}`}>Best</span>
+                     <span className={`domKeywords_head_history flex-1 basis-20 grow-0  ${shouldHideColumn('History')}`}>History (7d)</span>
+                     <span className={`domKeywords_head_volume flex-1 basis-24 grow-0 text-center ${shouldHideColumn('Volume')}`}>Volume</span>
                      <span className='domKeywords_head_url flex-1'>URL</span>
-                     <span className='domKeywords_head_updated flex-1 relative left-3'>Updated</span>
-                     {showSCData && (
-                        <div className='domKeywords_head_sc flex-1 min-w-[170px] mr-7 text-center'>
+                     <span className='domKeywords_head_updated flex-1 relative left-3 max-w-[150px]'>Updated</span>
+                     {showSCData && tableColumns.includes('Search Console') && (
+                        <div className='domKeywords_head_sc flex-1 min-w-[170px] lg:max-w-[170px] mr-7 text-center'>
                            {/* Search Console */}
                            <div>
                               <div

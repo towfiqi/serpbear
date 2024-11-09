@@ -85,6 +85,7 @@ type SettingsType = {
    notification_interval: string,
    notification_email: string,
    notification_email_from: string,
+   notification_email_from_name: string,
    smtp_server: string,
    smtp_port: string,
    smtp_username?: string,
@@ -105,6 +106,7 @@ type SettingsType = {
    adwords_refresh_token?: string,
    adwords_developer_token?: string,
    adwords_account_id?: string,
+   keywordsColumns: string[]
 }
 
 type KeywordSCDataChild = {

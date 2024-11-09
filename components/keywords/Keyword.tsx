@@ -21,7 +21,9 @@ type KeywordProps = {
    lastItem?:boolean,
    showSCData: boolean,
    scDataType: string,
-   style: Object
+   style: Object,
+   maxTitleColumnWidth: number,
+   tableColumns? : string[]
 }
 
 const Keyword = (props: KeywordProps) => {
@@ -39,12 +41,16 @@ const Keyword = (props: KeywordProps) => {
       style,
       index,
       scDataType = 'threeDays',
+      tableColumns = [],
+      maxTitleColumnWidth,
    } = props;
    const {
       keyword, domain, ID, city, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = false, volume,
    } = keywordData;
+
    const [showOptions, setShowOptions] = useState(false);
    const [showPositionError, setPositionError] = useState(false);
+
    const turncatedURL = useMemo(() => {
       return url.replace(`https://${domain}`, '').replace(`https://www.${domain}`, '').replace(`http://${domain}`, '');
    }, [url, domain]);
@@ -91,7 +97,7 @@ const Keyword = (props: KeywordProps) => {
       className={`keyword relative py-5 px-4 text-gray-600 border-b-[1px] border-gray-200 lg:py-4 lg:px-6 lg:border-0 
       lg:flex lg:justify-between lg:items-center ${selected ? ' bg-indigo-50 keyword--selected' : ''} ${lastItem ? 'border-b-0' : ''}`}>
 
-         <div className=' w-3/4 font-semibold cursor-pointer lg:flex-1 lg:basis-20 lg:w-auto lg:flex lg:items-center'>
+         <div className=' w-3/4 font-semibold cursor-pointer lg:flex-1 lg:shrink-0 lg:basis-20 lg:w-auto lg:flex lg:items-center'>
             <button
                className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border 
                ${selected ? ' bg-blue-700 border-blue-700 text-white' : 'text-transparent'}`}
@@ -100,10 +106,15 @@ const Keyword = (props: KeywordProps) => {
                   <Icon type="check" size={10} />
             </button>
             <a
-            className={`py-2 hover:text-blue-600 lg:flex lg:items-center lg:w-full ${showSCData ? 'lg:max-w-[180px]' : 'lg:max-w-[240px]'}`}
-            onClick={() => showKeywordDetails()}>
+            style={{ maxWidth: `${maxTitleColumnWidth - 35}px` }}
+            className={'py-2 hover:text-blue-600 lg:flex lg:items-center w-full'}
+            onClick={() => showKeywordDetails()}
+            title={keyword}
+            >
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />
-               <span className=' text-ellipsis overflow-hidden whitespace-nowrap w-[calc(100%-30px)]'>{keyword}{city ? ` (${city})` : ''}</span>
+               <span className='inline-block text-ellipsis overflow-hidden whitespace-nowrap w-[calc(100%-50px)]'>
+                  {keyword}{city ? ` (${city})` : ''}
+               </span>
             </a>
             {sticky && <button className='ml-2 relative top-[2px]' title='Favorite'><Icon type="star-filled" size={16} color="#fbd346" /></button>}
             {lastUpdateError && lastUpdateError.date
@@ -126,13 +137,15 @@ const Keyword = (props: KeywordProps) => {
             ? new Date(bestPosition.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }) : ''
          }
          className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
-          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-16 lg:grow-0 lg:right-0 text-center font-semibold`}>
+          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-16 lg:grow-0 lg:right-0 text-center font-semibold
+          ${!tableColumns.includes('Best') ? 'lg:hidden' : ''}
+          `}>
             {bestPosition ? bestPosition.position || '-' : (position || '-')}
          </div>
 
          {chartData.labels.length > 0 && (
             <div
-               className='hidden basis-20 grow-0 cursor-pointer lg:block'
+               className={`hidden basis-20 grow-0 cursor-pointer lg:block ${!tableColumns.includes('History') ? 'lg:hidden' : ''}`}
                onClick={() => showKeywordDetails()}>
                <ChartSlim labels={chartData.labels} sreies={chartData.sreies} />
             </div>
@@ -140,26 +153,28 @@ const Keyword = (props: KeywordProps) => {
 
          <div
          className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
-          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-24 lg:grow-0 lg:right-0 text-center`}>
+          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-24 lg:grow-0 lg:right-0 text-center
+          ${!tableColumns.includes('Volume') ? 'lg:hidden' : ''}
+          `}>
             {formattedNum(volume)}
          </div>
 
          <div
          className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 text-gray-400 lg:m-0 max-w-[70px] 
-         overflow-hidden text-ellipsis whitespace-nowrap lg:max-w-none lg:pr-5`}>
+         overflow-hidden text-ellipsis whitespace-nowrap lg:max-w-none lg:pr-5 lg:pl-3`}>
             <a href={url} target="_blank" rel="noreferrer"><span className='mr-3 lg:hidden'>
                <Icon type="link-alt" size={14} color="#999" /></span>{turncatedURL || '-'}
             </a>
          </div>
 
          <div
-         className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0 lg:top-0'>
+         className='inline-block mt-[4] top-[-5px] relative lg:flex-1 lg:m-0 lg:top-0 max-w-[150px]'>
             <span className='mr-2 lg:hidden'><Icon type="clock" size={14} color="#999" /></span>
             <TimeAgo title={dayjs(lastUpdated).format('DD-MMM-YYYY, hh:mm:ss A')} date={lastUpdated} />
          </div>
 
-         {showSCData && (
-            <div className='keyword_sc_data min-w-[170px] text-xs mt-4 pt-2 border-t border-gray-100 top-[6px]
+         {showSCData && tableColumns.includes('Search Console') && (
+            <div className='keyword_sc_data min-w-[170px] lg:max-w-[170px] text-xs mt-4 pt-2 border-t border-gray-100 top-[6px]
             relative flex justify-between text-center lg:flex-1 lg:text-sm lg:m-0 lg:mt-0 lg:border-t-0 lg:pt-0 lg:top-0'>
                <span className='min-w-[40px]'>
                   <span className='lg:hidden'>SC Position: </span>

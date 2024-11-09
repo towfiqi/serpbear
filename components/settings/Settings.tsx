@@ -17,7 +17,7 @@ type SettingsError = {
    msg: string
 }
 
-const defaultSettings: SettingsType = {
+export const defaultSettings: SettingsType = {
    scraper_type: 'none',
    scrape_delay: 'none',
    scrape_retry: false,
@@ -32,6 +32,7 @@ const defaultSettings: SettingsType = {
    search_console: true,
    search_console_client_email: '',
    search_console_private_key: '',
+   keywordsColumns: ['Best', 'History', 'Volume', 'Search Console'],
 };
 
 const Settings = ({ closeSettings }:SettingsProps) => {

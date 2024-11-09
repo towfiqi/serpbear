@@ -80,6 +80,7 @@ const SingleDomain: NextPage = () => {
                showAddModal={showAddKeywords}
                setShowAddModal={setShowAddKeywords}
                isConsoleIntegrated={!!(appSettings && appSettings.search_console_integrated) || domainHasScAPI }
+               settings={appSettings}
                />
             </div>
          </div>
