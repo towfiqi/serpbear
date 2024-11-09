@@ -8,6 +8,10 @@ body {
    background-color: #f8f9ff;
 }
 
+.max-w-7xl {
+   max-width: 90rem;
+}
+
 .domKeywords {
    /* min-height: 70vh; */
    border-color: #e9ebff;
