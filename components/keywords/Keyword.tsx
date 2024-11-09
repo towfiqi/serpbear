@@ -136,8 +136,8 @@ const Keyword = (props: KeywordProps) => {
          title={bestPosition && bestPosition.date
             ? new Date(bestPosition.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }) : ''
          }
-         className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
-          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-16 lg:grow-0 lg:right-0 text-center font-semibold
+         className={`keyword_best mr-1 bg-[#f8f9ff] float-right mt-8 w-14 rounded right-5 lg:relative lg:block
+          lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:mr-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-16 lg:grow-0 lg:right-0 text-center font-semibold
           ${!tableColumns.includes('Best') ? 'lg:hidden' : ''}
           `}>
             {bestPosition ? bestPosition.position || '-' : (position || '-')}
@@ -152,7 +152,7 @@ const Keyword = (props: KeywordProps) => {
          )}
 
          <div
-         className={`keyword_best hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
+         className={`hidden bg-[#f8f9ff] w-fit min-w-[50px] h-12 p-2 text-base mt-[-20px] rounded right-5 lg:relative lg:block
           lg:bg-transparent lg:w-auto lg:h-auto lg:mt-0 lg:p-0 lg:text-sm lg:flex-1 lg:basis-24 lg:grow-0 lg:right-0 text-center
           ${!tableColumns.includes('Volume') ? 'lg:hidden' : ''}
           `}>

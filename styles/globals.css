@@ -305,6 +305,13 @@ body {
    background-color: #f9ded7;
 }
 
+@media screen and (max-width: 760px){
+   .keyword_best:before{
+      content: "Best: ";
+   }
+}
+
+
 /* Disable LastPass Icon for Secret Field */
 [autocomplete="off"] + div[data-lastpass-icon-root="true"], [autocomplete="off"] + div[data-lastpass-infield="true"] {
    display: none;
