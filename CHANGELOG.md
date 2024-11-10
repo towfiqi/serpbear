@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.4](https://github.com/towfiqi/serpbear/compare/v2.0.3...v2.0.4) (2024-11-10)
+
+
+### Bug Fixes
+
+* Fixes Docker build issue. ([1bef758](https://github.com/towfiqi/serpbear/commit/1bef7587cccada6df48cfa3d208bf123a5d00c30))
+
 ### [2.0.3](https://github.com/towfiqi/serpbear/compare/v2.0.2...v2.0.3) (2024-11-10)
 
 
