@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.3](https://github.com/towfiqi/serpbear/compare/v2.0.2...v2.0.3) (2024-11-10)
+
+
+### Features
+
+* Ability to keywords for both mobile and desktop at once. ([3786438](https://github.com/towfiqi/serpbear/commit/3786438662f015613330912f668c161f007f3eef)), closes [#60](https://github.com/towfiqi/serpbear/issues/60) [#66](https://github.com/towfiqi/serpbear/issues/66) [#199](https://github.com/towfiqi/serpbear/issues/199)
+* Adds ability to set Notification Email From name. ([b35d333](https://github.com/towfiqi/serpbear/commit/b35d333bfcdf0765bd105f74c8b324aec6d98b22)), closes [#222](https://github.com/towfiqi/serpbear/issues/222)
+* Adds the ability to show hide columns in tracked keywords table. ([d3e3760](https://github.com/towfiqi/serpbear/commit/d3e37605279c48f7a56b2ef5125c32a00b948e05)), closes [#224](https://github.com/towfiqi/serpbear/issues/224)
+* auto filter keywords if they already exist instead of throwing error. ([a09eb62](https://github.com/towfiqi/serpbear/commit/a09eb62f5a65f584c32ddb5c46018dc404d3e1f3)), closes [#244](https://github.com/towfiqi/serpbear/issues/244)
+* Displays Best position on mobile layout as well. ([a74338f](https://github.com/towfiqi/serpbear/commit/a74338fe15bee0fbc65a5197ee56db5d6a629bc8))
+* Displays keyword's best position in email notification. ([4c2f900](https://github.com/towfiqi/serpbear/commit/4c2f900d85e56b1994630942c9ea53d0fd0b4cdb))
+* Keywords Country filter now only shows relevant countries. ([a050536](https://github.com/towfiqi/serpbear/commit/a0505368140076d6626647993a41a5f4ef9db019))
+* Makes Content width a little wider. ([42c5e2b](https://github.com/towfiqi/serpbear/commit/42c5e2be0777a1bd72aa53bdf3c211075793a6e8))
+
+
+### Bug Fixes
+
+* Correct CTR calculation in InsightStats component ([232507e](https://github.com/towfiqi/serpbear/commit/232507e1ff7519cfc82f3818d3b757f2c427b52a))
+* Fixes incorrect position display in keyword detail view when position is above 100 ([01b1b7b](https://github.com/towfiqi/serpbear/commit/01b1b7b9e9c603e470217ad476dd54359d7d35b8))
+* Fixes missing keyword city value in exported csv file. ([f482884](https://github.com/towfiqi/serpbear/commit/f48288473e910c00e7c9178366a394e891bc47c7)), closes [#194](https://github.com/towfiqi/serpbear/issues/194)
+* Fixes missing Search Console data in Email notification when its integrated through App settings. ([040dab1](https://github.com/towfiqi/serpbear/commit/040dab15177d81874a6eb89f913a450f8a6f212d))
+* Resolves incorrect search trend graph in Ideas section. ([7597210](https://github.com/towfiqi/serpbear/commit/7597210ca2018b4abc82d441d2fc871e46295307)), closes [#219](https://github.com/towfiqi/serpbear/issues/219)
+* Resolves notification email's incorrect image size in some email clients. ([bc96dc7](https://github.com/towfiqi/serpbear/commit/bc96dc7de50844fbda19a89961c36cc65ac0b97b)), closes [#201](https://github.com/towfiqi/serpbear/issues/201)
+* update scraping robot typo in README ([c24b630](https://github.com/towfiqi/serpbear/commit/c24b63009c48c61218ea96511b11fe1a4f2ff239))
+
 ### [2.0.2](https://github.com/towfiqi/serpbear/compare/v2.0.1...v2.0.2) (2024-03-13)
 
 
