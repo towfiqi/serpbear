@@ -66,7 +66,10 @@ const KeywordFilters = (props: KeywordFilterProps) => {
       const optionObject:{label:string, value:string}[] = [];
 
       if (!isConsole) {
-         const allCountries = keywords.reduce((acc: string[], keyword) => [...acc, keyword.country], []).filter((t) => t && t.trim() !== '');
+         const allCountries = Array.from(keywords as KeywordType[])
+         .map((keyword) => keyword.country)
+         .reduce<string[]>((acc, country) => [...acc, country], [])
+         .filter((t) => t && t.trim() !== '');
          [...new Set(allCountries)].forEach((c) => optionObject.push({ label: countries[c][0], value: c }));
       } else {
          Object.keys(countries).forEach((countryISO:string) => {

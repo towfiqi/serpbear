@@ -1,5 +1,6 @@
-FROM node:lts-alpine AS deps
-
+FROM node:22.11.0-alpine3.20 AS deps
+ENV NPM_VERSION=10.3.0
+RUN npm install -g npm@"${NPM_VERSION}"
 WORKDIR /app
 
 COPY package.json ./
@@ -7,8 +8,10 @@ RUN npm install
 COPY . .
 
 
-FROM node:lts-alpine AS builder
+FROM node:22.11.0-alpine3.20 AS builder
 WORKDIR /app
+ENV NPM_VERSION=10.3.0
+RUN npm install -g npm@"${NPM_VERSION}"
 COPY --from=deps /app ./
 RUN rm -rf /app/data
 RUN rm -rf /app/__tests__
@@ -16,9 +19,11 @@ RUN rm -rf /app/__mocks__
 RUN npm run build
 
 
-FROM node:lts-alpine AS runner
+FROM node:22.11.0-alpine3.20 AS runner
 WORKDIR /app
-ENV NODE_ENV production
+ENV NPM_VERSION=10.3.0
+RUN npm install -g npm@"${NPM_VERSION}"
+ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 RUN set -xe && mkdir -p /app/data && chown nextjs:nodejs /app/data
