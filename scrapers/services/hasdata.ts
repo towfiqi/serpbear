@@ -20,11 +20,10 @@ const hasdata:ScraperSettings = {
    scrapeURL: (keyword, settings) => {
       const country = keyword.country || 'US';
       const countryName = countries[country][0];
-      const location = keyword.city && countryName ? `&location=${encodeURI(`${keyword.city},${countryName}`)}` : '';
-      return `https://api.scrape-it.cloud/scrape/google/serp?q=${encodeURI(keyword.keyword)}${location}&num=100&gl=${country.toLowerCase()}&deviceType=${keyword.device}`;
+      const location = keyword.city && countryName ? `&location=${encodeURIComponent(`${keyword.city},${countryName}`)}` : '';
+      return `https://api.scrape-it.cloud/scrape/google/serp?q=${encodeURIComponent(keyword.keyword)}${location}&num=100&gl=${country.toLowerCase()}&deviceType=${keyword.device}`;
    },
    resultObjectKey: 'organicResults',
-   
    serpExtractor: (content) => {
       const extractedResult = [];
       const results: HasDataResult[] = (typeof content === 'string') ? JSON.parse(content) : content as HasDataResult[];

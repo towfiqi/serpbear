@@ -20,7 +20,7 @@ const serply:ScraperSettings = {
    },
    scrapeURL: (keyword) => {
       const country = scraperCountries.includes(keyword.country.toUpperCase()) ? keyword.country : 'US';
-      return `https://api.serply.io/v1/search/q=${encodeURI(keyword.keyword)}&num=100&hl=${country}`;
+      return `https://api.serply.io/v1/search/q=${encodeURIComponent(keyword.keyword)}&num=100&hl=${country}`;
    },
    resultObjectKey: 'result',
    serpExtractor: (content) => {

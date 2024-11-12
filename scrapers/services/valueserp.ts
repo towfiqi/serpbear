@@ -15,11 +15,11 @@ const valueSerp:ScraperSettings = {
    scrapeURL: (keyword, settings, countryData) => {
       const country = keyword.country || 'US';
       const countryName = countries[country][0];
-      const location = keyword.city ? `&location=${encodeURI(`${keyword.city},${countryName}`)}` : '';
+      const location = keyword.city ? `&location=${encodeURIComponent(`${keyword.city},${countryName}`)}` : '';
       const device = keyword.device === 'mobile' ? '&device=mobile' : '';
       const lang = countryData[country][2];
-      console.log(`https://api.valueserp.com/search?api_key=${settings.scaping_api}&q=${encodeURI(keyword.keyword)}&gl=${country}&hl=${lang}${device}${location}&num=100&output=json&include_answer_box=false&include_advertiser_info=false`);
-      return `https://api.valueserp.com/search?api_key=${settings.scaping_api}&q=${encodeURI(keyword.keyword)}&gl=${country}&hl=${lang}${device}${location}&num=100&output=json&include_answer_box=false&include_advertiser_info=false`;
+      console.log(`https://api.valueserp.com/search?api_key=${settings.scaping_api}&q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}${device}${location}&num=100&output=json&include_answer_box=false&include_advertiser_info=false`);
+      return `https://api.valueserp.com/search?api_key=${settings.scaping_api}&q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}${device}${location}&num=100&output=json&include_answer_box=false&include_advertiser_info=false`;
    },
    resultObjectKey: 'organic_results',
    serpExtractor: (content) => {

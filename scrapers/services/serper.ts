@@ -12,7 +12,8 @@ const serper:ScraperSettings = {
    scrapeURL: (keyword, settings, countryData) => {
       const country = keyword.country || 'US';
       const lang = countryData[country][2];
-      return `https://google.serper.dev/search?q=${encodeURI(keyword.keyword)}&gl=${country}&hl=${lang}&num=100&apiKey=${settings.scaping_api}`;
+      console.log('Serper URL :', `https://google.serper.dev/search?q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}&num=100&apiKey=${settings.scaping_api}`);
+      return `https://google.serper.dev/search?q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}&num=100&apiKey=${settings.scaping_api}`;
    },
    resultObjectKey: 'organic',
    serpExtractor: (content) => {
