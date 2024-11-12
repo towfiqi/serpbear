@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.5](https://github.com/towfiqi/serpbear/compare/v2.0.4...v2.0.5) (2024-11-12)
+
+
+### Bug Fixes
+
+* Fixes broken scrape result issue for keywords with special characters. ([d9d7c63](https://github.com/towfiqi/serpbear/commit/d9d7c6347e99e35f1e48f20b1e8f999612d69a72)), closes [#221](https://github.com/towfiqi/serpbear/issues/221)
+* Fixes misaligned Keywords table UI content. ([faa3519](https://github.com/towfiqi/serpbear/commit/faa3519a29fc61ef8bd2ce9275a6674f1c7946e0))
+* Resolves "Add Domain" UI confusion. ([17fb2c4](https://github.com/towfiqi/serpbear/commit/17fb2c40cc6b57ab2fe6aeb940dececd1a83411f))
+* Resolves broken Scrapingrobot scraper on new installs. ([bc02c92](https://github.com/towfiqi/serpbear/commit/bc02c929ba7efd6b4b6a09495af7310c155a26bd)), closes [#243](https://github.com/towfiqi/serpbear/issues/243)
+
 ### [2.0.4](https://github.com/towfiqi/serpbear/compare/v2.0.3...v2.0.4) (2024-11-10)
 
 
