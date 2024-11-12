@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, CreateAxiosDefaults } from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import { readFile, writeFile } from 'fs/promises';
 import HttpsProxyAgent from 'https-proxy-agent';
 import countries from './countries';
@@ -124,7 +124,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          throw new Error(res);
       }
    } catch (error:any) {
-      refreshedResults.error = scraperError;
+      refreshedResults.error = scraperError || 'Unknown Error';
       if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
          refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
       }
