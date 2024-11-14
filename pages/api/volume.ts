@@ -36,14 +36,13 @@ const updatekeywordVolume = async (req: NextApiRequest, res: NextApiResponse<Key
          keywordsToSend = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
       }
       if (domain) {
-         // const allDomain = domain === 'all';
-         // const allKeywords:Keyword[] = allDomain ? await Keyword.findAll() : await Keyword.findAll(allDomain ? {} : { where: { domain } });
-         // keywordsToSend = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
+         const allDomain = domain === 'all';
+         const allKeywords:Keyword[] = allDomain ? await Keyword.findAll() : await Keyword.findAll(allDomain ? {} : { where: { domain } });
+         keywordsToSend = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
       }
 
       if (keywordsToSend.length > 0) {
          const keywordsVolumeData = await getKeywordsVolume(keywordsToSend);
-         // console.log('keywordsVolumeData :', keywordsVolumeData);
          if (keywordsVolumeData.error) {
             return res.status(400).json({ keywords: [], error: keywordsVolumeData.error });
          }
