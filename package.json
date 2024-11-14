@@ -27,7 +27,7 @@
     "cheerio": "^1.0.0",
     "concurrently": "^7.6.0",
     "cookies": "^0.8.0",
-    "croner": "^5.3.5",
+    "croner": "^9.0.0",
     "cryptr": "^6.0.3",
     "dayjs": "^1.11.5",
     "dotenv": "^16.0.3",

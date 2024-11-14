@@ -1,7 +1,8 @@
+/* eslint-disable no-new */
 const Cryptr = require('cryptr');
 const { promises } = require('fs');
 const { readFile } = require('fs');
-const Cron = require('croner');
+const { Cron } = require('croner');
 require('dotenv').config({ path: './.env.local' });
 
 const getAppSettings = async () => {
@@ -71,7 +72,7 @@ const runAppCronJobs = () => {
       const scrape_interval = settings.scrape_interval || 'daily';
       if (scrape_interval !== 'never') {
          const scrapeCronTime = generateCronTime(scrape_interval);
-         Cron(scrapeCronTime, () => {
+         new Cron(scrapeCronTime, () => {
             // console.log('### Running Keyword Position Cron Job!');
             const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
             fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cron`, fetchOpts)
@@ -89,7 +90,7 @@ const runAppCronJobs = () => {
       if (notif_interval) {
          const cronTime = generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval);
          if (cronTime) {
-            Cron(cronTime, () => {
+            new Cron(cronTime, () => {
                // console.log('### Sending Notification Email...');
                const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
                fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notify`, fetchOpts)
@@ -106,7 +107,7 @@ const runAppCronJobs = () => {
 
    // Run Failed scraping CRON (Every Hour)
    const failedCronTime = generateCronTime('hourly');
-   Cron(failedCronTime, () => {
+   new Cron(failedCronTime, () => {
       // console.log('### Retrying Failed Scrapes...');
 
       readFile(`${process.cwd()}/data/failed_queue.json`, { encoding: 'utf-8' }, (err, data) => {
@@ -135,7 +136,7 @@ const runAppCronJobs = () => {
    // Run Google Search Console Scraper Daily
    if (process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL) {
       const searchConsoleCRONTime = generateCronTime('daily');
-      Cron(searchConsoleCRONTime, () => {
+      new Cron(searchConsoleCRONTime, () => {
          const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
          fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/searchconsole`, fetchOpts)
          .then((res) => res.json())
