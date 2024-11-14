@@ -1,22 +1,26 @@
 import { render } from '@testing-library/react';
-import { rest } from 'msw';
+import { http } from 'msw';
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 export const handlers = [
-    rest.get(
+    http.get(
         '*/react-query',
-        (req, res, ctx) => {
-            return res(
-                ctx.status(200),
-                ctx.json({
+        ({ request, params }) => {
+            return new Response(
+                JSON.stringify({
                     name: 'mocked-react-query',
                 }),
+                {
+                    status: 200,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
             );
         },
     ),
 ];
-
 const createTestQueryClient = () => new QueryClient({
     defaultOptions: {
         queries: {
