@@ -40,7 +40,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.sequelizerc ./.sequelizerc
 COPY --from=builder --chown=nextjs:nodejs /app/entrypoint.sh ./entrypoint.sh
 RUN rm package.json
 RUN npm init -y 
-RUN npm i cryptr dotenv croner @googleapis/searchconsole sequelize-cli @isaacs/ttlcache
+RUN npm i cryptr@6.0.3 dotenv@16.0.3 croner@9.0.0 @googleapis/searchconsole@1.0.5 sequelize-cli@6.6.2 @isaacs/ttlcache@1.4.1
 RUN npm i -g concurrently
 
 USER nextjs

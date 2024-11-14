@@ -18,7 +18,7 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@googleapis/searchconsole": "^1.0.0",
+    "@googleapis/searchconsole": "^1.0.5",
     "@isaacs/ttlcache": "^1.4.1",
     "@types/react-transition-group": "^4.4.5",
     "axios": "^1.7.7",
