@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.6](https://github.com/towfiqi/serpbear/compare/v2.0.5...v2.0.6) (2024-11-15)
+
+
+### Bug Fixes
+
+* Ensures Docker build uses matching npm package versions from package.json ([4fef1a9](https://github.com/towfiqi/serpbear/commit/4fef1a9abc737da67ab1ea0c4efce8194890545e))
+* Resolves broken Docker build due to croner package version mismatch. ([aeed1f8](https://github.com/towfiqi/serpbear/commit/aeed1f8559e044bf658d930a22fa91f38cfedc6b)), closes [#247](https://github.com/towfiqi/serpbear/issues/247)
+* Resolves broken Proxy Scraper functionality. ([649f412](https://github.com/towfiqi/serpbear/commit/649f412303dd50127b3736740962863f735f76eb)), closes [#248](https://github.com/towfiqi/serpbear/issues/248)
+* Resolves Google Ads search volume data loading issue. ([12eac2b](https://github.com/towfiqi/serpbear/commit/12eac2b01235e9eae06882d6a2c50c793b890661))
+
 ### [2.0.5](https://github.com/towfiqi/serpbear/compare/v2.0.4...v2.0.5) (2024-11-12)
 
 
