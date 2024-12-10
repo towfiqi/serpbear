@@ -4,10 +4,10 @@ import path from 'path';
 import { getKeywordsInsight, getPagesInsight } from './insight';
 import { readLocalSCData } from './searchConsole';
 
-const serpBearLogo = 'https://erevanto.sirv.com/Images/serpbear/ikAdjQq.png';
-const mobileIcon = 'https://erevanto.sirv.com/Images/serpbear/SqXD9rd.png';
-const desktopIcon = 'https://erevanto.sirv.com/Images/serpbear/Dx3u0XD.png';
-const googleIcon = 'https://erevanto.sirv.com/Images/serpbear/Sx3u0X9.png';
+const serpBearLogo = 'https://serpbear.b-cdn.net/ikAdjQq.png';
+const mobileIcon = 'https://serpbear.b-cdn.net/SqXD9rd.png';
+const desktopIcon = 'https://serpbear.b-cdn.net/Dx3u0XD.png';
+const googleIcon = 'https://serpbear.b-cdn.net/Sx3u0X9.png';
 
 type SCStatsObject = {
    [key:string]: {

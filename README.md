@@ -8,7 +8,7 @@
 
 SerpBear is an Open Source Search Engine Position Tracking and Keyword Research App. It allows you to track your website's keyword positions in Google and get notified of their position change.
 
-![Easy to Use Search Engine Rank Tracker](https://erevanto.sirv.com/Images/serpbear/serpbear_readme_v2.gif)
+![Easy to Use Search Engine Rank Tracker](https://serpbear.b-cdn.net/serpbear_readme_v2.gif)
 
 #### Features
 
