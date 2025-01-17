@@ -16,6 +16,13 @@ const proxy:ScraperSettings = {
 
       const $ = cheerio.load(content);
       let lastPosition = 0;
+      const hasValidContent = $('body').find('#main')
+      if (hasValidContent.length == 0) {
+         const msg = '[ERROR] Scraped search results from proxy do not adhere to expected format. Unable to parse results';
+         console.log(msg);
+         throw new Error(msg);
+      }
+
       const mainContent = $('body').find('#main');
       const children = $(mainContent).find('h3');
 
