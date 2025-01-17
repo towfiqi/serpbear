@@ -129,9 +129,11 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
       }
 
-      console.log('[ERROR] Scraping Keyword : ', keyword.keyword, '. Error: ', error && error.response && error.response.statusText);
+      console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
       if (!(error && error.response && error.response.statusText)) {
          console.log('[ERROR_MESSAGE]: ', error);
+      } else {
+         console.log('[ERROR_MESSAGE]: ', error && error.response && error.response.statusText);
       }
    }
 
@@ -148,9 +150,17 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
    const extractedResult = [];
 
    const $ = cheerio.load(content);
+   const hasValidContent = [...$('body').find('#search'), ...$('body').find('#rso')];
+   if (hasValidContent.length == 0) {
+      const msg = '[ERROR] Scraped search results do not adhere to expected format. Unable to parse results';
+      console.log(msg);
+      throw new Error(msg);
+   }
+
    const hasNumberofResult = $('body').find('#search  > div > div');
    const searchResultItems = hasNumberofResult.find('h3');
    let lastPosition = 0;
+   console.log('Scraped search results contain ', searchResultItems.length, ' desktop results.');
 
    for (let i = 0; i < searchResultItems.length; i += 1) {
       if (searchResultItems[i]) {
@@ -161,11 +171,12 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
             extractedResult.push({ title, url, position: lastPosition });
          }
       }
-  }
+   }
 
-  // Mobile Scraper
-  if (extractedResult.length === 0 && device === 'mobile') {
+   // Mobile Scraper
+   if (extractedResult.length === 0 && device === 'mobile') {
       const items = $('body').find('#rso > div');
+      console.log('Scraped search results contain ', items.length, ' mobile results.');
       for (let i = 0; i < items.length; i += 1) {
          const item = $(items[i]);
          const linkDom = item.find('a[role="presentation"]');
@@ -181,7 +192,7 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
       }
    }
 
-  return extractedResult;
+   return extractedResult;
 };
 
 /**
