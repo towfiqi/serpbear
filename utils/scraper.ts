@@ -127,6 +127,8 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       refreshedResults.error = scraperError || 'Unknown Error';
       if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
          refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
+      } else if (settings.scraper_type === 'proxy' && error) {
+         refreshedResults.error = error;
       }
 
       console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
