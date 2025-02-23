@@ -153,7 +153,7 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
 
    const $ = cheerio.load(content);
    const hasValidContent = [...$('body').find('#search'), ...$('body').find('#rso')];
-   if (hasValidContent.length == 0) {
+   if (hasValidContent.length === 0) {
       const msg = '[ERROR] Scraped search results do not adhere to expected format. Unable to parse results';
       console.log(msg);
       throw new Error(msg);
