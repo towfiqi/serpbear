@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.7](https://github.com/towfiqi/serpbear/compare/v2.0.6...v2.0.7) (2025-02-23)
+
+
+### Bug Fixes
+
+* Resolves AdWords integration issue. ([36ed4cf](https://github.com/towfiqi/serpbear/commit/36ed4cf800c1fd0e3df4e807faaa1fdb863df5e4))
+* resolves broken CDN images. ([bf911b4](https://github.com/towfiqi/serpbear/commit/bf911b4e45b9007a05ce6399838da3276161c61d))
+
 ### [2.0.6](https://github.com/towfiqi/serpbear/compare/v2.0.5...v2.0.6) (2024-11-15)
 
 
