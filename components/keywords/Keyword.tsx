@@ -15,7 +15,7 @@ type KeywordProps = {
    refreshkeyword: Function,
    favoriteKeyword: Function,
    removeKeyword: Function,
-   selectKeyword: Function,
+   selectKeyword: (id: number, event: React.MouseEvent) => void,
    manageTags: Function,
    showKeywordDetails: Function,
    lastItem?:boolean,
@@ -99,9 +99,10 @@ const Keyword = (props: KeywordProps) => {
 
          <div className=' w-3/4 font-semibold cursor-pointer lg:flex-1 lg:shrink-0 lg:basis-28 lg:w-auto lg:flex lg:items-center'>
             <button
+               data-testid={`keyword-checkbox-${ID}`}
                className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border 
                ${selected ? ' bg-blue-700 border-blue-700 text-white' : 'text-transparent'}`}
-               onClick={() => selectKeyword(ID)}
+               onClick={(e) => selectKeyword(ID, e)}
                >
                   <Icon type="check" size={10} />
             </button>

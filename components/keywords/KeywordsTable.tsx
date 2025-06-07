@@ -83,13 +83,41 @@ const KeywordsTable = (props: KeywordsTableProps) => {
       return [...new Set(allTags)];
    }, [keywords]);
 
-   const selectKeyword = (keywordID: number) => {
-      console.log('Select Keyword: ', keywordID);
-      let updatedSelectd = [...selectedKeywords, keywordID];
-      if (selectedKeywords.includes(keywordID)) {
-         updatedSelectd = selectedKeywords.filter((keyID) => keyID !== keywordID);
+   const selectKeyword = (keywordID: number, event?: React.MouseEvent) => {
+      if (event?.shiftKey) {
+         const currentKeywordId = keywordID;
+         const currentKeywords = processedKeywords[device];
+         const currentKeywordIndex = currentKeywords.findIndex(kw => kw.ID === currentKeywordId);
+
+         if (currentKeywordIndex === -1) return;
+
+         let rangeStart = currentKeywordIndex;
+         let rangeEnd = currentKeywordIndex;
+
+         if (selectedKeywords.length > 0) {
+            const lastSelectedKeywordId = selectedKeywords[selectedKeywords.length - 1];
+            const lastSelectedKeywordIndex = currentKeywords.findIndex(kw => kw.ID === lastSelectedKeywordId);
+
+            if (lastSelectedKeywordIndex !== -1) {
+               rangeStart = Math.min(lastSelectedKeywordIndex, currentKeywordIndex);
+               rangeEnd = Math.max(lastSelectedKeywordIndex, currentKeywordIndex);
+            }
+         }
+
+         const keywordsInRange = currentKeywords.slice(rangeStart, rangeEnd + 1);
+         const keywordIdsInRange = keywordsInRange.map(kw => kw.ID);
+
+         // Add new range to existing selections, avoid duplicates
+         setSelectedKeywords(prevSelected => [...new Set([...prevSelected, ...keywordIdsInRange])]);
+
+      } else {
+         // Original logic for single select/deselect
+         let updatedSelected = [...selectedKeywords, keywordID];
+         if (selectedKeywords.includes(keywordID)) {
+            updatedSelected = selectedKeywords.filter((keyID) => keyID !== keywordID);
+         }
+         setSelectedKeywords(updatedSelected);
       }
-      setSelectedKeywords(updatedSelectd);
    };
 
    const updateColumns = (column:string) => {
@@ -109,7 +137,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
          style={style}
          index={index}
          selected={selectedKeywords.includes(keyword.ID)}
-         selectKeyword={selectKeyword}
+         selectKeyword={(id, event) => selectKeyword(id, event)}
          keywordData={keyword}
          refreshkeyword={() => refreshMutate({ ids: [keyword.ID] })}
          favoriteKeyword={favoriteMutate}
