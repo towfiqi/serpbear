@@ -106,10 +106,8 @@ const KeywordsTable = (props: KeywordsTableProps) => {
 
          const keywordsInRange = currentKeywords.slice(rangeStart, rangeEnd + 1);
          const keywordIdsInRange = keywordsInRange.map(kw => kw.ID);
-
          // Add new range to existing selections, avoid duplicates
          setSelectedKeywords(prevSelected => [...new Set([...prevSelected, ...keywordIdsInRange])]);
-
       } else {
          // Original logic for single select/deselect
          let updatedSelected = [...selectedKeywords, keywordID];

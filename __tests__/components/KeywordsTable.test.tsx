@@ -2,13 +2,14 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import KeywordsTable from '../../components/keywords/KeywordsTable';
-import { KeywordType } from '../../types/keyword'; // Assuming types are here
-import { SettingsType } from '../../types/settings'; // Assuming types are here
-import { DomainType } from '../../types/domain'; // Assuming types are here
+import { KeywordType, SettingsType, DomainType } from '../../types';
 
 // Mock child components and hooks to isolate KeywordsTable logic
-jest.mock('../../components/common/Icon', () => (props: any) => <span data-testid={`icon-${props.type}`} />);
-jest.mock('../../components/keywords/Keyword', () => (props: any) => (
+const MockIcon = (props: any) => <span data-testid={`icon-${props.type}`} />;
+MockIcon.displayName = 'MockIcon';
+jest.mock('../../components/common/Icon', () => MockIcon);
+
+const MockKeyword = (props: any) => (
   <div data-testid={`keyword-row-${props.keywordData.ID}`} className={props.selected ? 'keyword--selected' : ''}>
     <button
       data-testid={`keyword-checkbox-${props.keywordData.ID}`}
@@ -18,10 +19,22 @@ jest.mock('../../components/keywords/Keyword', () => (props: any) => (
     </button>
     <span onClick={() => act(() => props.showKeywordDetails())} data-testid={`keyword-details-link-${props.keywordData.ID}`}>details</span>
   </div>
-));
-jest.mock('../../components/keywords/KeywordDetails', () => () => <div data-testid="keyword-details">Keyword Details</div>);
-jest.mock('../../components/keywords/KeywordFilter', () => () => <div data-testid="keyword-filters">Keyword Filters</div>);
-jest.mock('../../components/common/Modal', () => ({ children }: { children: React.ReactNode}) => <div data-testid="modal">{children}</div>);
+);
+MockKeyword.displayName = 'MockKeyword';
+jest.mock('../../components/keywords/Keyword', () => MockKeyword);
+
+const MockKeywordDetails = () => <div data-testid="keyword-details">Keyword Details</div>;
+MockKeywordDetails.displayName = 'MockKeywordDetails';
+jest.mock('../../components/keywords/KeywordDetails', () => MockKeywordDetails);
+
+const MockKeywordFilter = () => <div data-testid="keyword-filters">Keyword Filters</div>;
+MockKeywordFilter.displayName = 'MockKeywordFilter';
+jest.mock('../../components/keywords/KeywordFilter', () => MockKeywordFilter);
+
+const MockModal = ({ children }: { children: React.ReactNode}) => <div data-testid="modal">{children}</div>;
+MockModal.displayName = 'MockModal';
+jest.mock('../../components/common/Modal', () => MockModal);
+
 jest.mock('../../services/keywords', () => ({
   useDeleteKeywords: () => ({ mutate: jest.fn() }),
   useFavKeywords: () => ({ mutate: jest.fn() }),
@@ -32,24 +45,89 @@ jest.mock('../../hooks/useIsMobile', () => jest.fn(() => [false]));
 jest.mock('../../services/settings', () => ({
   useUpdateSettings: () => ({ mutate: jest.fn(), isLoading: false }),
 }));
-jest.mock('react-hot-toast', () => ({ Toaster: () => <div data-testid="toaster" />}));
+
+const MockToaster = () => <div data-testid="toaster" />;
+MockToaster.displayName = 'MockToaster';
+jest.mock('react-hot-toast', () => ({ Toaster: MockToaster }));
+
+const MockFixedSizeList = ({ children, ...rest }: any) => (
+  <div data-testid="fixed-size-list" {...rest}>
+    {Array.from({ length: rest.itemCount }).map((_, index) =>
+      children({ data: rest.itemData, index, style: {} }),
+    )}
+  </div>
+);
+MockFixedSizeList.displayName = 'MockFixedSizeList';
 jest.mock('react-window', () => ({
-  FixedSizeList: ({ children, ...rest }: any) => (
-    <div data-testid="fixed-size-list" {...rest}>
-      {Array.from({ length: rest.itemCount }).map((_, index) =>
-        children({ data: rest.itemData, index, style: {} })
-      )}
-    </div>
-  ),
+  FixedSizeList: MockFixedSizeList,
 }));
 
-
 const mockKeywords: KeywordType[] = [
-  { ID: 1, keyword: 'Keyword A', device: 'desktop', position: 1, country: 'US', tags: [], history: {}, lastUpdated: new Date().toISOString(), domain: 'test.com', volume: 100, url: 'test.com/a' },
-  { ID: 2, keyword: 'Keyword B', device: 'desktop', position: 2, country: 'US', tags: [], history: {}, lastUpdated: new Date().toISOString(), domain: 'test.com', volume: 200, url: 'test.com/b' },
-  { ID: 3, keyword: 'Keyword C', device: 'desktop', position: 3, country: 'US', tags: [], history: {}, lastUpdated: new Date().toISOString(), domain: 'test.com', volume: 300, url: 'test.com/c' },
-  { ID: 4, keyword: 'Keyword D', device: 'desktop', position: 4, country: 'US', tags: [], history: {}, lastUpdated: new Date().toISOString(), domain: 'test.com', volume: 400, url: 'test.com/d' },
-  { ID: 5, keyword: 'Keyword E', device: 'desktop', position: 5, country: 'US', tags: [], history: {}, lastUpdated: new Date().toISOString(), domain: 'test.com', volume: 500, url: 'test.com/e' },
+  {
+    ID: 1,
+    keyword: 'Keyword A',
+    device: 'desktop',
+    position: 1,
+    country: 'US',
+    tags: [],
+    history: {},
+    lastUpdated: new Date().toISOString(),
+    domain: 'test.com',
+    volume: 100,
+    url: 'test.com/a',
+  },
+  {
+    ID: 2,
+    keyword: 'Keyword B',
+    device: 'desktop',
+    position: 2,
+    country: 'US',
+    tags: [],
+    history: {},
+    lastUpdated: new Date().toISOString(),
+    domain: 'test.com',
+    volume: 200,
+    url: 'test.com/b',
+  },
+  {
+    ID: 3,
+    keyword: 'Keyword C',
+    device: 'desktop',
+    position: 3,
+    country: 'US',
+    tags: [],
+    history: {},
+    lastUpdated: new Date().toISOString(),
+    domain: 'test.com',
+    volume: 300,
+    url: 'test.com/c',
+  },
+  {
+    ID: 4,
+    keyword: 'Keyword D',
+    device: 'desktop',
+    position: 4,
+    country: 'US',
+    tags: [],
+    history: {},
+    lastUpdated: new Date().toISOString(),
+    domain: 'test.com',
+    volume: 400,
+    url: 'test.com/d',
+  },
+  {
+    ID: 5,
+    keyword: 'Keyword E',
+    device: 'desktop',
+    position: 5,
+    country: 'US',
+    tags: [],
+    history: {},
+    lastUpdated: new Date().toISOString(),
+    domain: 'test.com',
+    volume: 500,
+    url: 'test.com/e',
+  },
 ];
 
 const mockDomain: DomainType = {
@@ -72,7 +150,10 @@ const mockDomain: DomainType = {
 };
 
 const mockSettings: SettingsType = {
-  ID: 1, user_id: 1, createdAt: '', updatedAt: '',
+  ID: 1,
+  user_id: 1,
+  createdAt: '',
+  updatedAt: '',
   generalNotifications: true,
   summaryEmails: true,
   alertEmails: true,
@@ -101,7 +182,7 @@ describe('KeywordsTable Shift-Click Functionality', () => {
         setShowAddModal={jest.fn()}
         isConsoleIntegrated={false}
         settings={mockSettings}
-      />
+      />,
     );
 
     const keyword1Checkbox = screen.getByTestId('keyword-checkbox-1');
@@ -116,7 +197,6 @@ describe('KeywordsTable Shift-Click Functionality', () => {
     // Assert that keywords at indices 0, 1, and 2 (IDs 1, 2, 3) are selected
     // Need to wait for state updates if selection is async
     // await screen.findByText('Keyword A'); // Example wait, adjust as needed
-
     expect(screen.getByTestId('keyword-row-1')).toHaveClass('keyword--selected');
     expect(screen.getByTestId('keyword-row-2')).toHaveClass('keyword--selected');
     expect(screen.getByTestId('keyword-row-3')).toHaveClass('keyword--selected');
@@ -134,7 +214,7 @@ describe('KeywordsTable Shift-Click Functionality', () => {
         setShowAddModal={jest.fn()}
         isConsoleIntegrated={false}
         settings={mockSettings}
-      />
+      />,
     );
 
     const keyword1Checkbox = screen.getByTestId('keyword-checkbox-1');
@@ -163,7 +243,7 @@ describe('KeywordsTable Shift-Click Functionality', () => {
         setShowAddModal={jest.fn()}
         isConsoleIntegrated={false}
         settings={mockSettings}
-      />
+      />,
     );
 
     const keyword1Checkbox = screen.getByTestId('keyword-checkbox-1'); // A
@@ -199,7 +279,7 @@ describe('KeywordsTable Shift-Click Functionality', () => {
         setShowAddModal={jest.fn()}
         isConsoleIntegrated={false}
         settings={mockSettings}
-      />
+      />,
     );
 
     const keyword1Checkbox = screen.getByTestId('keyword-checkbox-1');
@@ -231,7 +311,7 @@ describe('KeywordsTable Shift-Click Functionality', () => {
         setShowAddModal={jest.fn()}
         isConsoleIntegrated={false}
         settings={mockSettings}
-      />
+      />,
     );
 
     const keyword2Checkbox = screen.getByTestId('keyword-checkbox-2');
@@ -252,7 +332,7 @@ describe('KeywordsTable Shift-Click Functionality', () => {
         setShowAddModal={jest.fn()}
         isConsoleIntegrated={false}
         settings={mockSettings}
-      />
+      />,
     );
 
     const keyword1Checkbox = screen.getByTestId('keyword-checkbox-1');
@@ -299,7 +379,7 @@ describe('KeywordsTable Shift-Click Functionality', () => {
         setShowAddModal={jest.fn()}
         isConsoleIntegrated={false}
         settings={mockSettings}
-      />
+      />,
     );
 
     const keyword1Checkbox = screen.getByTestId('keyword-checkbox-1');
