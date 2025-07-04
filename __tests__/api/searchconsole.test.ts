@@ -7,11 +7,19 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import handler from '../../pages/api/searchconsole';
 import { fetchDomainSCData, getSearchConsoleApiInfo } from '../../utils/searchConsole';
 import Domain from '../../database/models/domain';
+import verifyUser from '../../utils/verifyUser';
 
 // Mock the dependencies
 jest.mock('../../utils/searchConsole');
-jest.mock('../../database/models/domain');
-jest.mock('../../database/database');
+jest.mock('../../database/models/domain', () => ({
+  __esModule: true,
+  default: { findAll: jest.fn() },
+}));
+jest.mock('../../database/database', () => ({
+  __esModule: true,
+  default: { sync: jest.fn() },
+}));
+jest.mock('../../utils/verifyUser');
 
 const mockFetchDomainSCData = fetchDomainSCData as jest.MockedFunction<typeof fetchDomainSCData>;
 const mockGetSearchConsoleApiInfo = getSearchConsoleApiInfo as jest.MockedFunction<typeof getSearchConsoleApiInfo>;
@@ -32,9 +40,9 @@ describe('/api/searchconsole - CRON functionality', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-
     // Reset all mocks
     jest.clearAllMocks();
+    (verifyUser as jest.Mock).mockReturnValue('authorized');
   });
 
   it('should fetch search console data for all domains with proper API credentials', async () => {

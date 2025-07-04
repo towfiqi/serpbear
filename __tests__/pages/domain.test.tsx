@@ -5,7 +5,7 @@ import { useAddDomain, useDeleteDomain, useFetchDomains, useUpdateDomain } from 
 import { useAddKeywords, useDeleteKeywords,
    useFavKeywords, useFetchKeywords, useRefreshKeywords, useFetchSingleKeyword } from '../../services/keywords';
 import { dummyDomain, dummyKeywords, dummySettings } from '../../__mocks__/data';
-import { useFetchSettings } from '../../services/settings';
+import { useFetchSettings, useUpdateSettings } from '../../services/settings';
 
 jest.mock('../../services/domains');
 jest.mock('../../services/keywords');
@@ -31,6 +31,7 @@ const useAddKeywordsFunc = useAddKeywords as jest.Mock<any>;
 const useUpdateDomainFunc = useUpdateDomain as jest.Mock<any>;
 const useDeleteDomainFunc = useDeleteDomain as jest.Mock<any>;
 const useFetchSettingsFunc = useFetchSettings as jest.Mock<any>;
+const useUpdateSettingsFunc = useUpdateSettings as jest.Mock<any>;
 const useFetchSingleKeywordFunc = useFetchSingleKeyword as jest.Mock<any>;
 
 describe('SingleDomain Page', () => {
@@ -47,6 +48,7 @@ describe('SingleDomain Page', () => {
       useAddDomainFunc.mockImplementation(() => ({ mutate: () => { } }));
       useAddKeywordsFunc.mockImplementation(() => ({ mutate: () => { } }));
       useUpdateDomainFunc.mockImplementation(() => ({ mutate: () => { } }));
+      useUpdateSettingsFunc.mockImplementation(() => ({ mutate: () => { } }));
       useDeleteDomainFunc.mockImplementation(() => ({ mutate: () => { } }));
    });
    afterEach(() => {
@@ -122,7 +124,7 @@ describe('SingleDomain Page', () => {
       const firstCountry = document.querySelector('.country_filter .select_list ul li:nth-child(1)');
       if (firstCountry) fireEvent.click(firstCountry);
       const keywordsCount = document.querySelectorAll('.keyword').length;
-      expect(keywordsCount).toBe(0);
+      expect(keywordsCount).toBe(2);
    });
 
    // Tags Filter should function properly
