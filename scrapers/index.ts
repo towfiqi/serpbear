@@ -8,6 +8,7 @@ import searchapi from './services/searchapi';
 import valueSerp from './services/valueserp';
 import serper from './services/serper';
 import hasdata from './services/hasdata';
+import fetchserp from './services/fetchserp';
 
 export default [
    scrapingRobot,
@@ -20,4 +21,5 @@ export default [
    valueSerp,
    serper,
    hasdata,
+   fetchserp,
 ];
