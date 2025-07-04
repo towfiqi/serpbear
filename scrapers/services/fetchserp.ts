@@ -38,4 +38,4 @@ const fetchserp:ScraperSettings = {
    },
 };
 
-export default fetchserp; 
+export default fetchserp;
