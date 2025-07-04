@@ -31,7 +31,7 @@ const Domains: NextPage = () => {
    const totalKeywords = useMemo(() => {
       let keywords = 0;
       if (domainsData?.domains) {
-         domainsData.domains.forEach(async (domain:DomainType) => {
+         domainsData.domains.forEach((domain:DomainType) => {
             keywords += domain?.keywordCount || 0;
          });
       }
@@ -41,7 +41,7 @@ const Domains: NextPage = () => {
    const domainSCAPiObj = useMemo(() => {
       const domainsSCAPI:{ [ID:string] : boolean } = {};
       if (domainsData?.domains) {
-         domainsData.domains.forEach(async (domain:DomainType) => {
+         domainsData.domains.forEach((domain:DomainType) => {
             const doaminSc = domain?.search_console ? JSON.parse(domain.search_console) : {};
             domainsSCAPI[domain.ID] = doaminSc.client_email && doaminSc.private_key;
          });
@@ -51,14 +51,34 @@ const Domains: NextPage = () => {
 
    useEffect(() => {
       if (domainsData?.domains && domainsData.domains.length > 0 && appSettings.screenshot_key) {
-         domainsData.domains.forEach(async (domain:DomainType) => {
-            if (domain.domain) {
-               const domainThumb = await fetchDomainScreenshot(domain.domain, appSettings.screenshot_key || '');
-               if (domainThumb) {
-                  setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain.domain]: domainThumb }));
+         const fetchAllScreenshots = async () => {
+            const screenshotPromises = domainsData.domains.map(async (domain: DomainType) => {
+               if (domain.domain) {
+                  const domainThumb = await fetchDomainScreenshot(domain.domain, appSettings.screenshot_key || '');
+                  if (domainThumb) {
+                     return { domain: domain.domain, thumb: domainThumb };
+                  }
                }
+               return null;
+            });
+
+            const screenshots = await Promise.all(screenshotPromises);
+            const validScreenshots = screenshots.filter((item): item is { domain: string; thumb: string } => Boolean(item));
+
+            if (validScreenshots.length > 0) {
+               setDomainThumbs((currentThumbs) => {
+                  const newThumbs = { ...currentThumbs };
+                  validScreenshots.forEach(({ domain, thumb }) => {
+                     if (domain && thumb) {
+                        newThumbs[domain] = thumb;
+                     }
+                  });
+                  return newThumbs;
+               });
             }
-         });
+         };
+
+         fetchAllScreenshots();
       }
    }, [domainsData, appSettings.screenshot_key]);
 

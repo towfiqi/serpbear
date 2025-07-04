@@ -5,7 +5,7 @@ import Domain from '../../database/models/domain';
 import Keyword from '../../database/models/keyword';
 import getdomainStats from '../../utils/domains';
 import verifyUser from '../../utils/verifyUser';
-import { checkSerchConsoleIntegration, removeLocalSCData } from '../../utils/searchConsole';
+import { checkSearchConsoleIntegration, removeLocalSCData } from '../../utils/searchConsole';
 
 type DomainsGetRes = {
    domains: DomainType[]
@@ -122,7 +122,7 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
       // Validate Search Console API Data
       if (domainToUpdate && search_console?.client_email && search_console?.private_key) {
          const theDomainObj = domainToUpdate.get({ plain: true });
-         const isSearchConsoleAPIValid = await checkSerchConsoleIntegration({ ...theDomainObj, search_console: JSON.stringify(search_console) });
+         const isSearchConsoleAPIValid = await checkSearchConsoleIntegration({ ...theDomainObj, search_console: JSON.stringify(search_console) });
          if (!isSearchConsoleAPIValid.isValid) {
             return res.status(400).json({ domain: null, error: isSearchConsoleAPIValid.error });
          }
