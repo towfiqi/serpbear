@@ -22,5 +22,24 @@ window.matchMedia = (query) => ({
 
 global.ResizeObserver = require('resize-observer-polyfill');
 
+// polyfill TextEncoder/TextDecoder for msw
+if (typeof global.TextEncoder === 'undefined') {
+   const util = require('util');
+   global.TextEncoder = util.TextEncoder;
+   global.TextDecoder = util.TextDecoder;
+}
+
+// polyfill BroadcastChannel for msw
+if (typeof global.BroadcastChannel === 'undefined') {
+   class BroadcastChannelMock {
+      constructor() {}
+      postMessage() {}
+      close() {}
+      addEventListener() {}
+      removeEventListener() {}
+   }
+   global.BroadcastChannel = BroadcastChannelMock;
+}
+
 // Enable Fetch Mocking
 enableFetchMocks();
