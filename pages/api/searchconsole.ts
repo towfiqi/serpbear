@@ -57,7 +57,17 @@ const cronRefreshSearchConsoleData = async (req: NextApiRequest, res: NextApiRes
       const allDomainsRaw = await Domain.findAll();
       const Domains: DomainType[] = allDomainsRaw.map((el) => el.get({ plain: true }));
       for (const domain of Domains) {
-         await fetchDomainSCData(domain);
+         try {
+            const scDomainAPI = await getSearchConsoleApiInfo(domain);
+            if (scDomainAPI.client_email && scDomainAPI.private_key) {
+               await fetchDomainSCData(domain, scDomainAPI);
+               console.log(`[SUCCESS] Updated Search Console data for domain: ${domain.domain}`);
+            } else {
+               console.log(`[SKIP] No Search Console API credentials found for domain: ${domain.domain}`);
+            }
+         } catch (domainError) {
+            console.log(`[ERROR] Failed to update Search Console data for domain: ${domain.domain}`, domainError);
+         }
       }
       return res.status(200).json({ status: 'completed' });
    } catch (error) {
