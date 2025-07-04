@@ -10,7 +10,7 @@ type MigrationGetResponse = {
 
 type MigrationPostResponse = {
    migrated: boolean,
-   erroor?: string
+   error?: string
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

@@ -22,7 +22,7 @@ type fetchConsoleDataResponse = SearchAnalyticsItem[] | SearchAnalyticsStat[] | 
  */
 const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:string, api?:SCAPISettings): Promise<fetchConsoleDataResponse> => {
    if (!domain) return { error: true, errorMsg: 'Domain Not Provided!' };
-   if (!api?.private_key || !api?.client_email) return { error: true, errorMsg: 'Search Console API Data Not Avaialable.' };
+   if (!api?.private_key || !api?.client_email) return { error: true, errorMsg: 'Search Console API Data Not Available.' };
    const domainName = domain.domain;
    const defaultSCSettings = { property_type: 'domain', url: '', client_email: '', private_key: '' };
    const domainSettings = domain.search_console ? JSON.parse(domain.search_console) : defaultSCSettings;
@@ -202,11 +202,15 @@ export const getSearchConsoleApiInfo = async (domain: DomainType): Promise<SCAPI
    }
    // Check if the App Settings Has the API Data
    if (!scAPIData?.private_key) {
-      const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
-      const settings: SettingsType = settingsRaw ? JSON.parse(settingsRaw) : {};
-      const cryptr = new Cryptr(process.env.SECRET as string);
-      scAPIData.client_email = settings.search_console_client_email ? cryptr.decrypt(settings.search_console_client_email) : '';
-      scAPIData.private_key = settings.search_console_private_key ? cryptr.decrypt(settings.search_console_private_key) : '';
+      try {
+         const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
+         const settings: SettingsType = settingsRaw ? JSON.parse(settingsRaw) : {};
+         const cryptr = new Cryptr(process.env.SECRET as string);
+         scAPIData.client_email = settings.search_console_client_email ? cryptr.decrypt(settings.search_console_client_email) : '';
+         scAPIData.private_key = settings.search_console_private_key ? cryptr.decrypt(settings.search_console_private_key) : '';
+      } catch (error) {
+         // Settings file doesn't exist or is invalid, continue with environment variables
+      }
    }
    if (!scAPIData?.private_key && process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL) {
       scAPIData.client_email = process.env.SEARCH_CONSOLE_CLIENT_EMAIL;
@@ -221,7 +225,7 @@ export const getSearchConsoleApiInfo = async (domain: DomainType): Promise<SCAPI
  * @param {DomainType} domain - The domain that represents the domain for which the SC API info is being checked.
  * @returns an object of type `{ isValid: boolean, error: string }`.
  */
-export const checkSerchConsoleIntegration = async (domain: DomainType): Promise<{ isValid: boolean, error: string }> => {
+export const checkSearchConsoleIntegration = async (domain: DomainType): Promise<{ isValid: boolean, error: string }> => {
    const res = { isValid: false, error: '' };
    const { client_email = '', private_key = '' } = domain?.search_console ? JSON.parse(domain.search_console) : {};
    const response = await fetchSearchConsoleData(domain, 3, undefined, { client_email, private_key });

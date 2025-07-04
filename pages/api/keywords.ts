@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGetResponse>) => {
-   if (!req.query.domain && typeof req.query.domain !== 'string') {
+   if (!req.query.domain || typeof req.query.domain !== 'string') {
       return res.status(400).json({ error: 'Domain is Required!' });
    }
    const settings = await getAppSettings();
@@ -151,7 +151,7 @@ const updateKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
    if (!req.query.id && typeof req.query.id !== 'string') {
       return res.status(400).json({ error: 'keyword ID is Required!' });
    }
-   if (req.body.sticky === undefined && !req.body.tags === undefined) {
+   if (req.body.sticky === undefined && req.body.tags === undefined) {
       return res.status(400).json({ error: 'keyword Payload Missing!' });
    }
    const keywordIDs = (req.query.id as string).split(',').map((item) => parseInt(item, 10));
