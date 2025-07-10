@@ -33,12 +33,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return getKeywordSearchResults(req, res);
    }
    if (req.method === 'POST') {
-      return refresTheKeywords(req, res);
+      return refreshTheKeywords(req, res);
    }
    return res.status(502).json({ error: 'Unrecognized Route.' });
 }
 
-const refresTheKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsRefreshRes>) => {
+const refreshTheKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsRefreshRes>) => {
    if (!req.query.id && typeof req.query.id !== 'string') {
       return res.status(400).json({ error: 'keyword ID is Required!' });
    }
@@ -62,7 +62,7 @@ const refresTheKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywo
 
       // If Single Keyword wait for the scraping process,
       // else, Process the task in background. Do not wait.
-      if (keywordIDs && keywordIDs.length === 0) {
+    if (keywordIDs && keywordIDs.length === 1) {
          const refreshed: KeywordType[] = await refreshAndUpdateKeywords(keywordQueries, settings);
          keywords = refreshed;
       } else {
@@ -72,7 +72,7 @@ const refresTheKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywo
 
       return res.status(200).json({ keywords });
    } catch (error) {
-      console.log('ERROR refresThehKeywords: ', error);
+      console.log('ERROR refreshTheKeywords: ', error);
       return res.status(400).json({ error: 'Error refreshing keywords!' });
    }
 };
@@ -116,7 +116,7 @@ const getKeywordSearchResults = async (req: NextApiRequest, res: NextApiResponse
       }
       return res.status(400).json({ error: 'Error Scraping Search Results for the given keyword!' });
    } catch (error) {
-      console.log('ERROR refresThehKeywords: ', error);
+      console.log('ERROR refreshTheKeywords: ', error);
       return res.status(400).json({ error: 'Error refreshing keywords!' });
    }
 };

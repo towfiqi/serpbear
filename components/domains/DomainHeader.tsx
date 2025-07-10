@@ -31,7 +31,7 @@ const DomainHeader = (
    const buttonStyle = 'leading-6 inline-block px-2 py-2 text-gray-500 hover:text-gray-700';
    const buttonLabelStyle = 'ml-2 text-sm not-italic lg:invisible lg:opacity-0';
    const tabStyle = 'rounded rounded-b-none cursor-pointer border-[#e9ebff] border-b-0';
-   const scDataFilterStlye = 'px-3 py-2 block w-full';
+   const scDataFilterStyle = 'px-3 py-2 block w-full';
    return (
       <div className='domain_kewywords_head w-full '>
          <div>
@@ -144,7 +144,7 @@ const DomainHeader = (
                         {['threeDays', 'sevenDays', 'thirtyDays'].map((itemKey) => {
                            return <button
                                     key={itemKey}
-                                    className={`${scDataFilterStlye} ${scFilter === itemKey ? ' bg-indigo-100 text-indigo-600' : ''}`}
+                                    className={`${scDataFilterStyle} ${scFilter === itemKey ? ' bg-indigo-100 text-indigo-600' : ''}`}
                                     onClick={() => { setShowSCDates(false); if (setScFilter) setScFilter(itemKey); }}
                                     >Last {daysName(itemKey)}
                                  </button>;

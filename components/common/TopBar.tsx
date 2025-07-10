@@ -25,7 +25,7 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
             router.push('/login');
          }
       } catch (fetchError) {
-         toast('Could not login, Ther Server is not responsive.', { icon: '⚠️' });
+         toast('The server.', { icon: '⚠️' });
       }
    };
 
