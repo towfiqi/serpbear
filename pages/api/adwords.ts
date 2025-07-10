@@ -44,7 +44,7 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<
             if (r?.tokens?.refresh_token) {
                const adwords_refresh_token = cryptr.encrypt(r.tokens.refresh_token);
                await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify({ ...settings, adwords_refresh_token }), { encoding: 'utf-8' });
-               return res.status(200).send('Google Ads Intergrated Successfully! You can close this window.');
+               return res.status(200).send('Integrated.');
             }
             return res.status(400).send('Error Getting the Google Ads Refresh Token. Please Try Again!');
          } catch (error:any) {
