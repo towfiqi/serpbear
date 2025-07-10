@@ -39,8 +39,8 @@ const SingleDomain: NextPage = () => {
    }, [router.query.slug, domainsData]);
 
    const domainHasScAPI = useMemo(() => {
-      const doaminSc = activDomain?.search_console ? JSON.parse(activDomain.search_console) : {};
-      return !!(doaminSc?.client_email && doaminSc?.private_key);
+      const domainSc = activDomain?.search_console ? JSON.parse(activDomain.search_console) : {};
+      return !!(domainSc?.client_email && domainSc?.private_key);
    }, [activDomain]);
 
    const { keywordsData, keywordsLoading } = useFetchKeywords(router, activDomain?.domain || '', setKeywordSPollInterval, keywordSPollInterval);
