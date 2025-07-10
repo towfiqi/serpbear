@@ -1,5 +1,5 @@
 /**
- * Sorrt Keywords by user's given input.
+ * Sort Keywords by user's given input.
  * @param {KeywordType[]} theKeywords - The Keywords to sort.
  * @param {string} sortBy - The sort method.
  * @returns {KeywordType[]}
