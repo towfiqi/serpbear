@@ -17,7 +17,7 @@ type fetchConsoleDataResponse = SearchAnalyticsItem[] | SearchAnalyticsStat[] | 
  * @param {DomainType} domain - The domain for which you want to fetch search console data.
  * @param {number} days - number of days of data you want to fetch from the Search Console.
  * @param {string} [type] - (optional) specifies the type of data to fetch from the Search Console.
- * @param {SCAPISettings} [api] - (optional) specifies the Seach Console API Information.
+ * @param {SCAPISettings} [api] - (optional) specifies the Search Console API Information.
  * @returns {Promise<fetchConsoleDataResponse>}
  */
 const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:string, api?:SCAPISettings): Promise<fetchConsoleDataResponse> => {
@@ -268,7 +268,7 @@ export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDat
 };
 
 /**
- * The function removes the domain-specific Seach Console data stored in a local JSON file.
+ * The function removes the domain-specific Search Console data stored in a local JSON file.
  * @param {string} domain - The `domain` parameter is a string that represents the domain for which the SC data file will be removed.
  * @returns {Promise<boolean>} - Returns true if file was removed, else returns false.
  */

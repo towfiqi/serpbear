@@ -142,8 +142,9 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                   {showTagSuggestions && (
                      <ul className={`absolute z-50
                      bg-white border border-t-0 border-gray-200 rounded rounded-t-none w-full`}>
-                        {existingTags.length > 0 && existingTags.map((tag, index) => {
-                           return newKeywordsData.tags.split(',').map((t) => t.trim()).includes(tag) === false && <li
+                        {existingTags.length > 0 && existingTags.map((tag, index) => (
+                           newKeywordsData.tags.split(',').map((t) => t.trim()).includes(tag) === false && (
+                                    <li
                                     className=' p-2 cursor-pointer hover:text-indigo-600 hover:bg-indigo-50 transition'
                                     key={index}
                                     onClick={() => {
@@ -155,8 +156,9 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                                        if (inputRef?.current) (inputRef.current as HTMLInputElement).focus();
                                     }}>
                                        <Icon type='tags' size={14} color='#bbb' /> {tag}
-                                    </li>;
-                        })}
+                                    </li>
+                           )
+                        ))}
                         {existingTags.length === 0 && <p>No Existing Tags Found... </p>}
                      </ul>
                   )}
@@ -167,7 +169,7 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                      outline-none focus:border-indigo-300 ${!allowsCity ? ' cursor-not-allowed' : ''} `}
                      disabled={!allowsCity}
                      title={!allowsCity ? `Your scraper ${scraperName} doesn't have city level scraping feature.` : ''}
-                     placeholder={`City (Optional)${!allowsCity ? `. Not avaialable for ${scraperName}.` : ''}`}
+                     placeholder={`City (Optional)${!allowsCity ? `. Not available for ${scraperName}.` : ''}`}
                      value={newKeywordsData.city}
                      onChange={(e) => setNewKeywordsData({ ...newKeywordsData, city: e.target.value })}
                   />

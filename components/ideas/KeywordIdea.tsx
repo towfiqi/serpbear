@@ -20,10 +20,10 @@ const KeywordIdea = (props: KeywordIdeaProps) => {
    const { keyword, uid, position, country, monthlySearchVolumes, avgMonthlySearches, competition, competitionIndex } = keywordData;
 
    const chartData = useMemo(() => {
-      const chartDataObj: { labels: string[], sreies: number[] } = { labels: [], sreies: [] };
+      const chartDataObj: { labels: string[], series: number[] } = { labels: [], series: [] };
       Object.keys(monthlySearchVolumes).forEach((dateKey:string) => {
          chartDataObj.labels.push(dateKey);
-         chartDataObj.sreies.push(parseInt(monthlySearchVolumes[dateKey], 10));
+         chartDataObj.series.push(parseInt(monthlySearchVolumes[dateKey], 10));
       });
       return chartDataObj;
    }, [monthlySearchVolumes]);
@@ -61,7 +61,7 @@ const KeywordIdea = (props: KeywordIdeaProps) => {
           onClick={() => showKeywordDetails()}
          className={`keyword_visits text-center hidden mt-4 mr-5 ml-5 cursor-pointer
          lg:flex-1 lg:m-0 lg:ml-10 max-w-[70px] lg:max-w-none lg:pr-5 lg:flex justify-center`}>
-            {chartData.labels.length > 0 && <ChartSlim labels={chartData.labels} sreies={chartData.sreies} noMaxLimit={true} reverse={false} />}
+            {chartData.labels.length > 0 && <ChartSlim labels={chartData.labels} series={chartData.series} noMaxLimit={true} reverse={false} />}
          </div>
 
          <div className='keyword_ctr text-center inline-block ml-4 lg:flex mt-4 relative lg:flex-1 lg:m-0 justify-center'>

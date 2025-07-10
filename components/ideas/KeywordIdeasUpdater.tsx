@@ -25,7 +25,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
    const router = useRouter();
    const [seedType, setSeedType] = useState(() => settings?.seedType || 'auto');
    const [language, setLanguage] = useState(() => settings?.language.toString() || '1000');
-   const [countries, setCoutries] = useState<string[]>(() => settings?.countries || ['US']);
+   const [countries, setCountries] = useState<string[]>(() => settings?.countries || ['US']);
    const [keywords, setKeywords] = useState(() => (settings?.keywords && Array.isArray(settings?.keywords) ? settings?.keywords.join(',') : ''));
    const { mutate: updateKeywordIdeas, isLoading: isUpdatingIdeas } = useMutateKeywordIdeas(router, () => onUpdate && onUpdate());
 
@@ -62,7 +62,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
       .map((countryISO) => ({ label: allCountries[countryISO][0], value: countryISO }));
    }, []);
 
-   const languageOPtions = useMemo(() => Object.entries(adwordsLanguages).map(([value, label]) => ({ label, value })), []);
+   const languageOptions = useMemo(() => Object.entries(adwordsLanguages).map(([value, label]) => ({ label, value })), []);
 
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700 capitalize w-full';
    return (
@@ -102,7 +102,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
                      selected={countries}
                      options={countryOptions}
                      defaultLabel='All Countries'
-                     updateField={(updated:string[]) => setCoutries(updated)}
+                     updateField={(updated:string[]) => setCountries(updated)}
                      flags={true}
                      multiple={false}
                      fullWidth={true}
@@ -114,7 +114,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
                   <label className={labelStyle}>Language</label>
                   <SelectField
                      selected={[language]}
-                     options={languageOPtions}
+                     options={languageOptions}
                      defaultLabel='All Languages'
                      updateField={(updated:string[]) => setLanguage(updated[0])}
                      rounded='rounded'

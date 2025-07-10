@@ -12,7 +12,7 @@ type SearchResult = {
 }
 
 type SERPObject = {
-   postion:number,
+   position:number,
    url:string
 }
 
@@ -116,9 +116,9 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       if (res && scrapeResult) {
          const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
          // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
-         const serp = getSerp(keyword.domain, extracted);
-         refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
-         console.log('[SERP]: ', keyword.keyword, serp.postion, serp.url);
+        const serp = getSerp(keyword.domain, extracted);
+        refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.position, url: serp.url, result: extracted, error: false };
+        console.log('[SERP]: ', keyword.keyword, serp.position, serp.url);
       } else {
          scraperError = res.detail || res.error || 'Unknown Error';
          throw new Error(res);
@@ -204,7 +204,7 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
  * @returns {SERPObject}
  */
 export const getSerp = (domainURL:string, result:SearchResult[]) : SERPObject => {
-   if (result.length === 0 || !domainURL) { return { postion: 0, url: '' }; }
+   if (result.length === 0 || !domainURL) { return { position: 0, url: '' }; }
    const URLToFind = new URL(domainURL.includes('https://') ? domainURL : `https://${domainURL}`);
    const theURL = URLToFind.hostname + URLToFind.pathname;
    const isURL = URLToFind.pathname !== '/';
@@ -215,7 +215,7 @@ export const getSerp = (domainURL:string, result:SearchResult[]) : SERPObject =>
       }
       return URLToFind.hostname === itemURL.hostname;
    });
-   return { postion: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
+   return { position: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
 };
 
 /**

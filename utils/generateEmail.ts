@@ -129,7 +129,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
 
       const isConsoleIntegrated = !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL)
       || (settings.search_console_client_email && settings.search_console_private_key);
-      const htmlWithSCStats = isConsoleIntegrated ? await generateGoogeleConsoleStats(domainName) : '';
+      const htmlWithSCStats = isConsoleIntegrated ? await generateGoogleConsoleStats(domainName) : '';
       const emailHTML = updatedEmail.replace('{{SCStatsTable}}', htmlWithSCStats);
 
       // await writeFile('testemail.html', emailHTML, { encoding: 'utf-8' });
@@ -142,7 +142,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
  * @param {string} domainName - The Domain name for which to generate the HTML.
  * @returns {Promise<string>}
  */
-const generateGoogeleConsoleStats = async (domainName:string): Promise<string> => {
+const generateGoogleConsoleStats = async (domainName:string): Promise<string> => {
       if (!domainName) return '';
 
       const localSCData = await readLocalSCData(domainName);

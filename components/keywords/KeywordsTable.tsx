@@ -85,11 +85,11 @@ const KeywordsTable = (props: KeywordsTableProps) => {
 
    const selectKeyword = (keywordID: number) => {
       console.log('Select Keyword: ', keywordID);
-      let updatedSelectd = [...selectedKeywords, keywordID];
+      let updatedSelected = [...selectedKeywords, keywordID];
       if (selectedKeywords.includes(keywordID)) {
-         updatedSelectd = selectedKeywords.filter((keyID) => keyID !== keywordID);
+         updatedSelected = selectedKeywords.filter((keyID) => keyID !== keywordID);
       }
-      setSelectedKeywords(updatedSelectd);
+      setSelectedKeywords(updatedSelected);
    };
 
    const updateColumns = (column:string) => {

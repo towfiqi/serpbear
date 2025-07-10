@@ -147,7 +147,7 @@ const Keyword = (props: KeywordProps) => {
             <div
                className={`hidden basis-20 grow-0 cursor-pointer lg:block ${!tableColumns.includes('History') ? 'lg:hidden' : ''}`}
                onClick={() => showKeywordDetails()}>
-               <ChartSlim labels={chartData.labels} sreies={chartData.sreies} />
+               <ChartSlim labels={chartData.labels} series={chartData.series} />
             </div>
          )}
 
