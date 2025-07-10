@@ -15,10 +15,10 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'jest-environment-jsdom',
   transformIgnorePatterns: [
-    '/node_modules/(?!(sequelize)/)'
+    '/node_modules/(?!(sequelize)/)',
   ],
   moduleNameMapper: {
-    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js'
+    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js',
   },
 };
 
