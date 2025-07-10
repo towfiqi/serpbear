@@ -60,18 +60,18 @@ const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType)
 /**
  * Processes the scraped data for the given keyword and updates the keyword serp position in DB.
  * @param {Keyword} keywordRaw - Keywords to Update
- * @param {RefreshResult} udpatedkeyword - scraped Data for that Keyword
+ * @param {RefreshResult} updatedKeyword - scraped Data for that Keyword
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
  * @returns {Promise<KeywordType>}
  */
-export const updateKeywordPosition = async (keywordRaw:Keyword, udpatedkeyword: RefreshResult, settings: SettingsType): Promise<KeywordType> => {
-   const keywordPrased = parseKeywords([keywordRaw.get({ plain: true })]);
-      const keyword = keywordPrased[0];
-      // const udpatedkeyword = refreshed;
+export const updateKeywordPosition = async (keywordRaw:Keyword, updatedKeyword: RefreshResult, settings: SettingsType): Promise<KeywordType> => {
+   const keywordParsed = parseKeywords([keywordRaw.get({ plain: true })]);
+      const keyword = keywordParsed[0];
+      // const updatedKeyword = refreshed;
       let updated = keyword;
 
-      if (udpatedkeyword && keyword) {
-         const newPos = udpatedkeyword.position;
+      if (updatedKeyword && keyword) {
+         const newPos = updatedKeyword.position;
          const { history } = keyword;
          const theDate = new Date();
          const dateKey = `${theDate.getFullYear()}-${theDate.getMonth() + 1}-${theDate.getDate()}`;
@@ -80,17 +80,17 @@ export const updateKeywordPosition = async (keywordRaw:Keyword, udpatedkeyword: 
          const updatedVal = {
             position: newPos,
             updating: false,
-            url: udpatedkeyword.url,
-            lastResult: udpatedkeyword.result,
+            url: updatedKeyword.url,
+            lastResult: updatedKeyword.result,
             history,
-            lastUpdated: udpatedkeyword.error ? keyword.lastUpdated : theDate.toJSON(),
-            lastUpdateError: udpatedkeyword.error
-               ? JSON.stringify({ date: theDate.toJSON(), error: `${udpatedkeyword.error}`, scraper: settings.scraper_type })
+            lastUpdated: updatedKeyword.error ? keyword.lastUpdated : theDate.toJSON(),
+            lastUpdateError: updatedKeyword.error
+               ? JSON.stringify({ date: theDate.toJSON(), error: `${updatedKeyword.error}`, scraper: settings.scraper_type })
                : 'false',
          };
 
          // If failed, Add to Retry Queue Cron
-         if (udpatedkeyword.error && settings?.scrape_retry) {
+         if (updatedKeyword.error && settings?.scrape_retry) {
             await retryScrape(keyword.ID);
          } else {
             await removeFromRetryQueue(keyword.ID);
@@ -100,7 +100,7 @@ export const updateKeywordPosition = async (keywordRaw:Keyword, udpatedkeyword: 
          try {
             await keywordRaw.update({
                ...updatedVal,
-               lastResult: Array.isArray(udpatedkeyword.result) ? JSON.stringify(udpatedkeyword.result) : udpatedkeyword.result,
+               lastResult: Array.isArray(updatedKeyword.result) ? JSON.stringify(updatedKeyword.result) : updatedKeyword.result,
                history: JSON.stringify(history),
             });
             console.log('[SUCCESS] Updating the Keyword: ', keyword.keyword);
