@@ -6,12 +6,12 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 type ChartProps ={
    labels: string[],
-   sreies: number[],
+   series: number[],
    reverse? : boolean,
    noMaxLimit?: boolean
 }
 
-const Chart = ({ labels, sreies, reverse = true, noMaxLimit = false }:ChartProps) => {
+const Chart = ({ labels, series, reverse = true, noMaxLimit = false }:ChartProps) => {
    const options = {
       responsive: true,
       maintainAspectRatio: false,
@@ -38,7 +38,7 @@ const Chart = ({ labels, sreies, reverse = true, noMaxLimit = false }:ChartProps
             datasets: [
                {
                   fill: 'start',
-                  data: sreies,
+                  data: series,
                   borderColor: 'rgb(31, 205, 176)',
                   backgroundColor: 'rgba(31, 205, 176, 0.5)',
                },

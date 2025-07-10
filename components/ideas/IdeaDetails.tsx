@@ -37,12 +37,12 @@ const IdeaDetails = ({ keyword, closeDetails }:IdeaDetailsProps) => {
    useOnKey('Escape', closeDetails);
 
    const chartData = useMemo(() => {
-      const chartDataObj: { labels: string[], sreies: number[] } = { labels: [], sreies: [] };
+      const chartDataObj: { labels: string[], series: number[] } = { labels: [], series: [] };
       Object.keys(monthlySearchVolumes).forEach((dateKey:string) => {
          const dateKeyArr = dateKey.split('-');
          const labelDate = `${dateKeyArr[0].slice(0, 1).toUpperCase()}${dateKeyArr[0].slice(1, 3).toLowerCase()}, ${dateKeyArr[1].slice(2)}`;
          chartDataObj.labels.push(labelDate);
-         chartDataObj.sreies.push(parseInt(monthlySearchVolumes[dateKey], 10));
+         chartDataObj.series.push(parseInt(monthlySearchVolumes[dateKey], 10));
       });
       return chartDataObj;
    }, [monthlySearchVolumes]);
@@ -80,7 +80,7 @@ const IdeaDetails = ({ keyword, closeDetails }:IdeaDetailsProps) => {
                         <h3 className=' font-bold text-gray-700 text-lg'>Search Volume Trend</h3>
                      </div>
                      <div className='IdeaDetails__section__chart h-64'>
-                        <Chart labels={chartData.labels} sreies={chartData.sreies} noMaxLimit={true} reverse={false} />
+                        <Chart labels={chartData.labels} series={chartData.series} noMaxLimit={true} reverse={false} />
                      </div>
                   </div>
                   <div className='IdeaDetails__section mt-10'>
