@@ -78,11 +78,11 @@ const IdeasKeywordsTable = ({
    }, [keywords]);
 
    const selectKeyword = (keywordID: string) => {
-      let updatedSelectd = [...selectedKeywords, keywordID];
+      let updatedSelected = [...selectedKeywords, keywordID];
       if (selectedKeywords.includes(keywordID)) {
-         updatedSelectd = selectedKeywords.filter((keyID) => keyID !== keywordID);
+         updatedSelected = selectedKeywords.filter((keyID) => keyID !== keywordID);
       }
-      setSelectedKeywords(updatedSelectd);
+      setSelectedKeywords(updatedSelected);
    };
 
    const favoriteKeyword = (keywordID: string) => {
