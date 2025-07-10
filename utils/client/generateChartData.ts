@@ -1,6 +1,6 @@
 type ChartData = {
    labels: string[],
-   sreies: number[]
+   series: number[]
 }
 
 export const generateChartData = (history: KeywordHistory): ChartData => {
@@ -23,18 +23,18 @@ export const generateChartData = (history: KeywordHistory): ChartData => {
       if (lastFoundSerp < serpOftheDate) { lastFoundSerp = serpOftheDate; }
    }
 
-   return { labels: priorDates, sreies: Object.values(seriesDates) };
+   return { labels: priorDates, series: Object.values(seriesDates) };
 };
 
 export const generateTheChartData = (history: KeywordHistory, time:string = '30'): ChartData => {
    const currentDate = new Date(); let lastFoundSerp = 0;
-   const chartData: ChartData = { labels: [], sreies: [] };
+   const chartData: ChartData = { labels: [], series: [] };
 
    if (time === 'all') {
       Object.keys(history).forEach((dateKey) => {
          const serpVal = history[dateKey] ? history[dateKey] : 111;
          chartData.labels.push(dateKey);
-         chartData.sreies.push(serpVal);
+         chartData.series.push(serpVal);
       });
    } else {
       // First Generate Labels. The labels should be the last 30 days dates. Format: Oct 26
@@ -47,7 +47,7 @@ export const generateTheChartData = (history: KeywordHistory, time:string = '30'
          const serpVal = prevSerp || (lastFoundSerp > 0 ? lastFoundSerp : 111);
          if (serpVal !== 0) { lastFoundSerp = prevSerp; }
          chartData.labels.push(pastDateKey);
-         chartData.sreies.push(serpVal);
+         chartData.series.push(serpVal);
       }
    }
    // console.log(chartData);
