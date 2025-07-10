@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiResponse<searchConsoleRes>) => {
-   if (!req.query.domain && typeof req.query.domain !== 'string') return res.status(400).json({ data: null, error: 'Domain is Missing.' });
+   if (!req.query.domain || typeof req.query.domain !== 'string') return res.status(400).json({ data: null, error: 'Domain is Missing.' });
    const domainname = (req.query.domain as string).replaceAll('-', '.').replaceAll('_', '-');
    const localSCData = await readLocalSCData(domainname);
    if (localSCData && localSCData.thirtyDays && localSCData.thirtyDays.length) {

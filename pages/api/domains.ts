@@ -95,7 +95,7 @@ const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddRes
 };
 
 export const deleteDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsDeleteRes>) => {
-   if (!req.query.domain && typeof req.query.domain !== 'string') {
+   if (!req.query.domain || typeof req.query.domain !== 'string') {
       return res.status(400).json({ domainRemoved: 0, keywordsRemoved: 0, SCDataRemoved: false, error: 'Domain is Required!' });
    }
    try {
@@ -111,7 +111,7 @@ export const deleteDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
 };
 
 export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsUpdateRes>) => {
-   if (!req.query.domain) {
+   if (!req.query.domain || typeof req.query.domain !== 'string') {
       return res.status(400).json({ domain: null, error: 'Domain is Required!' });
    }
    const { domain } = req.query || {};

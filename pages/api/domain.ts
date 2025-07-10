@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const getDomain = async (req: NextApiRequest, res: NextApiResponse<DomainGetResponse>) => {
-   if (!req.query.domain && typeof req.query.domain !== 'string') {
+   if (!req.query.domain || typeof req.query.domain !== 'string') {
        return res.status(400).json({ error: 'Domain Name is Required!' });
    }
 
