@@ -371,7 +371,7 @@ export const updateKeywordsVolumeData = async (volumesData: false | Record<numbe
       try {
          await Keyword.update({ volume: volumeData }, { where: { ID: keyID } });
       } catch (error) {
-         console.log('');
+         // Silently ignore update errors
       }
    });
    return true;
