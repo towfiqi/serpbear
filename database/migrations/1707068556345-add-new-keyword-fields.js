@@ -33,7 +33,7 @@ module.exports = {
                if (keywordTableDefinition.latlong) {
                   await queryInterface.removeColumn('keyword', 'latlong', { transaction: t });
                }
-               if (keywordTableDefinition.latlong) {
+               if (keywordTableDefinition.settings) {
                   await queryInterface.removeColumn('keyword', 'settings', { transaction: t });
                }
             }
