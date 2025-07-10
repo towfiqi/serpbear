@@ -1,21 +1,46 @@
-name: Build Docker Image
+name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ work ]
-  pull_request:
+    branches:
+      - "main"
+      - "dev"
+  release:
+    types: [published]
 
 jobs:
-  build-image:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Docker Buildx
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
         uses: docker/setup-buildx-action@v3
-      - name: Build Docker image
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: vontainment/v-serpbear
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev' }}
+            type=sha,priority=100,enable=${{ github.event_name == 'push' }}
+
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: false
-          tags: serpbear:latest
-
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
