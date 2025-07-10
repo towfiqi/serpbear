@@ -143,19 +143,26 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                      <ul className={`absolute z-50
                      bg-white border border-t-0 border-gray-200 rounded rounded-t-none w-full`}>
                         {existingTags.length > 0 && existingTags.map((tag, index) => {
-                           return newKeywordsData.tags.split(',').map((t) => t.trim()).includes(tag) === false && <li
-                                    className=' p-2 cursor-pointer hover:text-indigo-600 hover:bg-indigo-50 transition'
-                                    key={index}
-                                    onClick={() => {
-                                       const tagInput = newKeywordsData.tags;
-                                       // eslint-disable-next-line no-nested-ternary
-                                       const tagToInsert = tagInput + (tagInput.trim().slice(-1) === ',' ? '' : (tagInput.trim() ? ', ' : '')) + tag;
-                                       setNewKeywordsData({ ...newKeywordsData, tags: tagToInsert });
-                                       setShowTagSuggestions(false);
-                                       if (inputRef?.current) (inputRef.current as HTMLInputElement).focus();
-                                    }}>
+                           return (
+                              newKeywordsData.tags
+                                 .split(',')
+                                 .map((t) => t.trim())
+                                 .includes(tag) === false && (
+                                    <li
+                                       className=' p-2 cursor-pointer hover:text-indigo-600 hover:bg-indigo-50 transition'
+                                       key={index}
+                                       onClick={() => {
+                                          const tagInput = newKeywordsData.tags;
+                                          // eslint-disable-next-line no-nested-ternary
+                                          const tagToInsert = tagInput + (tagInput.trim().slice(-1) === ',' ? '' : tagInput.trim() ? ', ' : '') + tag;
+                                          setNewKeywordsData({ ...newKeywordsData, tags: tagToInsert });
+                                          setShowTagSuggestions(false);
+                                          if (inputRef?.current) (inputRef.current as HTMLInputElement).focus();
+                                       }}>
                                        <Icon type='tags' size={14} color='#bbb' /> {tag}
-                                    </li>;
+                                    </li>
+                                 )
+                           );
                         })}
                         {existingTags.length === 0 && <p>No Existing Tags Found... </p>}
                      </ul>
