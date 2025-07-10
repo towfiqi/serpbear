@@ -50,7 +50,7 @@ const Research: NextPage = () => {
       .map((countryISO) => ({ label: allCountries[countryISO][0], value: countryISO }));
    }, []);
 
-   const languageOPtions = useMemo(() => Object.entries(adwordsLanguages).map(([value, label]) => ({ label, value })), []);
+   const languageOptions = useMemo(() => Object.entries(adwordsLanguages).map(([value, label]) => ({ label, value })), []);
 
    const buttonStyle = 'leading-6 inline-block px-2 py-2 text-gray-500 hover:text-gray-700';
    const buttonLabelStyle = 'ml-2 text-sm not-italic lg:invisible lg:opacity-0';
@@ -96,7 +96,7 @@ const Research: NextPage = () => {
                      <label className={labelStyle}>Language</label>
                      <SelectField
                         selected={[language]}
-                        options={languageOPtions}
+                        options={languageOptions}
                         defaultLabel='All Languages'
                         updateField={(updated:string[]) => setLanguage(updated[0])}
                         rounded='rounded'

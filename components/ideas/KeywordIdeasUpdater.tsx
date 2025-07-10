@@ -62,7 +62,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
       .map((countryISO) => ({ label: allCountries[countryISO][0], value: countryISO }));
    }, []);
 
-   const languageOPtions = useMemo(() => Object.entries(adwordsLanguages).map(([value, label]) => ({ label, value })), []);
+   const languageOptions = useMemo(() => Object.entries(adwordsLanguages).map(([value, label]) => ({ label, value })), []);
 
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700 capitalize w-full';
    return (
@@ -114,7 +114,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
                   <label className={labelStyle}>Language</label>
                   <SelectField
                      selected={[language]}
-                     options={languageOPtions}
+                     options={languageOptions}
                      defaultLabel='All Languages'
                      updateField={(updated:string[]) => setLanguage(updated[0])}
                      rounded='rounded'
