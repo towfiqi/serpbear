@@ -62,7 +62,7 @@ const refreshTheKeywords = async (req: NextApiRequest, res: NextApiResponse<Keyw
 
       // If Single Keyword wait for the scraping process,
       // else, Process the task in background. Do not wait.
-      if (keywordIDs && keywordIDs.length === 1) {
+    if (keywordIDs && keywordIDs.length === 1) {
          const refreshed: KeywordType[] = await refreshAndUpdateKeywords(keywordQueries, settings);
          keywords = refreshed;
       } else {
