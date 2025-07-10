@@ -61,7 +61,7 @@ describe('/api/searchconsole - CRON functionality', () => {
         get: () => ({
           domain: 'test.com',
           search_console: JSON.stringify({
-            client_email: 'test2@example.com', 
+            client_email: 'test2@example.com',
             private_key: 'mock-private-key-2',
           }),
         }),
@@ -89,7 +89,7 @@ describe('/api/searchconsole - CRON functionality', () => {
       lastFetched: new Date().toISOString(),
       lastFetchError: '',
       stats: [],
-    });
+    },);
 
     await handler(req as NextApiRequest, res as NextApiResponse);
 
@@ -97,19 +97,31 @@ describe('/api/searchconsole - CRON functionality', () => {
     expect(mockFetchDomainSCData).toHaveBeenCalledTimes(2);
     expect(mockFetchDomainSCData).toHaveBeenNthCalledWith(
       1,
-      { domain: 'example.com', search_console: JSON.stringify({
+      {
+        domain: 'example.com',
+        search_console: JSON.stringify({
+          client_email: 'test@example.com',
+          private_key: 'mock-private-key',
+        }),
+      },
+      {
         client_email: 'test@example.com',
         private_key: 'mock-private-key',
-      }) },
-      { client_email: 'test@example.com', private_key: 'mock-private-key' }
+      },
     );
     expect(mockFetchDomainSCData).toHaveBeenNthCalledWith(
       2,
-      { domain: 'test.com', search_console: JSON.stringify({
+      {
+        domain: 'test.com',
+        search_console: JSON.stringify({
+          client_email: 'test2@example.com',
+          private_key: 'mock-private-key-2',
+        }),
+      },
+      {
         client_email: 'test2@example.com',
         private_key: 'mock-private-key-2',
-      }) },
-      { client_email: 'test2@example.com', private_key: 'mock-private-key-2' }
+      },
     );
 
     expect(res.status).toHaveBeenCalledWith(200);
@@ -187,7 +199,7 @@ describe('/api/searchconsole - CRON functionality', () => {
         lastFetched: new Date().toISOString(),
         lastFetchError: '',
         stats: [],
-      });
+      },);
 
     await handler(req as NextApiRequest, res as NextApiResponse);
 
