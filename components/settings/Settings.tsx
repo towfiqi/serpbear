@@ -39,7 +39,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
    const [currentTab, setCurrentTab] = useState<string>('scraper');
    const [settings, setSettings] = useState<SettingsType>(defaultSettings);
    const [settingsError, setSettingsError] = useState<SettingsError|null>(null);
-   const { mutate: updateMutate, isLoading: isUpdating } = useUpdateSettings(() => console.log(''));
+   const { mutateAsync: updateMutateAsync, isLoading: isUpdating } = useUpdateSettings(() => console.log(''));
    const { data: appSettings, isLoading } = useFetchSettings();
    useOnKey('Escape', closeSettings);
 
@@ -59,7 +59,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
       setSettings({ ...settings, [key]: value });
    };
 
-   const performUpdate = () => {
+   const performUpdate = async () => {
       let error: null|SettingsError = null;
       const { notification_interval, notification_email, notification_email_from, scraper_type, smtp_port, smtp_server, scaping_api } = settings;
       if (notification_interval !== 'never') {
@@ -83,7 +83,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
          setTimeout(() => { setSettingsError(null); }, 3000);
       } else {
          // Perform Update
-         updateMutate(settings);
+         await updateMutateAsync(settings);
          // If Scraper is updated, refresh the page.
          if (appSettings.settings === 'none' && scraper_type !== 'none') {
             window.location.reload();

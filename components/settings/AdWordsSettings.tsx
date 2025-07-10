@@ -29,16 +29,14 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
    const cloudProjectIntegrated = adwords_client_id && adwords_client_secret && adwords_refresh_token;
    const hasAllCredentials = adwords_client_id && adwords_client_secret && adwords_refresh_token && adwords_developer_token && adwords_account_id;
 
-   const udpateAndAuthenticate = () => {
+   const udpateAndAuthenticate = async () => {
       if (adwords_client_id && adwords_client_secret) {
-         const link = document.createElement('a');
-         link.href = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fadwords&response_type=code&client_id=${adwords_client_id}&redirect_uri=${`${encodeURIComponent(window.location.origin)}/api/adwords`}&service=lso&o2v=2&theme=glif&flowName=GeneralOAuthFlow`;
-         link.target = '_blank';
-         link.click();
          if (performUpdate) {
-            performUpdate();
-            closeSettings();
+            await performUpdate();
          }
+         const url = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fadwords&response_type=code&client_id=${adwords_client_id}&redirect_uri=${`${encodeURIComponent(window.location.origin)}/api/adwords`}&service=lso&o2v=2&theme=glif&flowName=GeneralOAuthFlow`;
+         window.open(url, '_blank');
+         closeSettings();
       }
    };
 
