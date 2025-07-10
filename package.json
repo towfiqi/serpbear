@@ -21,7 +21,7 @@
     "@googleapis/searchconsole": "^1.0.5",
     "@isaacs/ttlcache": "^1.4.1",
     "@types/react-transition-group": "^4.4.5",
-    "axios": "^1.8.2",
+    "axios": "^1.10.0",
     "axios-retry": "^3.3.1",
     "chart.js": "^3.9.1",
     "cheerio": "^1.0.0",
