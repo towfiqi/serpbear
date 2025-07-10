@@ -54,7 +54,8 @@ const generateCronTime = (interval) => {
       cronTime = '0 0 2-30/2 * *';
    }
    if (interval === 'daily_morning') {
-      cronTime = '0 0 3 * * *';
+      // Run at 1PM instead of 3AM for daily notification emails
+      cronTime = '0 0 13 * * *';
    }
    if (interval === 'weekly') {
       cronTime = '0 0 * * 1';
