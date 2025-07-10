@@ -1,5 +1,5 @@
 /**
- * Sorrt Keyword Ideas by user's given input.
+ * Sort Keyword Ideas by user's given input.
  * @param {IdeaKeyword[]} theKeywords - The Keywords to sort.
  * @param {string} sortBy - The sort method.
  * @returns {IdeaKeyword[]}
