@@ -3,6 +3,7 @@ import 'isomorphic-fetch';
 import './styles/globals.css';
 import '@testing-library/jest-dom';
 import { enableFetchMocks } from 'jest-fetch-mock';
+import { TextEncoder, TextDecoder } from 'util';
 // Optional: configure or set up a testing framework before each test.
 // If you delete this file, remove `setupFilesAfterEnv` from `jest.config.js`
 
@@ -24,18 +25,28 @@ global.ResizeObserver = require('resize-observer-polyfill');
 
 // polyfill TextEncoder/TextDecoder for msw
 if (typeof global.TextEncoder === 'undefined') {
-   const util = require('util');
-   global.TextEncoder = util.TextEncoder;
-   global.TextDecoder = util.TextDecoder;
+   global.TextEncoder = TextEncoder;
+   global.TextDecoder = TextDecoder;
 }
 
 // polyfill BroadcastChannel for msw
 if (typeof global.BroadcastChannel === 'undefined') {
    class BroadcastChannelMock {
-      constructor() {}
-      postMessage() {}
-      close() {}
+      constructor(name) {
+         this.name = name;
+         this.messages = [];
+      }
+
+      postMessage(message) {
+         this.messages.push(message);
+      }
+
+      close() {
+         this.messages = [];
+      }
+
       addEventListener() {}
+
       removeEventListener() {}
    }
    global.BroadcastChannel = BroadcastChannelMock;
