@@ -137,6 +137,6 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
       return res.status(200).json({ domain: domainToUpdate });
    } catch (error) {
       console.log('[ERROR] Updating Domain: ', req.query.domain, error);
-      return res.status(400).json({ domain: null, error: 'Error Updating Domain. An Unknown Error Occured.' });
+      return res.status(400).json({ domain: null, error: 'Error Updating Domain. An Unknown Error Occurred.' });
    }
 };
