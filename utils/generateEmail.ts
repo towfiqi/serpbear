@@ -109,6 +109,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
       const posChangeIcon = positionChange ? `<span class="pos_change">${positionChangeIcon} ${positionChange}</span>` : '';
       keywordsTable += `<tr class="keyword">
                            <td>${countryFlag} ${deviceIcon} ${keyword.keyword}</td>
+                           <td>${keyword.city ? `(${keyword.city})` : ''}</td>
                            <td>${keyword.position}${posChangeIcon}</td>
                            <td>${getBestKeywordPosition(keyword.history)}</td>
                            <td>${timeSince(new Date(keyword.lastUpdated).getTime() / 1000)}</td>
