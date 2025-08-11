@@ -128,6 +128,67 @@ const IdeasKeywordsTable = ({
       );
    };
 
+   let keywordsContent: JSX.Element | null = null;
+   if (!isLoading && finalKeywords && finalKeywords.length > 0) {
+      if (isMobile) {
+         keywordsContent = (
+            <div className='block sm:hidden'>
+               {finalKeywords.map((keyword, index) => (
+                  <KeywordIdea
+                     key={keyword.uid}
+                     style={{}}
+                     selected={selectedKeywords.includes(keyword.uid)}
+                     selectKeyword={selectKeyword}
+                     favoriteKeyword={() => favoriteKeyword(keyword.uid)}
+                     showKeywordDetails={() => setShowKeyDetails(keyword)}
+                     isFavorite={favoriteIDs.includes(keyword.uid)}
+                     keywordData={keyword}
+                     lastItem={index === (finalKeywords.length - 1)}
+                  />
+               ))}
+            </div>
+         );
+      } else {
+         keywordsContent = (
+            <div className='hidden sm:block'>
+               <List
+               innerElementType="div"
+               itemData={finalKeywords}
+               itemCount={finalKeywords.length}
+               itemSize={isMobile ? 100 : 57}
+               height={listHeight}
+               width={'100%'}
+               className={'styled-scrollbar'}
+               >
+                  {Row}
+               </List>
+            </div>
+         );
+      }
+   } else {
+      keywordsContent = (
+         <>
+            {isAdwordsIntegrated && isLoading && (
+               <p className=' p-9 pt-[10%] text-center text-gray-500'>Loading Keywords Ideas...</p>
+            )}
+            {isAdwordsIntegrated && noIdeasDatabase && !isLoading && (
+               <p className=' p-9 pt-[10%] text-center text-gray-500'>
+                  {'No keyword Ideas has been generated for this domain yet. Click the "Load Ideas" button to generate keyword ideas.'}
+               </p>
+            )}
+            {isAdwordsIntegrated && !isLoading && finalKeywords.length === 0 && !noIdeasDatabase && (
+               <p className=' p-9 pt-[10%] text-center text-gray-500'>
+                  {'No Keyword Ideas found. Please try generating Keyword Ideas again by clicking the "Load Ideas" button.'}
+               </p>
+            )}
+            {!isAdwordsIntegrated && (
+               <p className=' p-9 pt-[10%] text-center text-gray-500'>
+                  Google Ads has not been Integrated yet. Please follow <a className='text-indigo-600 underline' href='https://docs.serpbear.com/miscellaneous/integrate-google-ads' target="_blank" rel='noreferrer'>These Steps</a> to integrate Google Ads.
+               </p>
+            )}
+         </>
+      );
+   }
    return (
       <div>
          <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-5'>
@@ -200,60 +261,7 @@ const IdeasKeywordsTable = ({
                      <span className='domKeywords_head_competition flex-1 text-center'>Competition</span>
                   </div>
                   <div className='domKeywords_keywords border-gray-200 min-h-[55vh] relative' data-domain={domain?.domain}>
-                     {!isLoading && finalKeywords && finalKeywords.length > 0 ? (
-                        isMobile ? (
-                           <div className='block sm:hidden'>
-                              {finalKeywords.map((keyword, index) => (
-                                 <KeywordIdea
-                                    key={keyword.uid}
-                                    style={{}}
-                                    selected={selectedKeywords.includes(keyword.uid)}
-                                    selectKeyword={selectKeyword}
-                                    favoriteKeyword={() => favoriteKeyword(keyword.uid)}
-                                    showKeywordDetails={() => setShowKeyDetails(keyword)}
-                                    isFavorite={favoriteIDs.includes(keyword.uid)}
-                                    keywordData={keyword}
-                                    lastItem={index === (finalKeywords.length - 1)}
-                                 />
-                              ))}
-                           </div>
-                        ) : (
-                           <div className='hidden sm:block'>
-                              <List
-                              innerElementType="div"
-                              itemData={finalKeywords}
-                              itemCount={finalKeywords.length}
-                              itemSize={isMobile ? 100 : 57}
-                              height={listHeight}
-                              width={'100%'}
-                              className={'styled-scrollbar'}
-                              >
-                                 {Row}
-                              </List>
-                           </div>
-                        )
-                     ) : (
-                        <>
-                           {isAdwordsIntegrated && isLoading && (
-                              <p className=' p-9 pt-[10%] text-center text-gray-500'>Loading Keywords Ideas...</p>
-                           )}
-                           {isAdwordsIntegrated && noIdeasDatabase && !isLoading && (
-                              <p className=' p-9 pt-[10%] text-center text-gray-500'>
-                                 {'No keyword Ideas has been generated for this domain yet. Click the "Load Ideas" button to generate keyword ideas.'}
-                              </p>
-                           )}
-                           {isAdwordsIntegrated && !isLoading && finalKeywords.length === 0 && !noIdeasDatabase && (
-                              <p className=' p-9 pt-[10%] text-center text-gray-500'>
-                                 {'No Keyword Ideas found. Please try generating Keyword Ideas again by clicking the "Load Ideas" button.'}
-                              </p>
-                           )}
-                           {!isAdwordsIntegrated && (
-                              <p className=' p-9 pt-[10%] text-center text-gray-500'>
-                                 Google Ads has not been Integrated yet. Please follow <a className='text-indigo-600 underline' href='https://docs.serpbear.com/miscellaneous/integrate-google-ads' target="_blank" rel='noreferrer'>These Steps</a> to integrate Google Ads.
-                              </p>
-                           )}
-                        </>
-                     )}
+                     {keywordsContent}
                   </div>
                </div>
             </div>
