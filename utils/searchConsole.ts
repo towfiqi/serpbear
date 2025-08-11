@@ -1,6 +1,7 @@
 import { auth, searchconsole_v1 } from '@googleapis/searchconsole';
 import Cryptr from 'cryptr';
 import { readFile, writeFile, unlink } from 'fs/promises';
+import * as path from 'path';
 import { getCountryCodeFromAlphaThree } from './countries';
 
 export type SCDomainFetchError = {
@@ -241,7 +242,8 @@ export const checkSearchConsoleIntegration = async (domain: DomainType): Promise
  */
 export const readLocalSCData = async (domain:string): Promise<SCDomainDataType|false> => {
    try {
-      const filePath = `${process.cwd()}/data/SC_${domain.replaceAll('/', '-')}.json`;
+      const filePath = getSafeSCDataFilePath(domain);
+      if (!filePath) throw new Error('Invalid domain for file path');
       const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch(async () => { await updateLocalSCData(domain); return '{}'; });
       const domainSCData = JSON.parse(currentQueueRaw);
       return domainSCData;
@@ -258,7 +260,8 @@ export const readLocalSCData = async (domain:string): Promise<SCDomainDataType|f
  */
 export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDataType): Promise<SCDomainDataType|false> => {
    try {
-      const filePath = `${process.cwd()}/data/SC_${domain.replaceAll('/', '-')}.json`;
+      const filePath = getSafeSCDataFilePath(domain);
+      if (!filePath) throw new Error('Invalid domain for file path');
       const emptyData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '' };
       await writeFile(filePath, JSON.stringify(scDomainData || emptyData), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
       return scDomainData || emptyData;
@@ -273,7 +276,8 @@ export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDat
  * @returns {Promise<boolean>} - Returns true if file was removed, else returns false.
  */
 export const removeLocalSCData = async (domain:string): Promise<boolean> => {
-   const filePath = `${process.cwd()}/data/SC_${domain.replaceAll('/', '-')}.json`;
+   const filePath = getSafeSCDataFilePath(domain);
+   if (!filePath) return false;
    try {
       await unlink(filePath);
       return true;
@@ -281,5 +285,23 @@ export const removeLocalSCData = async (domain:string): Promise<boolean> => {
       return false;
    }
 };
+
+/**
+ * Helper to safely construct the SC data file path for a given domain.
+ * Returns the absolute path if safe, or null if the domain is invalid.
+ */
+function getSafeSCDataFilePath(domain: string): string | null {
+   // Only allow alphanumeric, dash, dot, and underscore in domain
+   const safeDomain = domain.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+   const dataDir = path.resolve(process.cwd(), 'data');
+   const fileName = `SC_${safeDomain}.json`;
+   const filePath = path.resolve(dataDir, fileName);
+
+   // Ensure the filePath is within the dataDir
+   if (!filePath.startsWith(dataDir + path.sep)) {
+      return null;
+   }
+   return filePath;
+}
 
 export default fetchSearchConsoleData;
