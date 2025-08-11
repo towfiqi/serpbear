@@ -65,8 +65,8 @@ const Login: NextPage = () => {
          <Head>
             <title>Login - SerpBear</title>
          </Head>
-         <div className='flex items-center justify-center w-full h-screen'>
-            <div className='w-80 mt-[-300px]'>
+         <div className='flex items-center justify-center w-full min-h-screen overflow-y-auto'>
+            <div className='w-80'>
                <h3 className="py-7 text-2xl font-bold text-blue-700 text-center">
                   <span className=' relative top-[3px] mr-1'>
                      <Icon type="logo" size={30} color="#364AFF" />
