@@ -8,7 +8,7 @@ module.exports = {
     dialect: 'sqlite',
     storage: './data/database.sqlite',
     dialectOptions: {
-      bigNumberStrings: true,
-    },
-  },
+      bigNumberStrings: true
+    }
+  }
 };

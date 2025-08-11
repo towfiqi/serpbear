@@ -3,12 +3,12 @@ module.exports = {
    purge: {
       content: [
          './pages/**/*.{js,ts,jsx,tsx}',
-         './components/**/*.{js,ts,jsx,tsx}',
-      ],
+         './components/**/*.{js,ts,jsx,tsx}'
+      ]
    },
    content: [
       './pages/**/*.{js,ts,jsx,tsx}',
-      './components/**/*.{js,ts,jsx,tsx}',
+      './components/**/*.{js,ts,jsx,tsx}'
    ],
    safelist: [
       'max-h-48',
@@ -16,10 +16,10 @@ module.exports = {
       'w-[240px]',
       'min-w-[270px]',
       'min-w-[180px]',
-      'max-w-[180px]',
+      'max-w-[180px]'
     ],
    theme: {
-     extend: {},
+     extend: {}
    },
-   plugins: [],
+   plugins: []
  };
