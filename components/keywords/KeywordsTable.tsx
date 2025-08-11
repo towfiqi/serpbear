@@ -127,6 +127,59 @@ const KeywordsTable = (props: KeywordsTableProps) => {
 
    const selectedAllItems = selectedKeywords.length === processedKeywords[device].length;
 
+   let keywordsContent: JSX.Element | null = null;
+   if (processedKeywords[device] && processedKeywords[device].length > 0) {
+      if (isMobile) {
+         keywordsContent = (
+            <div className='block sm:hidden'>
+               {processedKeywords[device].map((keyword, index) => (
+                  <Keyword
+                     key={keyword.ID}
+                     style={{}}
+                     index={index}
+                     selected={selectedKeywords.includes(keyword.ID)}
+                     selectKeyword={selectKeyword}
+                     keywordData={keyword}
+                     refreshkeyword={() => refreshMutate({ ids: [keyword.ID] })}
+                     favoriteKeyword={favoriteMutate}
+                     manageTags={() => setShowTagManager(keyword.ID)}
+                     removeKeyword={() => { setSelectedKeywords([keyword.ID]); setShowRemoveModal(true); }}
+                     showKeywordDetails={() => setShowKeyDetails(keyword)}
+                     lastItem={index === (processedKeywords[device].length - 1)}
+                     showSCData={showSCData}
+                     scDataType={scDataType}
+                     maxTitleColumnWidth={maxTitleColumnWidth}
+                     tableColumns={tableColumns}
+                  />
+               ))}
+            </div>
+         );
+      } else {
+         keywordsContent = (
+            <div className='hidden sm:block'>
+               <List
+               innerElementType="div"
+               itemData={processedKeywords[device]}
+               itemCount={processedKeywords[device].length}
+               itemSize={isMobile ? 146 : 57}
+               height={SCListHeight}
+               width={'100%'}
+               className={'styled-scrollbar'}
+               >
+                  {Row}
+               </List>
+            </div>
+         );
+      }
+   } else {
+      keywordsContent = (
+         !isLoading ? (
+            <p className=' p-9 pt-[10%] text-center text-gray-500'>No Keywords Added for this Device Type.</p>
+         ) : (
+            <p className=' p-9 pt-[10%] text-center text-gray-500'>Loading Keywords...</p>
+         )
+      );
+   }
    return (
       <div>
          <div className='domKeywords flex flex-col bg-[white] rounded-md text-sm border mb-5'>
@@ -237,52 +290,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                      )}
                   </div>
                   <div className='domKeywords_keywords border-gray-200 min-h-[55vh] relative'>
-                     {processedKeywords[device] && processedKeywords[device].length > 0 ? (
-                        isMobile ? (
-                           <div className='block sm:hidden'>
-                              {processedKeywords[device].map((keyword, index) => (
-                                 <Keyword
-                                    key={keyword.ID}
-                                    style={{}}
-                                    index={index}
-                                    selected={selectedKeywords.includes(keyword.ID)}
-                                    selectKeyword={selectKeyword}
-                                    keywordData={keyword}
-                                    refreshkeyword={() => refreshMutate({ ids: [keyword.ID] })}
-                                    favoriteKeyword={favoriteMutate}
-                                    manageTags={() => setShowTagManager(keyword.ID)}
-                                    removeKeyword={() => { setSelectedKeywords([keyword.ID]); setShowRemoveModal(true); }}
-                                    showKeywordDetails={() => setShowKeyDetails(keyword)}
-                                    lastItem={index === (processedKeywords[device].length - 1)}
-                                    showSCData={showSCData}
-                                    scDataType={scDataType}
-                                    maxTitleColumnWidth={maxTitleColumnWidth}
-                                    tableColumns={tableColumns}
-                                 />
-                              ))}
-                           </div>
-                        ) : (
-                           <div className='hidden sm:block'>
-                              <List
-                              innerElementType="div"
-                              itemData={processedKeywords[device]}
-                              itemCount={processedKeywords[device].length}
-                              itemSize={isMobile ? 146 : 57}
-                              height={SCListHeight}
-                              width={'100%'}
-                              className={'styled-scrollbar'}
-                              >
-                                 {Row}
-                              </List>
-                           </div>
-                        )
-                     ) : (
-                        !isLoading ? (
-                           <p className=' p-9 pt-[10%] text-center text-gray-500'>No Keywords Added for this Device Type.</p>
-                        ) : (
-                           <p className=' p-9 pt-[10%] text-center text-gray-500'>Loading Keywords...</p>
-                        )
-                     )}
+                       {keywordsContent}
                   </div>
                </div>
             </div>
