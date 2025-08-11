@@ -49,7 +49,6 @@ const Keyword = (props: KeywordProps) => {
         domain,
         ID,
         city,
-        state,
         position,
         url = '',
         lastUpdated,
@@ -125,8 +124,15 @@ const Keyword = (props: KeywordProps) => {
             title={keyword}
             >
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />
-               <span className='inline-block text-ellipsis overflow-hidden whitespace-nowrap w-[calc(100%-50px)]'>
-                  {keyword}{city || state ? ` (${[city, state].filter(Boolean).join(', ')})` : ''}
+               <span className="inline-block w-[calc(100%-50px)]">
+                  <span className="block text-ellipsis overflow-hidden whitespace-nowrap">
+                     {keyword}
+                  </span>
+                  {city && (
+                     <span className="block text-sm text-gray-500 lg:inline lg:ml-1">
+                        ({city})
+                     </span>
+                  )}
                </span>
             </a>
             {sticky && <button className='ml-2 relative top-[2px]' title='Favorite'><Icon type="star-filled" size={16} color="#fbd346" /></button>}
