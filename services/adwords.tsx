@@ -54,7 +54,8 @@ export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
       const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ ...data }) };
       const res = await fetch(`${window.location.origin}/api/ideas`, fetchOpts);
       if (res.status >= 400 && res.status < 600) {
-         throw new Error('Bad response from server');
+         const errorData = await res.json();
+         throw new Error(errorData?.error ? errorData.error : 'Bad response from server');
       }
       return res.json();
    }, {
@@ -68,7 +69,8 @@ export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
       },
       onError: (error) => {
          console.log('Error Loading Keyword Ideas!!!', error);
-         toast('Error Loading Keyword Ideas', { icon: '⚠️' });
+         const message = (error as Error)?.message || 'Error Loading Keyword Ideas';
+         toast(message, { icon: '⚠️' });
       },
    });
 }

@@ -55,7 +55,17 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
    const { keywords = [], country = 'US', language = '1000', domain = '', seedSCKeywords, seedCurrentKeywords, seedType } = req.body;
 
    if (!country || !language) {
-      return res.status(400).json({ keywords: [], error: 'Error Fetching Keywords. Please Provide a Country and Language' });
+      return res.status(400).json({ keywords: [], error: 'Please provide both country and language' });
+   }
+   if (!domain) {
+      return res.status(400).json({ keywords: [], error: 'Missing domain' });
+   }
+   if (!seedType) {
+      return res.status(400).json({ keywords: [], error: 'Missing seedType' });
+   }
+   const validSeedTypes = ['auto', 'custom', 'tracking', 'searchconsole'];
+   if (!validSeedTypes.includes(seedType)) {
+      return res.status(400).json({ keywords: [], error: 'Invalid seedType' });
    }
    if (seedType === 'custom' && (keywords.length === 0 && !seedSCKeywords && !seedCurrentKeywords)) {
       return res.status(400).json({ keywords: [], error: 'Error Fetching Keywords. Please Provide one of these: keywords, url or domain' });
@@ -63,14 +73,21 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
    try {
       const adwordsCreds = await getAdwordsCredentials();
       const { client_id, client_secret, developer_token, account_id, refresh_token } = adwordsCreds || {};
-      if (adwordsCreds && client_id && client_secret && developer_token && account_id && refresh_token) {
-         const ideaOptions = { country, language, keywords, domain, seedSCKeywords, seedCurrentKeywords, seedType };
+      if (!adwordsCreds || !client_id || !client_secret || !developer_token || !account_id || !refresh_token) {
+         return res.status(500).json({ keywords: [], error: 'Google Ads credentials not configured' });
+      }
+      const ideaOptions = { country, language, keywords, domain, seedSCKeywords, seedCurrentKeywords, seedType };
+      try {
          const keywordIdeas = await getAdwordsKeywordIdeas(adwordsCreds, ideaOptions);
          if (keywordIdeas && Array.isArray(keywordIdeas) && keywordIdeas.length > 1) {
             return res.status(200).json({ keywords: keywordIdeas });
          }
+         return res.status(400).json({ keywords: [], error: errMsg });
+      } catch (error: any) {
+         console.log('[ERROR] Fetching Keyword Ideas: ', error);
+         const message = error?.message || errMsg;
+         return res.status(400).json({ keywords: [], error: message });
       }
-      return res.status(400).json({ keywords: [], error: errMsg });
    } catch (error) {
       console.log('[ERROR] Fetching Keyword Ideas: ', error);
       return res.status(400).json({ keywords: [], error: errMsg });
