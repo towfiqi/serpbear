@@ -3,7 +3,7 @@ require('dotenv').config({ path: './.env.local' });
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
-  dir: './'
+  dir: './',
 });
 
 // Add any custom config to be passed to Jest
@@ -15,11 +15,11 @@ const customJestConfig = {
   moduleDirectories: ['node_modules', '<rootDir>/'],
   testEnvironment: 'jest-environment-jsdom',
   transformIgnorePatterns: [
-    '/node_modules/(?!(sequelize)/)'
+    '/node_modules/(?!(sequelize)/)',
   ],
   moduleNameMapper: {
-    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js'
-  }
+    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js',
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

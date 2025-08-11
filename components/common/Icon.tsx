@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/* eslint-disable complexity */
 import React from 'react';
 
 type IconProps = {
