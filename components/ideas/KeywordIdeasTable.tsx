@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import React, { useState, useMemo } from 'react';
-import { Toaster } from 'react-hot-toast';
 import { useQuery } from 'react-query';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import { useAddKeywords } from '../../services/keywords';
@@ -269,7 +268,6 @@ const IdeasKeywordsTable = ({
          {showKeyDetails && showKeyDetails.uid && (
             <IdeaDetails keyword={showKeyDetails} closeDetails={() => setShowKeyDetails(null)} />
          )}
-         <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>
    );
  };

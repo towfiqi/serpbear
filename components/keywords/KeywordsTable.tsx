@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Toaster } from 'react-hot-toast';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import { filterKeywords, keywordsByDevice, sortKeywords } from '../../utils/client/sortFilter';
 import Icon from '../common/Icon';
@@ -331,7 +330,6 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                closeModal={() => setShowAddTags(false)}
                />
          )}
-         <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>
    );
  };

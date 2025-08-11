@@ -2,7 +2,6 @@ import type { NextPage } from 'next';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Toaster } from 'react-hot-toast';
 import Icon from '../components/common/Icon';
 
 const Home: NextPage = () => {
@@ -22,7 +21,6 @@ const Home: NextPage = () => {
       <main role={'main'} className='main flex items-center justify-center w-full min-h-screen'>
         <Icon type='loading' size={36} color="#999" />
       </main>
-      <Toaster position='bottom-center' containerClassName="react_toaster" />
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Toaster } from 'react-hot-toast';
 import { useFetchSettings, useUpdateSettings } from '../../services/settings';
 import Icon from '../common/Icon';
 import NotificationSettings from './NotificationSettings';
@@ -150,7 +149,6 @@ const Settings = ({ closeSettings }:SettingsProps) => {
                   </button>
                </div>
             </div>
-            <Toaster position='bottom-center' containerClassName="react_toaster" />
        </div>
    );
 };

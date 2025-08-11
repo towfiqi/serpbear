@@ -39,6 +39,7 @@ export async function fetchAdwordsKeywordIdeas(router: NextRouter, domainSlug: s
    return res.json();
 }
 
+// React hook; should be used within a React component or another hook
 export function useFetchKeywordIdeas(router: NextRouter, adwordsConnected = false) {
    const isResearch = router.pathname === '/research';
    const domainSlug = isResearch ? 'research' : (router.query.slug as string);
@@ -46,6 +47,7 @@ export function useFetchKeywordIdeas(router: NextRouter, adwordsConnected = fals
    return useQuery(`keywordIdeas-${domainSlug}`, () => domainSlug && fetchAdwordsKeywordIdeas(router, domainSlug), { enabled, retry: false });
 }
 
+// React hook; should be used within a React component or another hook
 export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
    const queryClient = useQueryClient();
    const domainSlug = router.pathname === '/research' ? 'research' : router.query.slug as string;

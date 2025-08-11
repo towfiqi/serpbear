@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { CSSTransition } from 'react-transition-group';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import TopBar from '../../components/common/TopBar';
 import AddDomain from '../../components/domains/AddDomain';
 import Settings from '../../components/settings/Settings';
@@ -160,7 +160,6 @@ const Domains: NextPage = () => {
              <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
          <Footer currentVersion={appSettings?.version ? appSettings.version : ''} />
-         <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>
    );
 };
