@@ -96,14 +96,14 @@ const DomainHeader = (
             }
             {isInsight && <button className={`${buttonStyle} lg:hidden invisible`}>x</button>}
             <div
-            className={'absolute top-full right-0 w-40 mt-2 bg-white border border-gray-100 rounded z-[70]'
-            + ' lg:block lg:static lg:mt-0 lg:border-0 lg:w-auto lg:bg-transparent'}
-            style={{ display: showOptions ? 'block' : undefined }}>
+            className={`absolute top-full right-0 w-40 mt-2 bg-white border border-gray-100 rounded z-[70] ${
+               showOptions ? 'block' : 'hidden'
+            } lg:block lg:static lg:mt-0 lg:border-0 lg:w-auto lg:bg-transparent`}>
                {!isInsight && (
                   <button
                   className={`domheader_action_button relative ${buttonStyle}`}
                   aria-pressed="false"
-                  onClick={() => exportCsv()}>
+                  onClick={() => { exportCsv(); setShowOptions(false); }}>
                      <Icon type='download' size={20} /><i className={`${buttonLabelStyle}`}>Export as csv</i>
                   </button>
                )}
@@ -111,7 +111,7 @@ const DomainHeader = (
                   <button
                   className={`domheader_action_button relative ${buttonStyle} lg:ml-3`}
                   aria-pressed="false"
-                  onClick={() => refreshMutate({ ids: [], domain: domain.domain })}>
+                  onClick={() => { refreshMutate({ ids: [], domain: domain.domain }); setShowOptions(false); }}>
                      <Icon type='reload' size={14} /><i className={`${buttonLabelStyle}`}>Reload All Serps</i>
                   </button>
                 )}
@@ -119,7 +119,7 @@ const DomainHeader = (
                data-testid="show_domain_settings"
                className={`domheader_action_button relative ${buttonStyle} lg:ml-3`}
                aria-pressed="false"
-               onClick={() => showSettingsModal(true)}><Icon type='settings' size={20} />
+               onClick={() => { showSettingsModal(true); setShowOptions(false); }}><Icon type='settings' size={20} />
                   <i className={`${buttonLabelStyle}`}>Domain Settings</i>
                </button>
             </div>
