@@ -1,16 +1,14 @@
-import path from 'path';
-import fs from 'fs';
-import generateEmail from '../../utils/generateEmail';
-import { readFile } from 'fs/promises';
-
 jest.mock('fs/promises', () => ({
   readFile: jest.fn(),
 }));
 
+import generateEmail from '../../utils/generateEmail';
+
+const { readFile: mockReadFile } = require('fs/promises') as { readFile: jest.Mock };
+
 describe('generateEmail', () => {
   it('includes city in keyword table when keyword.city is provided', async () => {
-    const template = fs.readFileSync(path.join(process.cwd(), 'email', 'email.html'), 'utf-8');
-    (readFile as jest.Mock).mockResolvedValue(template);
+    mockReadFile.mockResolvedValue('<html>{{keywordsTable}}</html>');
 
     const keywords = [
       {
