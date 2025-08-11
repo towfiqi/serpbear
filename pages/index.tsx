@@ -19,7 +19,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main role={'main'} className='main flex items-center justify-center w-full h-screen'>
+      <main role={'main'} className='main flex items-center justify-center w-full min-h-screen'>
         <Icon type='loading' size={36} color="#999" />
       </main>
       <Toaster position='bottom-center' containerClassName="react_toaster" />
