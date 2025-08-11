@@ -1,10 +1,11 @@
+import { readFile } from 'fs/promises';
+import generateEmail from '../../utils/generateEmail';
+
 jest.mock('fs/promises', () => ({
   readFile: jest.fn(),
 }));
 
-import generateEmail from '../../utils/generateEmail';
-
-const { readFile: mockReadFile } = require('fs/promises') as { readFile: jest.Mock };
+const mockReadFile = readFile as jest.Mock;
 
 describe('generateEmail', () => {
   it('includes city and state in keyword table when provided', async () => {
