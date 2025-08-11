@@ -31,8 +31,8 @@ type IdeaSettings = {
    state?: string;
    language?: string;
    keywords?: string[];
-   url?: string;
-   domain?:string;
+   domainUrl?: string;
+   domainSlug?: string;
    seedType: 'auto' | 'custom' | 'tracking' | 'searchconsole'
 }
 
@@ -122,7 +122,7 @@ export const getAdwordsAccessToken = async (credentials:AdwordsCredentials) => {
 export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adwordsDomainOptions:IdeaSettings, test:boolean = false) => {
    if (!credentials) { return false; }
    const { account_id, developer_token } = credentials;
-   const { country = '2840', language = '1000', keywords = [], domain = '', seedType } = adwordsDomainOptions || {};
+   const { country = '2840', language = '1000', keywords = [], domainUrl = '', domainSlug = '', seedType } = adwordsDomainOptions || {};
 
    let accessToken = '';
 
@@ -140,8 +140,8 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       const seedKeywords = [...keywords];
 
       // Load Keywords from Google Search Console File.
-      if (seedType === 'searchconsole' && domain) {
-         const domainSCData = await readLocalSCData(domain);
+      if (seedType === 'searchconsole' && domainSlug) {
+         const domainSCData = await readLocalSCData(domainSlug);
          if (domainSCData && domainSCData.thirtyDays) {
             const scKeywords = domainSCData.thirtyDays;
             const sortedSCKeywords = scKeywords.sort((a, b) => (b.impressions > a.impressions ? 1 : -1));
@@ -154,8 +154,8 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       }
 
       // Load all Keywords from Database
-      if (seedType === 'tracking' && domain) {
-         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain } });
+      if (seedType === 'tracking' && domainSlug) {
+         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainSlug } });
          const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
          currentKeywords.forEach((keyword) => {
             if (keyword.keyword && !seedKeywords.includes(keyword.keyword)) {
@@ -176,8 +176,8 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
          if (['custom', 'searchconsole', 'tracking'].includes(seedType) && seedKeywords.length > 0) {
             reqPayload.keywordSeed = { keywords: seedKeywords.slice(0, 20) };
          }
-         if (seedType === 'auto' && domain) {
-            reqPayload.siteSeed = { site: domain };
+         if (seedType === 'auto' && domainUrl) {
+            reqPayload.siteSeed = { site: domainUrl };
          }
 
          const resp = await fetch(`https://googleads.googleapis.com/v18/customers/${customerID}:generateKeywordIdeas`, {
@@ -199,11 +199,11 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
          }
 
          if (ideaData?.results) {
-            fetchedKeywords = extractAdwordskeywordIdeas(ideaData.results as keywordIdeasResponseItem[], { country, domain });
+            fetchedKeywords = extractAdwordskeywordIdeas(ideaData.results as keywordIdeasResponseItem[], { country, domain: domainSlug });
          }
 
          if (!test && fetchedKeywords.length > 0) {
-            await updateLocalKeywordIdeas(domain, { keywords: fetchedKeywords, settings: adwordsDomainOptions });
+            await updateLocalKeywordIdeas(domainSlug, { keywords: fetchedKeywords, settings: adwordsDomainOptions });
          }
       } catch (error) {
          console.log('[ERROR] Fetching Keyword Ideas from Google Ads :', error);

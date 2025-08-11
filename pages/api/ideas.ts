@@ -52,13 +52,25 @@ const getKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyword
 
 const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keywordsIdeasUpdateResp>) => {
    const errMsg = 'Error Fetching Keywords. Please try again!';
-   const { keywords = [], country = 'US', language = '1000', domain = '', seedSCKeywords, seedCurrentKeywords, seedType } = req.body;
+   const {
+      keywords = [],
+      country = 'US',
+      language = '1000',
+      domainUrl = '',
+      domainSlug = '',
+      seedSCKeywords,
+      seedCurrentKeywords,
+      seedType,
+   } = req.body;
 
    if (!country || !language) {
       return res.status(400).json({ keywords: [], error: 'Please provide both country and language' });
    }
-   if (!domain) {
-      return res.status(400).json({ keywords: [], error: 'Missing domain' });
+   if (!domainSlug) {
+      return res.status(400).json({ keywords: [], error: 'Missing domainSlug' });
+   }
+   if (seedType === 'auto' && !domainUrl) {
+      return res.status(400).json({ keywords: [], error: 'Missing domainUrl' });
    }
    if (!seedType) {
       return res.status(400).json({ keywords: [], error: 'Missing seedType' });
@@ -68,7 +80,7 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
       return res.status(400).json({ keywords: [], error: 'Invalid seedType' });
    }
    if (seedType === 'custom' && (keywords.length === 0 && !seedSCKeywords && !seedCurrentKeywords)) {
-      return res.status(400).json({ keywords: [], error: 'Error Fetching Keywords. Please Provide one of these: keywords, url or domain' });
+      return res.status(400).json({ keywords: [], error: 'Error Fetching Keywords. Please Provide one of these: keywords, url or domainSlug' });
    }
    try {
       const adwordsCreds = await getAdwordsCredentials();
@@ -76,7 +88,7 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
       if (!adwordsCreds || !client_id || !client_secret || !developer_token || !account_id || !refresh_token) {
          return res.status(500).json({ keywords: [], error: 'Google Ads credentials not configured' });
       }
-      const ideaOptions = { country, language, keywords, domain, seedSCKeywords, seedCurrentKeywords, seedType };
+      const ideaOptions = { country, language, keywords, domainUrl, domainSlug, seedSCKeywords, seedCurrentKeywords, seedType };
       try {
          const keywordIdeas = await getAdwordsKeywordIdeas(adwordsCreds, ideaOptions);
          if (keywordIdeas && Array.isArray(keywordIdeas) && keywordIdeas.length > 1) {
