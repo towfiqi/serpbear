@@ -33,7 +33,9 @@ type IdeaSettings = {
    keywords?: string[];
    domainUrl?: string;
    domainSlug?: string;
-   seedType: 'auto' | 'custom' | 'tracking' | 'searchconsole'
+   seedType: 'auto' | 'custom' | 'tracking' | 'searchconsole';
+   seedSCKeywords?: boolean;
+   seedCurrentKeywords?: boolean;
 }
 
 type IdeaDatabaseUpdateData = {
@@ -122,7 +124,16 @@ export const getAdwordsAccessToken = async (credentials:AdwordsCredentials) => {
 export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adwordsDomainOptions:IdeaSettings, test:boolean = false) => {
    if (!credentials) { return false; }
    const { account_id, developer_token } = credentials;
-   const { country = '2840', language = '1000', keywords = [], domainUrl = '', domainSlug = '', seedType } = adwordsDomainOptions || {};
+   const {
+      country = '2840',
+      language = '1000',
+      keywords = [],
+      domainUrl = '',
+      domainSlug = '',
+      seedType,
+      seedSCKeywords = false,
+      seedCurrentKeywords = false,
+   } = adwordsDomainOptions || {};
 
    let accessToken = '';
 
@@ -140,7 +151,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       const seedKeywords = [...keywords];
 
       // Load Keywords from Google Search Console File.
-      if (seedType === 'searchconsole' && domainSlug) {
+      if ((seedType === 'searchconsole' || seedSCKeywords) && domainSlug) {
          const domainSCData = await readLocalSCData(domainSlug);
          if (domainSCData && domainSCData.thirtyDays) {
             const scKeywords = domainSCData.thirtyDays;
@@ -154,7 +165,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       }
 
       // Load all Keywords from Database
-      if (seedType === 'tracking' && domainSlug) {
+      if ((seedType === 'tracking' || seedCurrentKeywords) && domainSlug) {
          const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainSlug } });
          const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
          currentKeywords.forEach((keyword) => {
@@ -162,6 +173,13 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
                seedKeywords.push(keyword.keyword);
             }
          });
+      }
+
+      if (['tracking', 'searchconsole'].includes(seedType) && seedKeywords.length === 0) {
+         const errMessage = seedType === 'tracking'
+            ? 'No tracked keywords found for this domain'
+            : 'No search console keywords found for this domain';
+         throw new Error(errMessage);
       }
 
       try {
