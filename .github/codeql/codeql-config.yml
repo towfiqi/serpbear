@@ -1,0 +1,6 @@
+name: v-serpbear-codeql
+paths:
+  - .
+paths-ignore:
+  - "__tests__/**"
+  - "__mocks__/**"
