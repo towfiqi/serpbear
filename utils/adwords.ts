@@ -151,63 +151,54 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
    if (accessToken) {
       const seedKeywords = [...keywords];
 
-      // Check if domain exists first for better error reporting
-      let domainExists = false;
+      // Get the actual domain URL from the domain slug for database queries
+      let domainUrl = '';
       if (domainSlug && ['tracking', 'searchconsole'].includes(seedType)) {
          try {
             const domain = await Domain.findOne({ where: { slug: domainSlug } });
-            domainExists = !!domain;
-            if (!domainExists) {
-               console.log(`[DEBUG] Domain with slug '${domainSlug}' not found in database`);
+            if (domain) {
+               domainUrl = domain.domain;
             }
          } catch (error) {
-            console.log(`[DEBUG] Error checking domain existence: ${error}`);
+            console.log('[ERROR] Looking up domain from slug:', error);
          }
       }
 
       // Load Keywords from Google Search Console File.
       if ((seedType === 'searchconsole' || seedSCKeywords) && domainSlug) {
-         console.log(`[DEBUG] Loading Search Console keywords for domain: ${domainSlug}`);
          const domainSCData = await readLocalSCData(domainSlug);
          if (domainSCData && domainSCData.thirtyDays) {
             const scKeywords = domainSCData.thirtyDays;
-            console.log(`[DEBUG] Found ${scKeywords.length} search console keywords`);
             const sortedSCKeywords = scKeywords.sort((a, b) => (b.impressions > a.impressions ? 1 : -1));
             sortedSCKeywords.slice(0, 100).forEach((sckeywrd) => {
                if (sckeywrd.keyword && !seedKeywords.includes(sckeywrd.keyword)) {
                   seedKeywords.push(sckeywrd.keyword);
                }
             });
-            console.log(`[DEBUG] Added ${seedKeywords.length} search console keywords to seed list`);
-         } else {
-            console.log(`[DEBUG] No search console data found for domain: ${domainSlug}. Data structure:`, domainSCData);
          }
       }
 
       // Load all Keywords from Database
-      if ((seedType === 'tracking' || seedCurrentKeywords) && domainSlug) {
-         console.log(`[DEBUG] Loading tracked keywords for domain: ${domainSlug}`);
-         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainSlug } });
-         console.log(`[DEBUG] Found ${allKeywords.length} tracked keywords in database`);
+      if ((seedType === 'tracking' || seedCurrentKeywords) && domainUrl) {
+         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainUrl } });
          const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
          currentKeywords.forEach((keyword) => {
             if (keyword.keyword && !seedKeywords.includes(keyword.keyword)) {
                seedKeywords.push(keyword.keyword);
             }
          });
-         console.log(`[DEBUG] Added ${seedKeywords.length} tracked keywords to seed list`);
       }
 
       if (['tracking', 'searchconsole'].includes(seedType) && seedKeywords.length === 0) {
-         // Provide more detailed error messages
-         if (!domainExists) {
-            const errMessage = `Domain '${domainSlug}' not found. Please ensure the domain is added to the system.`;
+         // Check if the domain slug was found in the database
+         if (domainSlug && !domainUrl) {
+            const errMessage = `Domain with slug '${domainSlug}' not found. Please ensure the domain is added to the system.`;
             throw new Error(errMessage);
          }
          
          const errMessage = seedType === 'tracking'
-            ? `No tracked keywords found for domain '${domainSlug}'. Please add some keywords to track first.`
-            : `No search console keywords found for domain '${domainSlug}'. Please ensure Search Console is properly integrated and has data.`;
+            ? 'No tracked keywords found for this domain'
+            : 'No search console keywords found for this domain';
          throw new Error(errMessage);
       }
 
