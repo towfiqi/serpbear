@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Toaster } from 'react-hot-toast';
 import { sortInsightItems } from '../../utils/insight';
 import SelectField from '../common/SelectField';
 import InsightItem from './InsightItem';
@@ -124,7 +123,6 @@ const SCInsight = ({ insight, isLoading = true, isConsoleIntegrated = true, doma
                </div>
             </div>
          </div>
-         <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>
    );
  };
