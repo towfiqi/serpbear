@@ -96,7 +96,7 @@ const DomainHeader = (
             }
             {isInsight && <button className={`${buttonStyle} lg:hidden invisible`}>x</button>}
             <div
-            className={`hidden w-40 ml-[-70px] lg:block absolute mt-10 bg-white border border-gray-100 z-40 rounded 
+            className={`hidden w-40 ml-[-70px] lg:block absolute mt-10 bg-white border border-gray-100 z-[60] rounded
             lg:z-auto lg:relative lg:mt-0 lg:border-0 lg:w-auto lg:bg-transparent`}
             style={{ display: showOptions ? 'block' : undefined }}>
                {!isInsight && (
