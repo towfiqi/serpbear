@@ -49,7 +49,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
       updateKeywordIdeas({
          seedType,
          language,
-         domain: domain?.domain,
+         domainUrl: domain?.domain,
          domainSlug: domain?.slug,
          keywords: keywordPaylod,
          country: countries[0],
