@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    return res.status(502).json({ error: 'Unrecognized Route.' });
 }
 
-const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<string>) => {
+const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse) => {
    try {
       const code = (req.query.code as string);
       const https = req.headers.host?.includes('localhost:') ? 'http://' : 'https://';
@@ -44,23 +44,23 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<
             if (r?.tokens?.refresh_token) {
                const adwords_refresh_token = cryptr.encrypt(r.tokens.refresh_token);
                await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify({ ...settings, adwords_refresh_token }), { encoding: 'utf-8' });
-               return res.status(200).send('Integrated.');
+               return res.status(200).json({ message: 'Integrated.' });
             }
-            return res.status(400).send('Error Getting the Google Ads Refresh Token. Please Try Again!');
+            return res.status(400).json({ error: 'Error Getting the Google Ads Refresh Token. Please Try Again!' });
          } catch (error:any) {
             let errorMsg = error?.response?.data?.error;
             if (errorMsg.includes('redirect_uri_mismatch')) {
                errorMsg += ` Redirected URL: ${redirectURL}`;
             }
             console.log('[Error] Getting Google Ads Refresh Token! Reason: ', errorMsg);
-            return res.status(400).send(`Error Saving the Google Ads Refresh Token ${errorMsg ? `. Details: ${errorMsg}` : ''}. Please Try Again!`);
+            return res.status(400).json({ error: 'Error Saving the Google Ads Refresh Token. Please Try Again!' });
          }
       } else {
-         return res.status(400).send('No Code Provided By Google. Please Try Again!');
+         return res.status(400).json({ error: 'No Code Provided By Google. Please Try Again!' });
       }
    } catch (error) {
       console.log('[ERROR] Getting Google Ads Refresh Token: ', error);
-      return res.status(400).send('Error Getting Google Ads Refresh Token. Please Try Again!');
+      return res.status(400).json({ error: 'Error Getting Google Ads Refresh Token. Please Try Again!' });
    }
 };
 
