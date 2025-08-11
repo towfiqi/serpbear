@@ -1,4 +1,5 @@
 import { readFile, writeFile } from 'fs/promises';
+import * as path from 'path';
 import Cryptr from 'cryptr';
 import TTLCache from '@isaacs/ttlcache';
 import { setTimeout as sleep } from 'timers/promises';
@@ -388,7 +389,13 @@ export const getLocalKeywordIdeas = async (domain:string): Promise<false | Keywo
    try {
       const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
       const filename = `IDEAS_${domainName}.json`;
-      const keywordIdeasRaw = await readFile(`${process.cwd()}/data/${filename}`, { encoding: 'utf-8' });
+      const dataDir = path.resolve(process.cwd(), 'data');
+      const filePath = path.resolve(dataDir, filename);
+      // Ensure the filePath is within the data directory
+      if (!filePath.startsWith(dataDir + path.sep)) {
+         throw new Error('Invalid domain value for file access');
+      }
+      const keywordIdeasRaw = await readFile(filePath, { encoding: 'utf-8' });
       const keywordIdeasData = JSON.parse(keywordIdeasRaw) as KeywordIdeasDatabase;
       if (keywordIdeasData.keywords) {
          return keywordIdeasData;
@@ -412,6 +419,12 @@ export const updateLocalKeywordIdeas = async (domain:string, data:IdeaDatabaseUp
       const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
       const existingIdeas = await getLocalKeywordIdeas(domain);
       const filename = `IDEAS_${domainName}.json`;
+      const dataDir = path.resolve(process.cwd(), 'data');
+      const filePath = path.resolve(dataDir, filename);
+      // Ensure the filePath is within the data directory
+      if (!filePath.startsWith(dataDir + path.sep)) {
+         throw new Error('Invalid domain value for file access');
+      }
       const fileContent = { ...existingIdeas, updated: new Date().getTime() };
       if (data.keywords && Array.isArray(data.keywords) && data.keywords.length > 0) {
          fileContent.keywords = data.keywords;
@@ -423,7 +436,7 @@ export const updateLocalKeywordIdeas = async (domain:string, data:IdeaDatabaseUp
          fileContent.settings = data.settings;
       }
 
-      await writeFile(`${process.cwd()}/data/${filename}`, JSON.stringify(fileContent, null, 2), 'utf-8');
+      await writeFile(filePath, JSON.stringify(fileContent, null, 2), 'utf-8');
       console.log(`Data saved to ${filename} successfully!`);
       return true;
    } catch (error) {
