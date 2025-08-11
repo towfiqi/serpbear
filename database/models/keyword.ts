@@ -23,6 +23,9 @@ class Keyword extends Model {
    city!: string;
 
    @Column({ type: DataType.STRING, allowNull: true, defaultValue: '' })
+   state!: string;
+
+   @Column({ type: DataType.STRING, allowNull: true, defaultValue: '' })
    latlong!: string;
 
    @Column({ type: DataType.STRING, allowNull: false, defaultValue: '{}' })

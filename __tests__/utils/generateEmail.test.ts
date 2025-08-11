@@ -7,7 +7,7 @@ import generateEmail from '../../utils/generateEmail';
 const { readFile: mockReadFile } = require('fs/promises') as { readFile: jest.Mock };
 
 describe('generateEmail', () => {
-  it('includes city in keyword table when keyword.city is provided', async () => {
+  it('includes city and state in keyword table when provided', async () => {
     mockReadFile.mockResolvedValue('<html>{{keywordsTable}}</html>');
 
     const keywords = [
@@ -29,12 +29,13 @@ describe('generateEmail', () => {
         updating: false,
         lastUpdateError: false,
         city: 'Berlin',
+        state: 'Berlin State',
       },
     ] as any;
 
     const settings = { search_console_client_email: '', search_console_private_key: '', keywordsColumns: [] } as any;
 
     const html = await generateEmail('example.com', keywords, settings);
-    expect(html).toContain('(Berlin)');
+    expect(html).toContain('(Berlin, Berlin State)');
   });
 });

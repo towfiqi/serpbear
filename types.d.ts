@@ -43,6 +43,7 @@ type KeywordType = {
    scData?: KeywordSCData,
    uid?: string
    city?: string
+   state?: string
 }
 
 type KeywordLastResult = {
@@ -131,7 +132,8 @@ type KeywordAddPayload = {
    country: string,
    domain: string,
    tags?: string,
-   city?:string
+   city?:string,
+   state?:string
 }
 
 type SearchAnalyticsRawItem = {

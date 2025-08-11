@@ -20,6 +20,7 @@ type KeywordsInput = {
    domain: string,
    tags: string,
    city?:string,
+   state?:string,
 }
 
 const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCity = false }: AddKeywordsProps) => {
@@ -28,7 +29,7 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
 
    const [error, setError] = useState<string>('');
    const [showTagSuggestions, setShowTagSuggestions] = useState(false);
-   const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '' });
+   const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '', city: '', state: '' });
    const { mutate: addMutate, isLoading: isAdding } = useAddKeywords(() => closeModal(false));
 
    const existingTags: string[] = useMemo(() => {
@@ -52,10 +53,10 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
          const devices = nkwrds.device.split(',');
          const multiDevice = nkwrds.device.includes(',') && devices.length > 1;
          const keywordsArray = [...new Set(nkwrds.keywords.split('\n').map((item) => item.trim()).filter((item) => !!item))];
-         const currentKeywords = keywords.map((k) => `${k.keyword}-${k.device}-${k.country}${k.city ? `-${k.city}` : ''}`);
+         const currentKeywords = keywords.map((k) => `${k.keyword}-${k.device}-${k.country}${k.state ? `-${k.state}` : ''}${k.city ? `-${k.city}` : ''}`);
 
          const keywordExist = keywordsArray.filter((k) =>
-            devices.some((device) => currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.city ? `-${nkwrds.city}` : ''}`)),
+            devices.some((device) => currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.state ? `-${nkwrds.state}` : ''}${nkwrds.city ? `-${nkwrds.city}` : ''}`)),
          );
 
          if (!multiDevice && (keywordsArray.length === 1 || currentKeywords.length === keywordExist.length) && keywordExist.length > 0) {
@@ -64,7 +65,7 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
          } else {
             const newKeywords = keywordsArray.flatMap((k) =>
                devices.filter((device) =>
-                 !currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.city ? `-${nkwrds.city}` : ''}`),
+                 !currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.state ? `-${nkwrds.state}` : ''}${nkwrds.city ? `-${nkwrds.city}` : ''}`),
                ).map((device) => ({
                  keyword: k,
                  device,
@@ -72,8 +73,9 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                  domain: nkwrds.domain,
                  tags: nkwrds.tags,
                  city: nkwrds.city,
+                 state: nkwrds.state,
                })),
-             );
+            );
             addMutate(newKeywords);
          }
       } else {
@@ -164,13 +166,25 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
                                  )
                            );
                         })}
-                        {existingTags.length === 0 && <p>No Existing Tags Found... </p>}
-                     </ul>
-                  )}
+               {existingTags.length === 0 && <p>No Existing Tags Found... </p>}
+                    </ul>
+                 )}
+              </div>
+               <div className='relative mt-2'>
+                  <input
+                     className={`w-full border rounded border-gray-200 py-2 px-4 pl-8
+                     outline-none focus:border-indigo-300 ${!allowsCity ? ' cursor-not-allowed' : ''} `}
+                     disabled={!allowsCity}
+                     title={!allowsCity ? `Your scraper ${scraperName} doesn't have city level scraping feature.` : ''}
+                     placeholder={`State (Optional)${!allowsCity ? `. Not available for ${scraperName}.` : ''}`}
+                     value={newKeywordsData.state}
+                     onChange={(e) => setNewKeywordsData({ ...newKeywordsData, state: e.target.value })}
+                  />
+                  <span className='absolute text-gray-400 top-2 left-2'><Icon type="city" size={16} /></span>
                </div>
                <div className='relative mt-2'>
                   <input
-                     className={`w-full border rounded border-gray-200 py-2 px-4 pl-8 
+                     className={`w-full border rounded border-gray-200 py-2 px-4 pl-8
                      outline-none focus:border-indigo-300 ${!allowsCity ? ' cursor-not-allowed' : ''} `}
                      disabled={!allowsCity}
                      title={!allowsCity ? `Your scraper ${scraperName} doesn't have city level scraping feature.` : ''}

@@ -82,7 +82,7 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
       const keywordsToAdd: any = []; // QuickFIX for bug: https://github.com/sequelize/sequelize-typescript/issues/936
 
       keywords.forEach((kwrd: KeywordAddPayload) => {
-         const { keyword, device, country, domain, tags, city } = kwrd;
+         const { keyword, device, country, domain, tags, city, state } = kwrd;
          const tagsArray = tags ? tags.split(',').map((item:string) => item.trim()) : [];
          const newKeyword = {
             keyword,
@@ -90,6 +90,7 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
             domain,
             country,
             city,
+            state,
             position: 0,
             updating: true,
             history: JSON.stringify({}),

@@ -27,6 +27,7 @@ type keywordIdeasResponseItem = {
 type IdeaSettings = {
    country?: string;
    city?: string;
+   state?: string;
    language?: string;
    keywords?: string[];
    url?: string;

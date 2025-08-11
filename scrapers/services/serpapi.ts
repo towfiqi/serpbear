@@ -19,7 +19,8 @@ const serpapi:ScraperSettings = {
    },
    scrapeURL: (keyword, settings) => {
       const countryName = countries[keyword.country || 'US'][0];
-      const location = keyword.city && keyword.country ? `&location=${encodeURIComponent(`${keyword.city},${countryName}`)}` : '';
+      const locationParts = [keyword.city, keyword.state, countryName].filter(Boolean);
+      const location = keyword.city || keyword.state ? `&location=${encodeURIComponent(locationParts.join(','))}` : '';
       return `https://serpapi.com/search?q=${encodeURIComponent(keyword.keyword)}&num=100&gl=${keyword.country}&device=${keyword.device}${location}&api_key=${settings.scaping_api}`;
    },
    resultObjectKey: 'organic_results',
