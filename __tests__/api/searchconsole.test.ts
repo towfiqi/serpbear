@@ -199,7 +199,7 @@ describe('/api/searchconsole - CRON functionality', () => {
         lastFetched: new Date().toISOString(),
         lastFetchError: '',
         stats: [],
-      },);
+      });
 
     await handler(req as NextApiRequest, res as NextApiResponse);
 
