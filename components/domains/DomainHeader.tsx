@@ -38,7 +38,7 @@ const DomainHeader = (
             <h1 className="hidden lg:block text-xl font-bold my-3" data-testid="domain-header">
                {domain && domain.domain && <><i className=' capitalize font-bold not-italic'>{domain.domain.charAt(0)}</i>{domain.domain.slice(1)}</>}
             </h1>
-            <div className='domain_selector bg-white mt-2 lg:hidden'>
+            <div className='domain_selector bg-white mt-2 lg:hidden relative z-10'>
                <SelectField
                options={domains && domains.length > 0 ? domains.map((d) => { return { label: d.domain, value: d.slug }; }) : []}
                selected={[domain.slug]}
@@ -89,15 +89,15 @@ const DomainHeader = (
                </Link>
             </li>
          </ul>
-         <div className={'flex mb-0 lg:mb-1 lg:mt-3'}>
+         <div className='relative flex mb-0 lg:mb-1 lg:mt-3'>
             {!isInsight && <button className={`${buttonStyle} lg:hidden`} onClick={() => setShowOptions(!showOptions)}>
                <Icon type='dots' size={20} />
             </button>
             }
             {isInsight && <button className={`${buttonStyle} lg:hidden invisible`}>x</button>}
             <div
-            className={`hidden w-40 ml-[-70px] lg:block absolute mt-10 bg-white border border-gray-100 z-[60] rounded
-            lg:z-auto lg:relative lg:mt-0 lg:border-0 lg:w-auto lg:bg-transparent`}
+            className={'absolute top-full right-0 w-40 mt-2 bg-white border border-gray-100 rounded z-[70]'
+            + ' lg:block lg:static lg:mt-0 lg:border-0 lg:w-auto lg:bg-transparent'}
             style={{ display: showOptions ? 'block' : undefined }}>
                {!isInsight && (
                   <button
