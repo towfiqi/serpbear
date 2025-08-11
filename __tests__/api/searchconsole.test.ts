@@ -25,6 +25,16 @@ const mockFetchDomainSCData = fetchDomainSCData as jest.MockedFunction<typeof fe
 const mockGetSearchConsoleApiInfo = getSearchConsoleApiInfo as jest.MockedFunction<typeof getSearchConsoleApiInfo>;
 const mockDomainFindAll = Domain.findAll as jest.MockedFunction<typeof Domain.findAll>;
 
+// Common mock data structures
+const mockSCDataResponse = {
+  threeDays: [],
+  sevenDays: [],
+  thirtyDays: [],
+  lastFetched: new Date().toISOString(),
+  lastFetchError: '',
+  stats: [],
+};
+
 describe('/api/searchconsole - CRON functionality', () => {
   let req: Partial<NextApiRequest>;
   let res: Partial<NextApiResponse>;
@@ -82,14 +92,7 @@ describe('/api/searchconsole - CRON functionality', () => {
       });
 
     // Mock successful data fetching
-    mockFetchDomainSCData.mockResolvedValue({
-      threeDays: [],
-      sevenDays: [],
-      thirtyDays: [],
-      lastFetched: new Date().toISOString(),
-      lastFetchError: '',
-      stats: [],
-    });
+    mockFetchDomainSCData.mockResolvedValue(mockSCDataResponse);
 
     await handler(req as NextApiRequest, res as NextApiResponse);
 
@@ -192,14 +195,7 @@ describe('/api/searchconsole - CRON functionality', () => {
     // Mock error for first domain, success for second
     mockFetchDomainSCData
       .mockRejectedValueOnce(new Error('API Error'))
-      .mockResolvedValueOnce({
-        threeDays: [],
-        sevenDays: [],
-        thirtyDays: [],
-        lastFetched: new Date().toISOString(),
-        lastFetchError: '',
-        stats: [],
-      });
+      .mockResolvedValueOnce(mockSCDataResponse);
 
     await handler(req as NextApiRequest, res as NextApiResponse);
 
