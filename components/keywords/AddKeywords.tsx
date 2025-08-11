@@ -29,7 +29,15 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
 
    const [error, setError] = useState<string>('');
    const [showTagSuggestions, setShowTagSuggestions] = useState(false);
-   const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '', city: '', state: '' });
+   const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({
+      keywords: '',
+      device: 'desktop',
+      country: defCountry,
+      domain,
+      tags: '',
+      city: '',
+      state: '',
+   });
    const { mutate: addMutate, isLoading: isAdding } = useAddKeywords(() => closeModal(false));
 
    const existingTags: string[] = useMemo(() => {
@@ -52,29 +60,43 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
       if (nkwrds.keywords) {
          const devices = nkwrds.device.split(',');
          const multiDevice = nkwrds.device.includes(',') && devices.length > 1;
-         const keywordsArray = [...new Set(nkwrds.keywords.split('\n').map((item) => item.trim()).filter((item) => !!item))];
-         const currentKeywords = keywords.map((k) => `${k.keyword}-${k.device}-${k.country}${k.state ? `-${k.state}` : ''}${k.city ? `-${k.city}` : ''}`);
+           const keywordsArray = [...new Set(nkwrds.keywords.split('\n').map((item) => item.trim()).filter((item) => !!item))];
+           const currentKeywords = keywords.map((k) => {
+              const statePart = k.state ? `-${k.state}` : '';
+              const cityPart = k.city ? `-${k.city}` : '';
+              return `${k.keyword}-${k.device}-${k.country}${statePart}${cityPart}`;
+           });
 
-         const keywordExist = keywordsArray.filter((k) =>
-            devices.some((device) => currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.state ? `-${nkwrds.state}` : ''}${nkwrds.city ? `-${nkwrds.city}` : ''}`)),
-         );
+           const keywordExist = keywordsArray.filter((k) =>
+              devices.some((device) => {
+                 const statePart = nkwrds.state ? `-${nkwrds.state}` : '';
+                 const cityPart = nkwrds.city ? `-${nkwrds.city}` : '';
+                 const id = `${k}-${device}-${nkwrds.country}${statePart}${cityPart}`;
+                 return currentKeywords.includes(id);
+              }),
+           );
 
          if (!multiDevice && (keywordsArray.length === 1 || currentKeywords.length === keywordExist.length) && keywordExist.length > 0) {
             setError(`Keywords ${keywordExist.join(',')} already Exist`);
             setTimeout(() => { setError(''); }, 3000);
          } else {
             const newKeywords = keywordsArray.flatMap((k) =>
-               devices.filter((device) =>
-                 !currentKeywords.includes(`${k}-${device}-${nkwrds.country}${nkwrds.state ? `-${nkwrds.state}` : ''}${nkwrds.city ? `-${nkwrds.city}` : ''}`),
-               ).map((device) => ({
-                 keyword: k,
-                 device,
-                 country: nkwrds.country,
-                 domain: nkwrds.domain,
-                 tags: nkwrds.tags,
-                 city: nkwrds.city,
-                 state: nkwrds.state,
-               })),
+               devices
+                  .filter((device) => {
+                     const statePart = nkwrds.state ? `-${nkwrds.state}` : '';
+                     const cityPart = nkwrds.city ? `-${nkwrds.city}` : '';
+                     const id = `${k}-${device}-${nkwrds.country}${statePart}${cityPart}`;
+                     return !currentKeywords.includes(id);
+                  })
+                  .map((device) => ({
+                     keyword: k,
+                     device,
+                     country: nkwrds.country,
+                     domain: nkwrds.domain,
+                     tags: nkwrds.tags,
+                     city: nkwrds.city,
+                     state: nkwrds.state,
+                  })),
             );
             addMutate(newKeywords);
          }
