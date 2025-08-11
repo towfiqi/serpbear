@@ -58,8 +58,8 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
       language = '1000',
       domainUrl = '',
       domainSlug = '',
-      seedSCKeywords,
-      seedCurrentKeywords,
+      seedSCKeywords = false,
+      seedCurrentKeywords = false,
       seedType,
    } = req.body;
 
