@@ -1,4 +1,5 @@
 import Keyword from '../../database/models/keyword';
+import Domain from '../../database/models/domain';
 
 jest.mock('../../utils/searchConsole', () => ({
   readLocalSCData: jest.fn(),
@@ -23,6 +24,7 @@ describe('getAdwordsKeywordIdeas', () => {
       status: 200,
     }) as any;
     jest.spyOn(Keyword, 'findAll').mockResolvedValue([] as any);
+    jest.spyOn(Domain, 'findOne').mockResolvedValue({ domain: 'example.com' } as any);
     jest.spyOn(scUtils, 'readLocalSCData').mockResolvedValue(null as any);
   });
 
@@ -50,5 +52,16 @@ describe('getAdwordsKeywordIdeas', () => {
         true,
       ),
     ).rejects.toThrow('No search console keywords found for this domain');
+  });
+
+  it('throws error when domain slug not found', async () => {
+    jest.spyOn(Domain, 'findOne').mockResolvedValue(null as any);
+    await expect(
+      adwordsUtils.getAdwordsKeywordIdeas(
+        creds,
+        { country: 'US', language: '1000', domainSlug: 'nonexistent', seedType: 'tracking' },
+        true,
+      ),
+    ).rejects.toThrow("Domain with slug 'nonexistent' not found. Please ensure the domain is added to the system.");
   });
 });

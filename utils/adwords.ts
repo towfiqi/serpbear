@@ -4,6 +4,7 @@ import Cryptr from 'cryptr';
 import TTLCache from '@isaacs/ttlcache';
 import { setTimeout as sleep } from 'timers/promises';
 import Keyword from '../database/models/keyword';
+import Domain from '../database/models/domain';
 import parseKeywords from './parseKeywords';
 import countries from './countries';
 import { readLocalSCData } from './searchConsole';
@@ -150,6 +151,19 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
    if (accessToken) {
       const seedKeywords = [...keywords];
 
+      // Get the actual domain URL from the domain slug for database queries
+      let domainUrl = '';
+      if (domainSlug && ['tracking', 'searchconsole'].includes(seedType)) {
+         try {
+            const domain = await Domain.findOne({ where: { slug: domainSlug } });
+            if (domain) {
+               domainUrl = domain.domain;
+            }
+         } catch (error) {
+            console.log('[ERROR] Looking up domain from slug:', error);
+         }
+      }
+
       // Load Keywords from Google Search Console File.
       if ((seedType === 'searchconsole' || seedSCKeywords) && domainSlug) {
          const domainSCData = await readLocalSCData(domainSlug);
@@ -165,8 +179,8 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       }
 
       // Load all Keywords from Database
-      if ((seedType === 'tracking' || seedCurrentKeywords) && domainSlug) {
-         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainSlug } });
+      if ((seedType === 'tracking' || seedCurrentKeywords) && domainUrl) {
+         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainUrl } });
          const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
          currentKeywords.forEach((keyword) => {
             if (keyword.keyword && !seedKeywords.includes(keyword.keyword)) {
@@ -176,6 +190,12 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       }
 
       if (['tracking', 'searchconsole'].includes(seedType) && seedKeywords.length === 0) {
+         // Check if the domain slug was found in the database
+         if (domainSlug && !domainUrl) {
+            const errMessage = `Domain with slug '${domainSlug}' not found. Please ensure the domain is added to the system.`;
+            throw new Error(errMessage);
+         }
+         
          const errMessage = seedType === 'tracking'
             ? 'No tracked keywords found for this domain'
             : 'No search console keywords found for this domain';
