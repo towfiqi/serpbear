@@ -5,8 +5,8 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   publicRuntimeConfig: {
-   version
- }
+   version,
+ },
 };
 
 module.exports = nextConfig;

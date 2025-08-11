@@ -18,7 +18,7 @@ window.matchMedia = (query) => ({
    removeListener: jest.fn(), // deprecated
    addEventListener: jest.fn(),
    removeEventListener: jest.fn(),
-   dispatchEvent: jest.fn()
+   dispatchEvent: jest.fn(),
 });
 
 global.ResizeObserver = require('resize-observer-polyfill');
@@ -45,9 +45,13 @@ if (typeof global.BroadcastChannel === 'undefined') {
          this.messages = [];
       }
 
-      addEventListener() {}
+      addEventListener() {
+         return this;
+      }
 
-      removeEventListener() {}
+      removeEventListener() {
+         return this;
+      }
    }
    global.BroadcastChannel = BroadcastChannelMock;
 }

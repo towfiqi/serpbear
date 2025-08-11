@@ -1,11 +1,15 @@
 {
   "extends": ["next/core-web-vitals", "airbnb-base"],
+  "plugins": ["security"],
   "settings": {
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       },
-      "typescript": {}
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json"
+      }
     }
   },
   "rules":{
@@ -16,7 +20,6 @@
    "camelcase":"off",
    "object-curly-newline":"off",
    "no-use-before-define": "off",
-   "no-restricted-syntax": "off",
    "no-await-in-loop": "off",
    "arrow-body-style":"off",
    "max-len": ["error", {"code": 150, "ignoreComments": true, "ignoreUrls": true}],
@@ -24,6 +27,17 @@
    "no-unused-vars": "off",
    "implicit-arrow-linebreak": "off",
    "function-paren-newline": "off",
+   "complexity": ["error", { "max": 40 }],
+   "comma-dangle": ["error", "always-multiline"],
+   "class-methods-use-this": "error",
+   "no-restricted-syntax": [
+     "error",
+     {
+       "selector": "TemplateLiteral[expressions.length > 0] > TemplateElement[value.raw*='<']",
+       "message": "Avoid HTML in template strings with interpolated variables for security reasons."
+     }
+   ],
+   "security/detect-non-literal-fs-filename": "error",
    "import/extensions": [
       "error",
       "ignorePackages",
@@ -35,5 +49,14 @@
         "tsx": "never"
       }
    ]
- }
+ },
+ "overrides": [
+   {
+     "files": ["**/__tests__/**/*", "**/__mocks__/**/*", "**/*.test.*", "**/*.spec.*"],
+     "rules": {
+       "no-restricted-properties": "off",
+       "complexity": "off"
+     }
+   }
+ ]
 }
