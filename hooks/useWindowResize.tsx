@@ -2,11 +2,14 @@ import { useEffect } from 'react';
 
 const useWindowResize = (onResize: () => void) => {
    useEffect(() => {
-      onResize();
-      window.addEventListener('resize', onResize);
-      return () => {
-          window.removeEventListener('resize', onResize);
-      };
+      // Only run on client side
+      if (typeof window !== 'undefined') {
+         onResize();
+         window.addEventListener('resize', onResize);
+         return () => {
+            window.removeEventListener('resize', onResize);
+         };
+      }
    }, [onResize]);
 };
 
