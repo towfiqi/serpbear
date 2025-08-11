@@ -290,9 +290,12 @@ export const removeLocalSCData = async (domain:string): Promise<boolean> => {
  * Helper to safely construct the SC data file path for a given domain.
  * Returns the absolute path if safe, or null if the domain is invalid.
  */
-function getSafeSCDataFilePath(domain: string): string | null {
-   // Only allow alphanumeric, dash, dot, and underscore in domain
-   const safeDomain = domain.replace(/[^a-zA-Z0-9.\-_]/g, '-');
+export function getSafeSCDataFilePath(domain: string): string | null {
+   // Convert domain slug format (with hyphens) back to domain format (with dots)
+   // Replace hyphens with dots to get the actual domain name for file storage
+   const domainName = domain.replace(/-/g, '.');
+   // Only allow alphanumeric, dash, dot, and underscore in domain - preserve dots for domains
+   const safeDomain = domainName.replace(/[^a-zA-Z0-9.\-_]/g, '_');
    const dataDir = path.resolve(process.cwd(), 'data');
    const fileName = `SC_${safeDomain}.json`;
    const filePath = path.resolve(dataDir, fileName);
