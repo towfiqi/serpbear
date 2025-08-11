@@ -30,7 +30,7 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
    };
 
    return (
-       <div className={`topbar flex w-full mx-auto justify-between 
+       <div className={`topbar flex items-center w-full mx-auto justify-between
        ${isDomainsPage ? 'max-w-5xl lg:justify-between' : 'max-w-7xl lg:justify-end'}  bg-white lg:bg-transparent`}>
 
          <h3 className={`p-4 text-base font-bold text-blue-700 ${isDomainsPage ? 'lg:pl-0' : 'lg:hidden'}`}>
@@ -50,7 +50,7 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
                <Icon type="hamburger" size={24} />
             </button>
             <ul
-               className={`text-sm font-semibold text-gray-500 absolute mt-[-10px] right-3 bg-white
+               className={`text-sm font-semibold text-gray-500 absolute mt-0 right-3 bg-white
                border border-gray-200 lg:mt-2 lg:relative lg:block lg:border-0 lg:bg-transparent ${showMobileMenu ? 'block z-50' : 'hidden'}`}
             >
                <li className={`block lg:inline-block lg:ml-5 ${router.asPath === '/domains' ? ' text-blue-700' : ''}`}>
