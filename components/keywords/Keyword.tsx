@@ -44,9 +44,22 @@ const Keyword = (props: KeywordProps) => {
       tableColumns = [],
       maxTitleColumnWidth,
    } = props;
-   const {
-      keyword, domain, ID, city, state, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = false, volume,
-   } = keywordData;
+     const {
+        keyword,
+        domain,
+        ID,
+        city,
+        state,
+        position,
+        url = '',
+        lastUpdated,
+        country,
+        sticky,
+        history = {},
+        updating = false,
+        lastUpdateError = false,
+        volume,
+     } = keywordData;
 
    const [showOptions, setShowOptions] = useState(false);
    const [showPositionError, setPositionError] = useState(false);
