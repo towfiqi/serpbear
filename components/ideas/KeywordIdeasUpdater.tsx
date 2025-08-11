@@ -44,14 +44,26 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
     }, [searchConsoleConnected]);
 
    const reloadKeywordIdeas = () => {
-      const keywordPaylod = seedType !== 'auto' && keywords ? keywords.split(',').map((key) => key.trim()) : undefined;
-      console.log('keywordPaylod :', keywords, keywordPaylod);
+      let keywordPayload: string[] | undefined;
+
+      if (seedType === 'custom' && keywords) {
+         // For custom seed type, parse the comma-separated keywords
+         keywordPayload = keywords.split(',').map((key) => key.trim()).filter((key) => key.length > 0);
+      } else if (seedType === 'tracking' || seedType === 'searchconsole') {
+         // For tracking and searchconsole, send empty array - backend will populate from DB/SC
+         keywordPayload = [];
+      } else {
+         // For auto seed type, don't send keywords (undefined) - domainUrl will be used
+         keywordPayload = undefined;
+      }
+
+      console.log('keywordPayload :', keywords, keywordPayload);
       updateKeywordIdeas({
          seedType,
          language,
          domainUrl: domain?.domain,
          domainSlug: domain?.slug,
-         keywords: keywordPaylod,
+         keywords: keywordPayload,
          country: countries[0],
       });
    };
