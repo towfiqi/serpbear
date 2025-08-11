@@ -15,7 +15,8 @@ const spaceSerp:ScraperSettings = {
    scrapeURL: (keyword, settings, countryData) => {
       const country = keyword.country || 'US';
       const countryName = countries[country][0];
-      const location = keyword.city ? `&location=${encodeURIComponent(`${keyword.city},${countryName}`)}` : '';
+      const locationParts = [keyword.city, keyword.state, countryName].filter(Boolean);
+      const location = keyword.city || keyword.state ? `&location=${encodeURIComponent(locationParts.join(','))}` : '';
       const device = keyword.device === 'mobile' ? '&device=mobile' : '';
       const lang = countryData[country][2];
       return `https://api.spaceserp.com/google/search?apiKey=${settings.scaping_api}&q=${encodeURIComponent(keyword.keyword)}&pageSize=100&gl=${country}&hl=${lang}${location}${device}&resultBlocks=`;

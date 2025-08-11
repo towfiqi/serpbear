@@ -45,7 +45,7 @@ const Keyword = (props: KeywordProps) => {
       maxTitleColumnWidth,
    } = props;
    const {
-      keyword, domain, ID, city, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = false, volume,
+      keyword, domain, ID, city, state, position, url = '', lastUpdated, country, sticky, history = {}, updating = false, lastUpdateError = false, volume,
    } = keywordData;
 
    const [showOptions, setShowOptions] = useState(false);
@@ -113,7 +113,7 @@ const Keyword = (props: KeywordProps) => {
             >
                <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />
                <span className='inline-block text-ellipsis overflow-hidden whitespace-nowrap w-[calc(100%-50px)]'>
-                  {keyword}{city ? ` (${city})` : ''}
+                  {keyword}{city || state ? ` (${[city, state].filter(Boolean).join(', ')})` : ''}
                </span>
             </a>
             {sticky && <button className='ml-2 relative top-[2px]' title='Favorite'><Icon type="star-filled" size={16} color="#fbd346" /></button>}
