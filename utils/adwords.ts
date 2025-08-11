@@ -193,8 +193,9 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
          const ideaData = await resp.json();
 
          if (resp.status !== 200) {
-            console.log('[ERROR] Google Ads Response :', ideaData?.error?.details[0]?.errors[0]?.message);
-            // console.log('Response from Ads :', JSON.stringify(ideaData, null, 2));
+            const errMessage = ideaData?.error?.details?.[0]?.errors?.[0]?.message || 'Failed to fetch keyword ideas';
+            console.log('[ERROR] Google Ads Response :', errMessage);
+            throw new Error(errMessage);
          }
 
          if (ideaData?.results) {
@@ -206,6 +207,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
          }
       } catch (error) {
          console.log('[ERROR] Fetching Keyword Ideas from Google Ads :', error);
+         throw error;
       }
    }
 
