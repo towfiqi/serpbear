@@ -37,7 +37,7 @@ export async function fetchDomainScreenshot(domain: string, forceFetch = false):
    const domThumbs = domainThumbsRaw ? JSON.parse(domainThumbsRaw) : {};
    if (!domThumbs[domain] || forceFetch) {
       try {
-         const screenshotURL = `https://image.thum.io/get/width/200/https/${domain}`;
+         const screenshotURL = `https://image.thum.io/get/width/200/https://${domain}`;
          const domainImageRes = await fetch(screenshotURL);
          const domainImageBlob = domainImageRes.status === 200 ? await domainImageRes.blob() : false;
          if (domainImageBlob) {
