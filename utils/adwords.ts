@@ -199,6 +199,8 @@ export const getAdwordsKeywordIdeas = async (credentials: AdwordsCredentials, ad
             reqPayload.siteSeed = { site: domainUrl };
          }
 
+         console.log('[DEBUG] Adwords reqPayload:', JSON.stringify(reqPayload));
+
          const resp = await fetch(`https://googleads.googleapis.com/v18/customers/${customerID}:generateKeywordIdeas`, {
             method: 'POST',
             headers: {
@@ -209,7 +211,16 @@ export const getAdwordsKeywordIdeas = async (credentials: AdwordsCredentials, ad
             },
             body: JSON.stringify(reqPayload),
          });
-         const ideaData = await resp.json();
+         let ideaData;
+         try {
+            ideaData = await resp.json();
+         } catch (jsonErr) {
+            console.log('[DEBUG] Failed to parse JSON from Google Ads response:', jsonErr);
+            throw jsonErr;
+         }
+
+         console.log('[DEBUG] Adwords API response status:', resp.status);
+         console.log('[DEBUG] Adwords API response body:', JSON.stringify(ideaData).slice(0, 1000));
 
          if (resp.status !== 200) {
             const errMessage = ideaData?.error?.details?.[0]?.errors?.[0]?.message || 'Failed to fetch keyword ideas';
@@ -219,6 +230,9 @@ export const getAdwordsKeywordIdeas = async (credentials: AdwordsCredentials, ad
 
          if (ideaData?.results) {
             fetchedKeywords = extractAdwordskeywordIdeas(ideaData.results as keywordIdeasResponseItem[], { country, domain: domainSlug });
+            console.log('[DEBUG] Extracted fetchedKeywords:', Array.isArray(fetchedKeywords) ? fetchedKeywords.length : fetchedKeywords);
+         } else {
+            console.log('[DEBUG] No results in ideaData:', ideaData);
          }
 
          if (!test && fetchedKeywords.length > 0) {
