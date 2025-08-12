@@ -38,8 +38,8 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
             <button className='px-3 py-1 font-bold text-blue-700  lg:hidden ml-3 text-lg' onClick={() => showAddModal()}>+</button>
          </h3>
          {!isDomainsPage && router.asPath !== '/research' && (
-            <Link href={'/domains'} className=' right-14 top-2 px-2 py-1 cursor-pointer bg-[#ecf2ff] hover:bg-indigo-100 transition-all
-               absolute lg:top-3 lg:right-auto lg:left-8 lg:px-3 lg:py-2 rounded-full'>
+            <Link href={'/domains'} className=' right-14 top-4 px-2 py-1 cursor-pointer bg-[#ecf2ff] hover:bg-indigo-100 transition-all
+               absolute lg:top-4 lg:right-auto lg:left-8 lg:px-3 lg:py-2 rounded-full'>
                <Icon type="caret-left" size={16} title="Go Back" />
             </Link>
          )}
