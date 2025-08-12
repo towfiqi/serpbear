@@ -416,7 +416,8 @@ export const getLocalKeywordIdeas = async (domain: string): Promise<false | Keyw
       if (!filePath.startsWith(dataDir + path.sep)) {
          throw new Error('Invalid domain value for file access');
       }
-      const keywordIdeasRaw = await readFile(filePath, { encoding: 'utf-8' });
+   // eslint-disable-next-line security/detect-non-literal-fs-filename
+   const keywordIdeasRaw = await readFile(filePath, { encoding: 'utf-8' });
       const keywordIdeasData = JSON.parse(keywordIdeasRaw) as KeywordIdeasDatabase;
       if (keywordIdeasData.keywords) {
          return keywordIdeasData;
@@ -457,7 +458,8 @@ export const updateLocalKeywordIdeas = async (domain: string, data: IdeaDatabase
          fileContent.settings = data.settings;
       }
 
-      await writeFile(filePath, JSON.stringify(fileContent, null, 2), 'utf-8');
+   // eslint-disable-next-line security/detect-non-literal-fs-filename
+   await writeFile(filePath, JSON.stringify(fileContent, null, 2), 'utf-8');
       console.log(`Data saved to ${filename} successfully!`);
       return true;
    } catch (error) {
