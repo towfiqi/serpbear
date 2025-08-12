@@ -12,12 +12,12 @@ const memoryCache = new TTLCache({ max: 10000 });
 
 type keywordIdeasMetrics = {
    competition: IdeaKeyword['competition'],
-   monthlySearchVolumes: {month : string, year : string, monthlySearches : string}[],
+   monthlySearchVolumes: { month: string, year: string, monthlySearches: string }[],
    avgMonthlySearches: string,
    competitionIndex: string,
    lowTopOfPageBidMicros: string,
    highTopOfPageBidMicros: string
- }
+}
 
 type keywordIdeasResponseItem = {
    keywordIdeaMetrics: keywordIdeasMetrics,
@@ -94,16 +94,16 @@ export const getAdwordsCredentials = async (): Promise<false | AdwordsCredential
  * @param {AdwordsCredentials} credentials - The `credentials` to use to generate the access token,
  * @returns {Promise<string>} the fetched access token or an empty string if failed.
  */
-export const getAdwordsAccessToken = async (credentials:AdwordsCredentials) => {
+export const getAdwordsAccessToken = async (credentials: AdwordsCredentials) => {
    const { client_id, client_secret, refresh_token } = credentials;
    try {
       const resp = await fetch('https://www.googleapis.com/oauth2/v3/token', {
          method: 'POST',
          body: new URLSearchParams({ grant_type: 'refresh_token', client_id, client_secret, refresh_token }),
       });
-       const tokens = await resp.json();
+      const tokens = await resp.json();
       //  console.log('token :', tokens);
-       return tokens?.access_token || '';
+      return tokens?.access_token || '';
    } catch (error) {
       console.log('[Error] Getting Google Account Access Token:', error);
       return '';
@@ -121,7 +121,7 @@ export const getAdwordsAccessToken = async (credentials:AdwordsCredentials) => {
  * When `test` is set to `true`, only 1 keyword is requested from adwords.
  * @returns returns an array of fetched keywords (`fetchedKeywords`) after processing the Google Ads API response.
  */
-export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adwordsDomainOptions:IdeaSettings, test:boolean = false) => {
+export const getAdwordsKeywordIdeas = async (credentials: AdwordsCredentials, adwordsDomainOptions: IdeaSettings, test: boolean = false) => {
    if (!credentials) { return false; }
    const { account_id, developer_token } = credentials;
    const {
@@ -137,7 +137,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
 
    let accessToken = '';
 
-   const cachedAccessToken:string|false|undefined = memoryCache.get('adwords_token');
+   const cachedAccessToken: string | false | undefined = memoryCache.get('adwords_token');
    if (cachedAccessToken && !test) {
       accessToken = cachedAccessToken;
    } else {
@@ -146,7 +146,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       memoryCache.set('adwords_token', accessToken, { ttl: 3300000 });
    }
 
-   let fetchedKeywords:IdeaKeyword[] = [];
+   let fetchedKeywords: IdeaKeyword[] = [];
    if (accessToken) {
       const seedKeywords = [...keywords];
 
@@ -167,14 +167,30 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       // Load all Keywords from Database
       if ((seedType === 'tracking' || seedCurrentKeywords) && domainSlug) {
          // Convert domain slug format back to actual domain format for database query
+         // Before querying database
+         console.log('DEBUG: seedType:', seedType);
+         console.log('DEBUG: domainSlug:', domainSlug);
+
+         // Convert domain slug format back to actual domain format for database query
          const domainForQuery = domainSlug.replace(/-/g, '.');
-         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainForQuery } });
-         const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
+         console.log('DEBUG: domainForQuery:', domainForQuery);
+
+         // Load all Keywords from Database
+         const allKeywords: Keyword[] = await Keyword.findAll({ where: { domain: domainForQuery } });
+         console.log('DEBUG: allKeywords from DB:', allKeywords);
+
+         const allKeywordsPlain = allKeywords.map((e) => e.get({ plain: true }));
+         console.log('DEBUG: allKeywords plain:', allKeywordsPlain);
+
+         const currentKeywords: KeywordType[] = parseKeywords(allKeywordsPlain);
+         console.log('DEBUG: currentKeywords after parseKeywords:', currentKeywords);
+
          currentKeywords.forEach((keyword) => {
             if (keyword.keyword && !seedKeywords.includes(keyword.keyword)) {
                seedKeywords.push(keyword.keyword);
             }
          });
+         console.log('DEBUG: final seedKeywords:', seedKeywords);
       }
 
       if (['tracking', 'searchconsole'].includes(seedType) && seedKeywords.length === 0) {
@@ -243,7 +259,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
  * that can contain two properties: `country` and `domain`.
  * @returns returns an array of `IdeaKeyword` array sorted based on the average monthly searches in descending order.
  */
-const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], options:Record<string, string>) => {
+const extractAdwordskeywordIdeas = (keywordIdeas: keywordIdeasResponseItem[], options: Record<string, string>) => {
    const keywords: IdeaKeyword[] = [];
    if (keywordIdeas.length > 0) {
       const { country = '', domain = '' } = options;
@@ -284,7 +300,7 @@ const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], opt
  *  The `volumes` propery which outputs `false` if the request fails and outputs the volume data in `{[keywordID]: volume}` object if succeeds.
  *  The `error` porperty that outputs the error message if any.
  */
-export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error?: string, volumes: false | Record<number, number>}> => {
+export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{ error?: string, volumes: false | Record<number, number> }> => {
    const credentials = await getAdwordsCredentials();
    if (!credentials) { return { error: 'Cannot Load Google Ads Credentials', volumes: false }; }
    const { client_id, client_secret, developer_token, account_id } = credentials;
@@ -294,7 +310,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
 
    // Generate Access Token
    let accessToken = '';
-   const cachedAccessToken:string|false|undefined = memoryCache.get('adwords_token');
+   const cachedAccessToken: string | false | undefined = memoryCache.get('adwords_token');
    if (cachedAccessToken) {
       accessToken = cachedAccessToken;
    } else {
@@ -302,7 +318,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
       memoryCache.delete('adwords_token');
       memoryCache.set('adwords_token', accessToken, { ttl: 3300000 });
    }
-   const fetchedKeywords:Record<number, number> = {};
+   const fetchedKeywords: Record<number, number> = {};
 
    if (accessToken) {
       // Group keywords based on their country.
@@ -349,8 +365,8 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
 
                if (ideaData?.results) {
                   if (Array.isArray(ideaData.results) && ideaData.results.length > 0) {
-                     const volumeDataObj:Map<string, number> = new Map();
-                     ideaData.results.forEach((item:{ keywordMetrics: keywordIdeasMetrics, text: string }) => {
+                     const volumeDataObj: Map<string, number> = new Map();
+                     ideaData.results.forEach((item: { keywordMetrics: keywordIdeasMetrics, text: string }) => {
                         const kwVol = item?.keywordMetrics?.avgMonthlySearches;
                         volumeDataObj.set(`${country}:${item.text}`, kwVol ? parseInt(kwVol, 10) : 0);
                      });
@@ -407,7 +423,7 @@ export const updateKeywordsVolumeData = async (volumesData: false | Record<numbe
  * @returns returns either a `KeywordIdeasDatabase` object if the data is successfully retrieved , or it returns `false` if
  * there are no keywords found in the retrieved data or if an error occurs during the process.
  */
-export const getLocalKeywordIdeas = async (domain:string): Promise<false | KeywordIdeasDatabase> => {
+export const getLocalKeywordIdeas = async (domain: string): Promise<false | KeywordIdeasDatabase> => {
    try {
       const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
       const filename = `IDEAS_${domainName}.json`;
@@ -436,7 +452,7 @@ export const getLocalKeywordIdeas = async (domain:string): Promise<false | Keywo
  *  It contains the following properties: `keywords`, `favorites` & `settings`
  * @returns The function `updateLocalKeywordIdeas` returns a Promise<boolean>.
  */
-export const updateLocalKeywordIdeas = async (domain:string, data:IdeaDatabaseUpdateData): Promise<boolean> => {
+export const updateLocalKeywordIdeas = async (domain: string, data: IdeaDatabaseUpdateData): Promise<boolean> => {
    try {
       const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
       const existingIdeas = await getLocalKeywordIdeas(domain);
