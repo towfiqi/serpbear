@@ -91,10 +91,11 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
       const ideaOptions = { country, language, keywords, domainUrl, domainSlug, seedSCKeywords, seedCurrentKeywords, seedType };
       try {
          const keywordIdeas = await getAdwordsKeywordIdeas(adwordsCreds, ideaOptions);
-         if (keywordIdeas && Array.isArray(keywordIdeas) && keywordIdeas.length > 1) {
+         if (keywordIdeas && Array.isArray(keywordIdeas) && keywordIdeas.length > 0) {
             return res.status(200).json({ keywords: keywordIdeas });
          }
-         return res.status(400).json({ keywords: [], error: errMsg });
+         // No error, just no keywords over the search volume minimum
+         return res.status(200).json({ keywords: [], error: 'No keywords found over the search volume minimum.' });
       } catch (error: any) {
          console.log('[ERROR] Fetching Keyword Ideas: ', error);
          const message = error?.message || errMsg;
