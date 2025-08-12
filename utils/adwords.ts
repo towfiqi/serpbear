@@ -165,32 +165,19 @@ export const getAdwordsKeywordIdeas = async (credentials: AdwordsCredentials, ad
       }
 
       // Load all Keywords from Database
-      if ((seedType === 'tracking' || seedCurrentKeywords) && domainSlug) {
-         // Convert domain slug format back to actual domain format for database query
-         // Before querying database
-         console.log('DEBUG: seedType:', seedType);
-         console.log('DEBUG: domainSlug:', domainSlug);
-
-         // Convert domain slug format back to actual domain format for database query
-         const domainForQuery = domainSlug.replace(/-/g, '.');
-         console.log('DEBUG: domainForQuery:', domainForQuery);
-
-         // Load all Keywords from Database
-         const allKeywords: Keyword[] = await Keyword.findAll({ where: { domain: domainForQuery } });
-         console.log('DEBUG: allKeywords from DB:', allKeywords);
-
-         const allKeywordsPlain = allKeywords.map((e) => e.get({ plain: true }));
-         console.log('DEBUG: allKeywords plain:', allKeywordsPlain);
-
-         const currentKeywords: KeywordType[] = parseKeywords(allKeywordsPlain);
-         console.log('DEBUG: currentKeywords after parseKeywords:', currentKeywords);
-
+      if ((seedType === 'tracking' || seedCurrentKeywords) && domainUrl) {
+         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainUrl } });
+         console.log('allKeywords:', allKeywords);                  // Should be array of objects from DB
+         console.log('allKeywords plain:', allKeywords.map(x => x.get({ plain: true })));
+         const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
+         console.log('currentKeywords after parseKeywords:', currentKeywords); // Should be array of {keyword: 'something'}
+         
          currentKeywords.forEach((keyword) => {
             if (keyword.keyword && !seedKeywords.includes(keyword.keyword)) {
                seedKeywords.push(keyword.keyword);
             }
          });
-         console.log('DEBUG: final seedKeywords:', seedKeywords);
+         console.log('seedKeywords:', seedKeywords);                // Should be array of strings
       }
 
       if (['tracking', 'searchconsole'].includes(seedType) && seedKeywords.length === 0) {
