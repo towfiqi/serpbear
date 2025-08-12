@@ -244,6 +244,7 @@ export const readLocalSCData = async (domain:string): Promise<SCDomainDataType|f
    try {
       const filePath = getSafeSCDataFilePath(domain);
       if (!filePath) throw new Error('Invalid domain for file path');
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch(async () => { await updateLocalSCData(domain); return '{}'; });
       const domainSCData = JSON.parse(currentQueueRaw);
       return domainSCData;
@@ -263,6 +264,7 @@ export const updateLocalSCData = async (domain:string, scDomainData?:SCDomainDat
       const filePath = getSafeSCDataFilePath(domain);
       if (!filePath) throw new Error('Invalid domain for file path');
       const emptyData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '' };
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       await writeFile(filePath, JSON.stringify(scDomainData || emptyData), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
       return scDomainData || emptyData;
    } catch (error) {
@@ -279,6 +281,7 @@ export const removeLocalSCData = async (domain:string): Promise<boolean> => {
    const filePath = getSafeSCDataFilePath(domain);
    if (!filePath) return false;
    try {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       await unlink(filePath);
       return true;
    } catch (error) {

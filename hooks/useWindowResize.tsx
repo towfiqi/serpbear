@@ -10,6 +10,7 @@ const useWindowResize = (onResize: () => void) => {
             window.removeEventListener('resize', onResize);
          };
       }
+      return undefined;
    }, [onResize]);
 };
 

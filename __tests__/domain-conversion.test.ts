@@ -14,7 +14,7 @@ jest.mock('path', () => {
       resolve: jest.fn((...segments) => {
          // Simple path resolution for testing
          const joined = segments.join('/').replace(/\/+/g, '/');
-         return joined.startsWith('/') ? joined : '/' + joined;
+         return joined.startsWith('/') ? joined : `/${joined}`;
       }),
       sep: '/',
    };
@@ -54,14 +54,14 @@ describe('Domain Conversion Fixes', () => {
    describe('Domain slug to domain conversion for keywords', () => {
       it('should convert domain slug back to domain format', () => {
          const convertSlugToDomain = (slug: string) => slug.replace(/-/g, '.');
-         
+
          // Test the main case from the issue
          expect(convertSlugToDomain('vontainment-com')).toBe('vontainment.com');
-         
+
          // Test other formats
          expect(convertSlugToDomain('example-org')).toBe('example.org');
          expect(convertSlugToDomain('my-test-domain-com')).toBe('my.test.domain.com');
-         
+
          // Test research domain (special case - no conversion needed)
          expect(convertSlugToDomain('research')).toBe('research');
       });
