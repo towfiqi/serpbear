@@ -151,8 +151,8 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       const seedKeywords = [...keywords];
 
       // Load Keywords from Google Search Console File.
-      if ((seedType === 'searchconsole' || seedSCKeywords) && domainSlug) {
-         const domainSCData = await readLocalSCData(domainSlug);
+      if ((seedType === 'searchconsole' || seedSCKeywords) && domainUrl) {
+         const domainSCData = await readLocalSCData(domainUrl);
          if (domainSCData && domainSCData.thirtyDays) {
             const scKeywords = domainSCData.thirtyDays;
             const sortedSCKeywords = scKeywords.sort((a, b) => (b.impressions > a.impressions ? 1 : -1));
@@ -165,10 +165,8 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       }
 
       // Load all Keywords from Database
-      if ((seedType === 'tracking' || seedCurrentKeywords) && domainSlug) {
-         // Convert domain slug format back to actual domain format for database query
-         const domainForQuery = domainSlug.replace(/-/g, '.');
-         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainForQuery } });
+      if ((seedType === 'tracking' || seedCurrentKeywords) && domainUrl) {
+         const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainUrl } });
          const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
          currentKeywords.forEach((keyword) => {
             if (keyword.keyword && !seedKeywords.includes(keyword.keyword)) {
