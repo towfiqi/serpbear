@@ -1,10 +1,10 @@
 import Keyword from '../../database/models/keyword';
+import * as scUtils from '../../utils/searchConsole';
+import * as adwordsUtils from '../../utils/adwords';
 
 jest.mock('../../utils/searchConsole', () => ({
   readLocalSCData: jest.fn(),
 }));
-import * as scUtils from '../../utils/searchConsole';
-import * as adwordsUtils from '../../utils/adwords';
 
 describe('getAdwordsKeywordIdeas', () => {
   const creds = {

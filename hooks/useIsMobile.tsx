@@ -7,19 +7,19 @@ const useIsMobile = () => {
    useEffect(() => {
       // Mark that we're now on the client side
       setIsClient(true);
-      
+
       // Check if we're on mobile
       const checkIsMobile = () => {
          setIsMobile(!!(window.matchMedia('only screen and (max-width: 760px)').matches));
       };
-      
+
       // Initial check
       checkIsMobile();
-      
+
       // Add listener for resize events
       const mediaQuery = window.matchMedia('only screen and (max-width: 760px)');
       mediaQuery.addEventListener('change', checkIsMobile);
-      
+
       // Cleanup
       return () => {
          mediaQuery.removeEventListener('change', checkIsMobile);

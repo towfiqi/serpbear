@@ -14,6 +14,7 @@ const useOnKey = (key:string, onPress: Function) => {
             window.removeEventListener('keydown', closeModalonEsc, false);
          };
       }
+      return undefined;
    }, [key, onPress]);
 };
 

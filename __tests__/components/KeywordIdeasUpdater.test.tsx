@@ -52,7 +52,7 @@ describe('KeywordIdeasUpdater Component', () => {
       return render(
          <QueryClientProvider client={queryClient}>
             {component}
-         </QueryClientProvider>
+         </QueryClientProvider>,
       );
    };
 
@@ -62,7 +62,7 @@ describe('KeywordIdeasUpdater Component', () => {
             domain={mockDomain}
             searchConsoleConnected={false}
             adwordsConnected={true}
-         />
+         />,
       );
 
       expect(screen.getByText('Get Keyword Ideas')).toBeInTheDocument();
@@ -71,19 +71,19 @@ describe('KeywordIdeasUpdater Component', () => {
 
    it('validates the fix for keywordPayload variable name', () => {
       const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-      
+
       renderWithQueryClient(
          <KeywordIdeasUpdater
             domain={mockDomain}
             searchConsoleConnected={false}
             adwordsConnected={true}
-         />
+         />,
       );
 
       // The console should not show "keywordPaylod" (with typo) anymore
       // This validates our fix
       expect(consoleLogSpy).not.toHaveBeenCalledWith(
-         expect.stringContaining('keywordPaylod')
+         expect.stringContaining('keywordPaylod'),
       );
 
       consoleLogSpy.mockRestore();

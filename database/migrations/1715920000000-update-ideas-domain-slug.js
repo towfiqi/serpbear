@@ -2,7 +2,9 @@
 
 module.exports = {
    up: async () => {
+      // eslint-disable-next-line global-require
       const fs = require('fs/promises');
+      // eslint-disable-next-line global-require
       const path = require('path');
       try {
          const dataDir = path.resolve(process.cwd(), 'data');
@@ -11,6 +13,7 @@ module.exports = {
          for (const file of ideaFiles) {
             try {
                const filePath = path.resolve(dataDir, file);
+               // eslint-disable-next-line security/detect-non-literal-fs-filename
                const raw = await fs.readFile(filePath, 'utf-8');
                const content = JSON.parse(raw);
                const domainName = file.replace(/^IDEAS_|\.json$/g, '');
@@ -29,6 +32,7 @@ module.exports = {
                   content.settings.domainSlug = domainSlug;
                }
 
+               // eslint-disable-next-line security/detect-non-literal-fs-filename
                await fs.writeFile(filePath, JSON.stringify(content, null, 2), 'utf-8');
             } catch (err) {
                console.log('[Migration] Failed to update', file, err);
@@ -40,4 +44,3 @@ module.exports = {
    },
    down: async () => { /* no rollback */ },
 };
-
