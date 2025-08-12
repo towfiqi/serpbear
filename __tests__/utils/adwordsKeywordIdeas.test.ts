@@ -35,7 +35,7 @@ describe('getAdwordsKeywordIdeas', () => {
     await expect(
       adwordsUtils.getAdwordsKeywordIdeas(
         creds,
-        { country: 'US', language: '1000', domainSlug: 'example', seedType: 'tracking' },
+        { country: 'US', language: '1000', domainUrl: 'example.com', seedType: 'tracking' },
         true,
       ),
     ).rejects.toThrow('No tracked keywords found for this domain');
