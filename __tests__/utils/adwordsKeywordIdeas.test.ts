@@ -46,7 +46,7 @@ describe('getAdwordsKeywordIdeas', () => {
     await expect(
       adwordsUtils.getAdwordsKeywordIdeas(
         creds,
-        { country: 'US', language: '1000', domainSlug: 'example', seedType: 'searchconsole' },
+        { country: 'US', language: '1000', domainUrl: 'example.com', seedType: 'searchconsole' },
         true,
       ),
     ).rejects.toThrow('No search console keywords found for this domain');
