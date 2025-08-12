@@ -32,12 +32,12 @@ export async function fetchDomain(router: NextRouter, domainName: string): Promi
    return res.json();
 }
 
-export async function fetchDomainScreenshot(domain: string, screenshot_key:string, forceFetch = false): Promise<string | false> {
+export async function fetchDomainScreenshot(domain: string, forceFetch = false): Promise<string | false> {
    const domainThumbsRaw = localStorage.getItem('domainThumbs');
    const domThumbs = domainThumbsRaw ? JSON.parse(domainThumbsRaw) : {};
    if (!domThumbs[domain] || forceFetch) {
       try {
-         const screenshotURL = `https://image.thum.io/get/auth/${screenshot_key}/maxAge/96/width/200/https://${domain}`;
+         const screenshotURL = `https://image.thum.io/get/width/200/https/${domain}`;
          const domainImageRes = await fetch(screenshotURL);
          const domainImageBlob = domainImageRes.status === 200 ? await domainImageRes.blob() : false;
          if (domainImageBlob) {
