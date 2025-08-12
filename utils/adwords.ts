@@ -151,8 +151,8 @@ export const getAdwordsKeywordIdeas = async (credentials: AdwordsCredentials, ad
       const seedKeywords = [...keywords];
 
       // Load Keywords from Google Search Console File.
-      if ((seedType === 'searchconsole' || seedSCKeywords) && domainSlug) {
-         const domainSCData = await readLocalSCData(domainSlug);
+      if ((seedType === 'searchconsole' || seedSCKeywords) && domainUrl) {
+         const domainSCData = await readLocalSCData(domainUrl);
          if (domainSCData && domainSCData.thirtyDays) {
             const scKeywords = domainSCData.thirtyDays;
             const sortedSCKeywords = scKeywords.sort((a, b) => (b.impressions > a.impressions ? 1 : -1));
