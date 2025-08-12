@@ -38,11 +38,9 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
             <button className='px-3 py-1 font-bold text-blue-700  lg:hidden ml-3 text-lg' onClick={() => showAddModal()}>+</button>
          </h3>
          {!isDomainsPage && router.asPath !== '/research' && (
-            <Link href={'/domains'} passHref={true}>
-               <a className=' right-14 top-2 px-2 py-1 cursor-pointer bg-[#ecf2ff] hover:bg-indigo-100 transition-all
+            <Link href={'/domains'} className=' right-14 top-2 px-2 py-1 cursor-pointer bg-[#ecf2ff] hover:bg-indigo-100 transition-all
                absolute lg:top-3 lg:right-auto lg:left-8 lg:px-3 lg:py-2 rounded-full'>
-                  <Icon type="caret-left" size={16} title="Go Back" />
-               </a>
+               <Icon type="caret-left" size={16} title="Go Back" />
             </Link>
          )}
          <div className="topbar__right">
@@ -54,17 +52,13 @@ const TopBar = ({ showSettings, showAddModal }:TopbarProps) => {
                border border-gray-200 lg:mt-2 lg:relative lg:block lg:border-0 lg:bg-transparent ${showMobileMenu ? 'block z-50' : 'hidden'}`}
             >
                <li className={`block lg:inline-block lg:ml-5 ${router.asPath === '/domains' ? ' text-blue-700' : ''}`}>
-                  <Link href={'/domains'} passHref={true}>
-                     <a className='block px-3 py-2 cursor-pointer'>
-                        <Icon type="domains" color={router.asPath === '/domains' ? '#1d4ed8' : '#888'} size={14} /> Domains
-                     </a>
+                  <Link href={'/domains'} className='block px-3 py-2 cursor-pointer'>
+                     <Icon type="domains" color={router.asPath === '/domains' ? '#1d4ed8' : '#888'} size={14} /> Domains
                   </Link>
                </li>
                <li className={`block lg:inline-block lg:ml-5 ${router.asPath === '/research' ? ' text-blue-700' : ''}`}>
-                  <Link href={'/research'} passHref={true}>
-                     <a className='block px-3 py-2 cursor-pointer'>
-                        <Icon type="research" color={router.asPath === '/research' ? '#1d4ed8' : '#888'} size={14} /> Research
-                     </a>
+                  <Link href={'/research'} className='block px-3 py-2 cursor-pointer'>
+                     <Icon type="research" color={router.asPath === '/research' ? '#1d4ed8' : '#888'} size={14} /> Research
                   </Link>
                </li>
                <li className='block lg:inline-block lg:ml-5'>
