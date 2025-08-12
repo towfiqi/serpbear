@@ -167,12 +167,16 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       // Load all Keywords from Database
       if ((seedType === 'tracking' || seedCurrentKeywords) && domainUrl) {
          const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain: domainUrl } });
+         console.log('allKeywords:', allKeywords);                  // Should be array of objects from DB
+         console.log('allKeywords plain:', allKeywords.map(x => x.get({ plain: true })));
          const currentKeywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
+         console.log('currentKeywords after parseKeywords:', currentKeywords); // Should be array of {keyword: 'something'}
          currentKeywords.forEach((keyword) => {
             if (keyword.keyword && !seedKeywords.includes(keyword.keyword)) {
                seedKeywords.push(keyword.keyword);
             }
          });
+         console.log('seedKeywords:', seedKeywords);                // Should be array of strings
       }
 
       if (['tracking', 'searchconsole'].includes(seedType) && seedKeywords.length === 0) {
