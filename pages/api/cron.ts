@@ -35,7 +35,12 @@ const cronRefreshkeywords = async (req: NextApiRequest, res: NextApiResponse<CRO
 
       return res.status(200).json({ started: true });
    } catch (error) {
-      console.log('[ERROR] CRON Refreshing Keywords: ', error);
+      // Safely log error to avoid [object Object] in logs
+      const errorMessage = error instanceof Error ? error.message
+         : error?.toString()
+         || JSON.stringify(error, Object.getOwnPropertyNames(error))
+         || 'Unknown Error';
+      console.log('[ERROR] CRON Refreshing Keywords: ', errorMessage);
       return res.status(400).json({ started: false, error: 'CRON Error refreshing keywords!' });
    }
 };
