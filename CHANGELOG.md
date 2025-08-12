@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+
+### [2.0.8](https://github.com/djav1985/v-serpbear/compare/v2.0.7...v2.0.8) (2025-08-12)
+
+### Features
+* Centralized `react-hot-toast` provider for consistent toast handling across the app.
+* Added state-based location targeting feature.
+* Added debugging logs to `getAdwordsKeywordIdeas` for improved keyword processing insight.
+
+### Bug Fixes
+* Fixed multiple React errors (#418, #423) by updating `Next.js` Link components and resolving SSR/hydration mismatches.
+* Fixed TopBar back button vertical alignment issue.
+* Fixed `[object Object]` error in Docker logs by improving error handling in cron and scraping functionality.
+* Fixed domain slug conversion logic to ensure correct usage in database and Search Console queries.
+* Fixed keyword loading bug causing Google Ads API requests to fail due to domain query mismatches.
+* Fixed typo in `keywordPayload` and API logic for keyword ideas generation.
+* Fixed keyword ideas API "invalid value" errors and improved handling of unused parameters.
+* Fixed domain name handling in keyword ideas for Search Console and tracked keywords.
+* Improved keyword idea error handling to prevent API failures.
+* Fixed mobile menu behavior issues.
+* Fixed anchor domain header dropdown positioning above selector.
+* Refactored keyword location display for better readability.
+* Fixed GitHub workflow permissions and patched XSS vulnerability in Adwords API.
+* Multiple minor UI and accessibility fixes for domain header, menus, and forms.
+
+### Code Quality & Maintenance
+* Resolved all ESLint linting errors across the codebase.
+* Enhanced code quality with comprehensive linting rules and security checks.
+* Removed nested ternaries and improved code readability in keyword tables.
+* Fixed trailing commas, stray quotes, typos, and minor formatting inconsistencies.
+* Increased z-index for domain header action menu.
+* Adjusted mobile responsiveness across components.
+* Displayed keyword location in emailed reports.
+* Adjusted daily email cron to run at 1 PM.
+* Multiple dependency updates and security patches.
+
 ### [2.0.7](https://github.com/towfiqi/serpbear/compare/v2.0.6...v2.0.7) (2025-02-23)
 
 
