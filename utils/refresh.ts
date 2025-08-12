@@ -104,7 +104,17 @@ export const updateKeywordPosition = async (keywordRaw:Keyword, updatedKeyword: 
                history: JSON.stringify(history),
             });
             console.log('[SUCCESS] Updating the Keyword: ', keyword.keyword);
-            updated = { ...keyword, ...updatedVal, lastUpdateError: JSON.parse(updatedVal.lastUpdateError) };
+            // Safely parse lastUpdateError, fallback to false if parsing fails
+            let parsedError: false | { date: string; error: string; scraper: string } = false;
+            try {
+               if (updatedVal.lastUpdateError !== 'false') {
+                  parsedError = JSON.parse(updatedVal.lastUpdateError);
+               }
+            } catch (parseError) {
+               console.log('[WARNING] Failed to parse lastUpdateError:', updatedVal.lastUpdateError);
+               parsedError = false;
+            }
+            updated = { ...keyword, ...updatedVal, lastUpdateError: parsedError };
          } catch (error) {
             console.log('[ERROR] Updating SERP for Keyword', keyword.keyword, error);
          }

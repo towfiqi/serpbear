@@ -121,19 +121,21 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
         console.log('[SERP]: ', keyword.keyword, serp.position, serp.url);
       } else {
          scraperError = res.detail || res.error || 'Unknown Error';
-         throw new Error(res);
+         throw new Error(scraperError);
       }
    } catch (error:any) {
       refreshedResults.error = scraperError || 'Unknown Error';
       if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
          refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
       } else if (settings.scraper_type === 'proxy' && error) {
-         refreshedResults.error = error;
+         refreshedResults.error = error.message || error.toString() || 'Proxy Error';
       }
 
       console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
       if (!(error && error.response && error.response.statusText)) {
-         console.log('[ERROR_MESSAGE]: ', error);
+         // Safely convert error to string to avoid [object Object] logging
+         const errorMessage = error?.message || error?.toString() || JSON.stringify(error, Object.getOwnPropertyNames(error)) || 'Unknown Error';
+         console.log('[ERROR_MESSAGE]: ', errorMessage);
       } else {
          console.log('[ERROR_MESSAGE]: ', error && error.response && error.response.statusText);
       }
