@@ -50,11 +50,11 @@ const Domains: NextPage = () => {
    }, [domainsData]);
 
    useEffect(() => {
-      if (domainsData?.domains && domainsData.domains.length > 0 && appSettings.screenshot_key) {
+      if (domainsData?.domains && domainsData.domains.length > 0) {
          const fetchAllScreenshots = async () => {
             const screenshotPromises = domainsData.domains.map(async (domain: DomainType) => {
                if (domain.domain) {
-                  const domainThumb = await fetchDomainScreenshot(domain.domain, appSettings.screenshot_key || '');
+                  const domainThumb = await fetchDomainScreenshot(domain.domain);
                   if (domainThumb) {
                      return { domain: domain.domain, thumb: domainThumb };
                   }
@@ -80,11 +80,11 @@ const Domains: NextPage = () => {
 
          fetchAllScreenshots();
       }
-   }, [domainsData, appSettings.screenshot_key]);
+   }, [domainsData]);
 
    const manuallyUpdateThumb = async (domain: string) => {
-      if (domain && appSettings.screenshot_key) {
-         const domainThumb = await fetchDomainScreenshot(domain, appSettings.screenshot_key, true);
+      if (domain) {
+         const domainThumb = await fetchDomainScreenshot(domain, true);
          if (domainThumb) {
             toast(`${domain} Screenshot Updated Successfully!`, { icon: '✔️' });
             setDomainThumbs((currentThumbs) => ({ ...currentThumbs, [domain]: domainThumb }));
