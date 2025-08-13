@@ -54,16 +54,15 @@ const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType)
    const currentkeyword = keyword.get({ plain: true });
    let refreshedkeywordData: RefreshResult | false = false;
    let scraperError: string | false = false;
-   
+
    try {
       refreshedkeywordData = await scrapeKeywordFromGoogle(currentkeyword, settings);
-      
       // If scraper returns false or has an error, capture the error
       if (!refreshedkeywordData) {
          scraperError = 'Scraper returned no data';
       } else if (refreshedkeywordData.error) {
-         scraperError = typeof refreshedkeywordData.error === 'string' 
-            ? refreshedkeywordData.error 
+         scraperError = typeof refreshedkeywordData.error === 'string'
+            ? refreshedkeywordData.error
             : JSON.stringify(refreshedkeywordData.error);
       }
    } catch (error: any) {
@@ -73,23 +72,23 @@ const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType)
       // Always ensure updating is set to false, regardless of success or failure
       try {
          const updateData: any = { updating: false };
-         
+
          // If there was an error, save it to lastUpdateError
          if (scraperError) {
             const theDate = new Date();
-            updateData.lastUpdateError = JSON.stringify({ 
-               date: theDate.toJSON(), 
-               error: scraperError, 
-               scraper: settings.scraper_type 
+            updateData.lastUpdateError = JSON.stringify({
+               date: theDate.toJSON(),
+               error: scraperError,
+               scraper: settings.scraper_type,
             });
          }
-         
+
          await keyword.update(updateData);
       } catch (updateError) {
          console.log('[ERROR] Failed to update keyword updating status:', updateError);
       }
    }
-   
+
    const updatedkeyword = refreshedkeywordData ? await updateKeywordPosition(keyword, refreshedkeywordData, settings) : currentkeyword;
    return updatedkeyword;
 };
