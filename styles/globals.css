@@ -13,10 +13,6 @@ body {
    max-width: 90rem;
 }
 
-.max-w-8xl {
-   max-width: 110rem;
-}
-
 .domKeywords {
    /* min-height: 70vh; */
    border-color: #e9ebff;

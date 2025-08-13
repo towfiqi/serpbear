@@ -39,7 +39,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    const [sortBy, setSortBy] = useState<string>('date_asc');
    const [scDataType, setScDataType] = useState<string>('threeDays');
    const [showScDataTypes, setShowScDataTypes] = useState<boolean>(false);
-   const [maxTitleColumnWidth, setMaxTitleColumnWidth] = useState(300);
+   const [maxTitleColumnWidth, setMaxTitleColumnWidth] = useState(235);
    const { mutate: deleteMutate } = useDeleteKeywords(() => {});
    const { mutate: favoriteMutate } = useFavKeywords(() => {});
    const { mutate: refreshMutate } = useRefreshKeywords(() => {});
@@ -231,12 +231,8 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                <div className=' lg:min-w-[800px]'>
                   <div className={`domKeywords_head domKeywords_head--${sortBy} hidden sm:flex p-3 px-6 bg-[#FCFCFF]
                    text-gray-600 justify-between items-center font-semibold border-y`}>
-                       <span
-                          ref={titleColumnRef}
-                          className={`domKeywords_head_keyword flex-1 basis-[6rem] w-auto lg:flex-1 ${
-                             showSCData && tableColumns.includes('Search Console') ? 'lg:basis-24' : 'lg:basis-14'
-                          } lg:w-auto lg:flex lg:items-center lg:min-w-[300px]`}
-                       >
+                     <span ref={titleColumnRef} className={`domKeywords_head_keyword flex-1 basis-[4rem] w-auto lg:flex-1 
+                        ${showSCData && tableColumns.includes('Search Console') ? 'lg:basis-20' : 'lg:basis-10'} lg:w-auto lg:flex lg:items-center `}>
                      {processedKeywords[device].length > 0 && (
                         <button
                            className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px]  border border-slate-300 
@@ -247,8 +243,8 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                         </button>
                      )}
                   {/* ${showSCData ? 'lg:min-w-[220px]' : 'lg:min-w-[280px]'} */}
-                          <span className={`inline-block lg:flex lg:items-center
-                             ${showSCData && tableColumns.includes('Search Console') ? 'lg:max-w-[300px]' : ''}`}>
+                        <span className={`inline-block lg:flex lg:items-center 
+                           ${showSCData && tableColumns.includes('Search Console') ? 'lg:max-w-[235px]' : ''}`}>
                            Keyword
                         </span>
                      </span>
@@ -256,7 +252,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
                      <span className={`domKeywords_head_best flex-1 basis-16 grow-0 text-center  ${shouldHideColumn('Best')}`}>Best</span>
                      <span className={`domKeywords_head_history flex-1 basis-20 grow-0  ${shouldHideColumn('History')}`}>History (7d)</span>
                      <span className={`domKeywords_head_volume flex-1 basis-24 grow-0 text-center ${shouldHideColumn('Volume')}`}>Volume</span>
-                       <span className='domKeywords_head_url flex-1 lg:min-w-[220px]'>URL</span>
+                     <span className='domKeywords_head_url flex-1'>URL</span>
                      <span className='domKeywords_head_updated flex-1 relative left-3 max-w-[150px]'>Updated</span>
                      {showSCData && tableColumns.includes('Search Console') && (
                         <div className='domKeywords_head_sc flex-1 min-w-[170px] lg:max-w-[170px] mr-7 text-center'>

@@ -109,7 +109,7 @@ const Keyword = (props: KeywordProps) => {
       className={`keyword relative py-5 px-4 text-gray-600 border-b-[1px] border-gray-200 lg:py-4 lg:px-6 lg:border-0 
       lg:flex lg:justify-between lg:items-center ${selected ? ' bg-indigo-50 keyword--selected' : ''} ${lastItem ? 'border-b-0' : ''}`}>
 
-         <div className=' w-3/4 font-semibold cursor-pointer lg:flex-1 lg:shrink-0 lg:basis-40 lg:w-auto lg:flex lg:items-center lg:min-w-[300px]'>
+         <div className=' w-3/4 font-semibold cursor-pointer lg:flex-1 lg:shrink-0 lg:basis-28 lg:w-auto lg:flex lg:items-center'>
             <button
                className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border 
                ${selected ? ' bg-blue-700 border-blue-700 text-white' : 'text-transparent'}`}
@@ -117,13 +117,13 @@ const Keyword = (props: KeywordProps) => {
                >
                   <Icon type="check" size={10} />
             </button>
-              <a
-              style={{ maxWidth: `${maxTitleColumnWidth - 35}px` }}
-              className={'py-2 hover:text-blue-600 flex items-center w-full'}
-              onClick={() => showKeywordDetails()}
-              title={keyword}
-              >
-                 <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2 relative top-[1px]`} title={countries[country][0]} />
+            <a
+            style={{ maxWidth: `${maxTitleColumnWidth - 35}px` }}
+            className={'py-2 hover:text-blue-600 lg:flex lg:items-center w-full'}
+            onClick={() => showKeywordDetails()}
+            title={keyword}
+            >
+               <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />
                <span className="inline-block w-[calc(100%-50px)]">
                   <span className="block text-ellipsis overflow-hidden whitespace-nowrap">
                      {keyword}
@@ -179,7 +179,7 @@ const Keyword = (props: KeywordProps) => {
          </div>
 
          <div
-         className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 lg:min-w-[220px] text-gray-400 lg:m-0 max-w-[120px]
+         className={`keyword_url inline-block mt-4 mr-5 ml-5 lg:flex-1 text-gray-400 lg:m-0 max-w-[70px] 
          overflow-hidden text-ellipsis whitespace-nowrap lg:max-w-none lg:pr-5 lg:pl-3`}>
             <a href={url} target="_blank" rel="noreferrer"><span className='mr-3 lg:hidden'>
                <Icon type="link-alt" size={14} color="#999" /></span>{turncatedURL || '-'}
