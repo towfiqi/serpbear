@@ -111,6 +111,36 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
    let scraperError:any = null;
    try {
       const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((reslt:any) => reslt.json());
+      
+      // Check response status and success indicators
+      const hasError = (res && (
+         (res.status && (res.status < 200 || res.status >= 300)) ||
+         (res.ok === false) ||
+         (res.request_info?.success === false)
+      ));
+
+      if (hasError) {
+         // Extract comprehensive error information
+         const statusCode = res.status || 'Unknown Status';
+         const errorInfo = res.request_info?.error || res.error_message || res.detail || res.error || '';
+         const errorBody = res.body || res.message || '';
+         
+         // Build comprehensive error object
+         scraperError = {
+            status: statusCode,
+            error: errorInfo,
+            body: errorBody,
+            request_info: res.request_info || null
+         };
+         
+         // Log status code and error payload
+         console.log('[SCRAPER_ERROR] Status:', statusCode);
+         console.log('[SCRAPER_ERROR] Payload:', JSON.stringify(scraperError));
+         
+         const errorMessage = `[${statusCode}] ${errorInfo || errorBody || 'Request failed'}`;
+         throw new Error(errorMessage);
+      }
+
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
       const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
       if (res && scrapeResult) {
@@ -120,11 +150,16 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
         refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.position, url: serp.url, result: extracted, error: false };
         console.log('[SERP]: ', keyword.keyword, serp.position, serp.url);
       } else {
-         scraperError = res.detail || res.error || 'Unknown Error';
+         // Enhanced error extraction for empty results
+         const errorInfo = res.request_info?.error || res.error_message || res.detail || res.error || '';
+         const statusCode = res.status || 'No Status';
+         scraperError = `[${statusCode}] ${errorInfo || 'No valid scrape result returned'}`;
          throw new Error(scraperError);
       }
    } catch (error:any) {
-      refreshedResults.error = scraperError || 'Unknown Error';
+      // Use the enhanced error message if available
+      refreshedResults.error = scraperError || error.message || 'Unknown Error';
+      
       if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
          refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
       } else if (settings.scraper_type === 'proxy' && error) {
@@ -132,12 +167,11 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       }
 
       console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
-      if (!(error && error.response && error.response.statusText)) {
-         // Safely convert error to string to avoid [object Object] logging
-         const errorMessage = error?.message || error?.toString() || JSON.stringify(error, Object.getOwnPropertyNames(error)) || 'Unknown Error';
-         console.log('[ERROR_MESSAGE]: ', errorMessage);
-      } else {
-         console.log('[ERROR_MESSAGE]: ', error && error.response && error.response.statusText);
+      console.log('[ERROR_MESSAGE]: ', refreshedResults.error);
+      
+      // Log additional error details if available
+      if (scraperError && typeof scraperError === 'object') {
+         console.log('[ERROR_DETAILS]: ', JSON.stringify(scraperError));
       }
    }
 
