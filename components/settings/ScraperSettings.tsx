@@ -68,6 +68,7 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
               {(settings?.scaping_api as unknown as string[])?.map((apiKey, index) => (
                 <div key={index} className="flex items-center mb-2">
                   <SecretField
+                    label=""
                     placeholder={'API Key/Token'}
                     value={apiKey}
                     hasError={settingsError?.type === 'no_api_key'}
