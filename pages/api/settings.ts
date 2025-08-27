@@ -42,7 +42,9 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
    }
    try {
       const cryptr = new Cryptr(process.env.SECRET as string);
-      const scaping_api = settings.scaping_api ? cryptr.encrypt(settings.scaping_api.trim()) : '';
+      const scaping_api = Array.isArray(settings.scaping_api)
+      ? settings.scaping_api.map((key: string) => (key ? cryptr.encrypt(key.trim()) : ''))
+      : '';
       const smtp_password = settings.smtp_password ? cryptr.encrypt(settings.smtp_password.trim()) : '';
       const search_console_client_email = settings.search_console_client_email ? cryptr.encrypt(settings.search_console_client_email.trim()) : '';
       const search_console_private_key = settings.search_console_private_key ? cryptr.encrypt(settings.search_console_private_key.trim()) : '';
@@ -82,7 +84,12 @@ export const getAppSettings = async () : Promise<SettingsType> => {
 
       try {
          const cryptr = new Cryptr(process.env.SECRET as string);
-         const scaping_api = settings.scaping_api ? cryptr.decrypt(settings.scaping_api) : '';
+         let scaping_api;
+         if (Array.isArray(settings.scaping_api)) {
+            scaping_api = settings.scaping_api.map((key) => (key ? cryptr.decrypt(key) : ''));
+         } else {
+            scaping_api = settings.scaping_api ? [cryptr.decrypt(settings.scaping_api)] : [''];
+         }
          const smtp_password = settings.smtp_password ? cryptr.decrypt(settings.smtp_password) : '';
          const search_console_client_email = settings.search_console_client_email ? cryptr.decrypt(settings.search_console_client_email) : '';
          const search_console_private_key = settings.search_console_private_key ? cryptr.decrypt(settings.search_console_private_key) : '';

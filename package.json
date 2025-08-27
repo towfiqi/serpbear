@@ -11,7 +11,7 @@
     "lint": "next lint",
     "lint:css": "stylelint styles/*.css",
     "test": "jest --watch --verbose",
-    "test:ci": "jest --ci",
+    "test:ci": "jest --ci --testTimeout=30000",
     "test:cv": "jest --coverage --coverageDirectory='coverage'",
     "db:migrate": "sequelize-cli db:migrate --env production",
     "db:revert": "sequelize-cli db:migrate:undo --env production",

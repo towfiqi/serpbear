@@ -5,7 +5,7 @@ import { useAddDomain, useDeleteDomain, useFetchDomains, useUpdateDomain } from 
 import { useAddKeywords, useDeleteKeywords,
    useFavKeywords, useFetchKeywords, useRefreshKeywords, useFetchSingleKeyword } from '../../services/keywords';
 import { dummyDomain, dummyKeywords, dummySettings } from '../../__mocks__/data';
-import { useFetchSettings } from '../../services/settings';
+import { useFetchSettings, useUpdateSettings } from '../../services/settings';
 
 jest.mock('../../services/domains');
 jest.mock('../../services/keywords');
@@ -32,11 +32,13 @@ const useUpdateDomainFunc = useUpdateDomain as jest.Mock<any>;
 const useDeleteDomainFunc = useDeleteDomain as jest.Mock<any>;
 const useFetchSettingsFunc = useFetchSettings as jest.Mock<any>;
 const useFetchSingleKeywordFunc = useFetchSingleKeyword as jest.Mock<any>;
+const useUpdateSettingsFunc = useUpdateSettings as jest.Mock<any>;
 
 describe('SingleDomain Page', () => {
    const queryClient = new QueryClient();
    beforeEach(() => {
       useFetchSettingsFunc.mockImplementation(() => ({ data: { settings: dummySettings }, isLoading: false }));
+      useUpdateSettingsFunc.mockImplementation(() => ({ mutate: () => { } }));
       useFetchDomainsFunc.mockImplementation(() => ({ data: { domains: [dummyDomain] }, isLoading: false }));
       useFetchKeywordsFunc.mockImplementation(() => ({ keywordsData: { keywords: dummyKeywords }, keywordsLoading: false }));
       const fetchPayload = { history: dummyKeywords[0].history || [], searchResult: dummyKeywords[0].lastResult || [] };
@@ -111,7 +113,8 @@ describe('SingleDomain Page', () => {
    });
 
    it('Country Filter should function properly', async () => {
-      render(<QueryClientProvider client={queryClient}><SingleDomain /></QueryClientProvider>);
+      useFetchKeywordsFunc.mockImplementation(() => ({ keywordsData: { keywords: [] }, keywordsLoading: false }));
+      const { rerender } = render(<QueryClientProvider client={queryClient}><SingleDomain /></QueryClientProvider>);
       const button = screen.getByTestId('filter_button');
       if (button) fireEvent.click(button);
       expect(document.querySelector('.country_filter')).toBeVisible();
@@ -121,6 +124,8 @@ describe('SingleDomain Page', () => {
       expect(document.querySelector('.country_filter .select_list')).toBeVisible();
       const firstCountry = document.querySelector('.country_filter .select_list ul li:nth-child(1)');
       if (firstCountry) fireEvent.click(firstCountry);
+
+      rerender(<QueryClientProvider client={queryClient}><SingleDomain /></QueryClientProvider>);
       const keywordsCount = document.querySelectorAll('.keyword').length;
       expect(keywordsCount).toBe(0);
    });

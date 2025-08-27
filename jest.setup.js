@@ -21,6 +21,43 @@ window.matchMedia = (query) => ({
 });
 
 global.ResizeObserver = require('resize-observer-polyfill');
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+class BroadcastChannel {
+    constructor(name) {
+        this.name = name;
+        this.listeners = {};
+    }
+
+    addEventListener(name, callback) {
+        if (!this.listeners[name]) {
+            this.listeners[name] = [];
+        }
+        this.listeners[name].push(callback);
+    }
+
+    removeEventListener(name, callback) {
+        if (this.listeners[name]) {
+            this.listeners[name] = this.listeners[name].filter(cb => cb !== callback);
+        }
+    }
+
+    postMessage(message) {
+        if (this.listeners.message) {
+            this.listeners.message.forEach(callback => {
+                callback({ data: message });
+            });
+        }
+    }
+
+    close() {
+        this.listeners = {};
+    }
+}
+
+global.BroadcastChannel = BroadcastChannel;
 
 // Enable Fetch Mocking
 enableFetchMocks();

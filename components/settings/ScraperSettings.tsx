@@ -40,6 +40,12 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
    const scraperOptions: SelectionOption[] = [{ label: 'None', value: 'none' }, ...allScrapers];
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700 capitalize';
 
+   if (settings.scaping_api && typeof settings.scaping_api === 'string') {
+      updateSettings('scaping_api', [settings.scaping_api]);
+   } else if (!settings.scaping_api) {
+      updateSettings('scaping_api', ['']);
+   }
+
    return (
       <div>
       <div className='settings__content styled-scrollbar p-6 text-sm'>
@@ -58,15 +64,46 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
          </div>
          {settings.scraper_type !== 'none' && settings.scraper_type !== 'proxy' && (
             <div className="settings__section__secret mb-5">
-               <SecretField
-               label='Scraper API Key or Token'
-               placeholder={'API Key/Token'}
-               value={settings?.scaping_api || ''}
-               hasError={settingsError?.type === 'no_api_key'}
-               onChange={(value:string) => updateSettings('scaping_api', value)}
-               />
+              <label className={labelStyle}>Scraper API Key or Token</label>
+              {(settings?.scaping_api as unknown as string[])?.map((apiKey, index) => (
+                <div key={index} className="flex items-center mb-2">
+                  <SecretField
+                    placeholder={'API Key/Token'}
+                    value={apiKey}
+                    hasError={settingsError?.type === 'no_api_key'}
+                    onChange={(value: string) => {
+                      const newApiKeys = [...(settings.scaping_api as unknown as string[])];
+                      newApiKeys[index] = value;
+                      updateSettings('scaping_api', newApiKeys);
+                    }}
+                  />
+                  {(settings?.scaping_api as unknown as string[]).length > 1 && (
+                    <button
+                      onClick={() => {
+                        const newApiKeys = [...(settings.scaping_api as unknown as string[])];
+                        newApiKeys.splice(index, 1);
+                        updateSettings('scaping_api', newApiKeys);
+                      }}
+                      className="ml-2 p-2 bg-red-500 text-white rounded"
+                    >
+                      <Icon type="delete" size={16} />
+                    </button>
+                  )}
+                </div>
+              ))}
+              {(settings?.scaping_api as unknown as string[]).length < 10 && (
+                <button
+                  onClick={() => {
+                    const newApiKeys = [...(settings.scaping_api as unknown as string[]), ''];
+                    updateSettings('scaping_api', newApiKeys);
+                  }}
+                  className="mt-2 p-2 bg-blue-500 text-white rounded"
+                >
+                  Add API Key
+                </button>
+              )}
             </div>
-         )}
+          )}
          {settings.scraper_type === 'proxy' && (
             <div className="settings__section__input mb-5">
                <label className={labelStyle}>Proxy List</label>

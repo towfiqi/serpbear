@@ -31,7 +31,7 @@ export type RefreshResult = false | {
  * @param {SettingsType} settings - the App Settings that contains the scraper details
  * @returns {Promise}
  */
-export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scraper?: ScraperSettings): Promise<AxiosResponse|Response> | false => {
+export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scraper?: ScraperSettings, apiKey?: string): Promise<AxiosResponse|Response> | false => {
    let apiURL = ''; let client: Promise<AxiosResponse|Response> | false = false;
    const headers: any = {
       'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scr
    if (scraper) {
       // Set Scraper Header
       const scrapeHeaders = scraper.headers ? scraper.headers(keyword, settings) : null;
-      const scraperAPIURL = scraper.scrapeURL ? scraper.scrapeURL(keyword, settings, countries) : null;
+      const scraperAPIURL = scraper.scrapeURL ? scraper.scrapeURL(keyword, { ...settings, scaping_api: apiKey }, countries) : null;
       if (scrapeHeaders && Object.keys(scrapeHeaders).length > 0) {
          Object.keys(scrapeHeaders).forEach((headerItemKey:string) => {
             headers[headerItemKey] = scrapeHeaders[headerItemKey as keyof object];
@@ -104,43 +104,58 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
    };
    const scraperType = settings?.scraper_type || '';
    const scraperObj = allScrapers.find((scraper:ScraperSettings) => scraper.id === scraperType);
-   const scraperClient = getScraperClient(keyword, settings, scraperObj);
 
-   if (!scraperClient) { return false; }
+   if (!scraperObj) {
+     return false;
+   }
 
-   let scraperError:any = null;
-   try {
-      const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((reslt:any) => reslt.json());
-      const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
-      const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
-      if (res && scrapeResult) {
-         const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
-         // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
-         const serp = getSerp(keyword.domain, extracted);
-         refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
-         console.log('[SERP]: ', keyword.keyword, serp.postion, serp.url);
-      } else {
-         scraperError = res.detail || res.error || 'Unknown Error';
-         throw new Error(res);
-      }
-   } catch (error:any) {
-      refreshedResults.error = scraperError || 'Unknown Error';
-      if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
-         refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
-      } else if (settings.scraper_type === 'proxy' && error) {
-         refreshedResults.error = error;
-      }
+   const apiKeys = settings.scaping_api || [];
+   let lastError: any = null;
 
-      console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
-      if (!(error && error.response && error.response.statusText)) {
-         console.log('[ERROR_MESSAGE]: ', error);
-      } else {
-         console.log('[ERROR_MESSAGE]: ', error && error.response && error.response.statusText);
-      }
+   for (const apiKey of apiKeys) {
+     const scraperClient = getScraperClient(keyword, settings, scraperObj, apiKey);
+
+     if (!scraperClient) {
+       continue;
+     }
+
+     try {
+       const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((reslt:any) => reslt.json());
+       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
+       const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
+       if (res && scrapeResult) {
+          const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
+          const serp = getSerp(keyword.domain, extracted);
+          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.postion, url: serp.url, result: extracted, error: false };
+          console.log('[SERP]: ', keyword.keyword, serp.postion, serp.url);
+          lastError = null;
+          break;
+       } else {
+          lastError = res.detail || res.error || 'Unknown Error';
+       }
+     } catch (error:any) {
+       lastError = error;
+     }
+   }
+
+   if (lastError) {
+     refreshedResults.error = lastError;
+     if (settings.scraper_type === 'proxy' && lastError && lastError.response && lastError.response.statusText) {
+       refreshedResults.error = `[${lastError.response.status}] ${lastError.response.statusText}`;
+     } else if (settings.scraper_type === 'proxy' && lastError) {
+       refreshedResults.error = lastError;
+     }
+
+     console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
+     if (!(lastError && lastError.response && lastError.response.statusText)) {
+       console.log('[ERROR_MESSAGE]: ', lastError);
+     } else {
+       console.log('[ERROR_MESSAGE]: ', lastError && lastError.response && lastError.response.statusText);
+     }
    }
 
    return refreshedResults;
-};
+ };
 
 /**
  * Extracts the Google Search result as object array from the Google Search's HTML content
