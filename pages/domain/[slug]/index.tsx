@@ -25,7 +25,7 @@ const SingleDomain: NextPage = () => {
    const [showSettings, setShowSettings] = useState(false);
    const [keywordSPollInterval, setKeywordSPollInterval] = useState<undefined|number>(undefined);
    const { data: appSettingsData, isLoading: isAppSettingsLoading } = useFetchSettings();
-   const { data: domainsData } = useFetchDomains(router);
+   const { data: domainsData } = useFetchDomains(router, false);
    const appSettings: SettingsType = appSettingsData?.settings || {};
    const { scraper_type = '', available_scapers = [] } = appSettings;
    const activeScraper = useMemo(() => available_scapers.find((scraper) => scraper.value === scraper_type), [scraper_type, available_scapers]);

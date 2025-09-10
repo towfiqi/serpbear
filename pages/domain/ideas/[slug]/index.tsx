@@ -27,7 +27,7 @@ const DiscoverPage: NextPage = () => {
    const [showFavorites, setShowFavorites] = useState(false);
 
    const { data: appSettings } = useFetchSettings();
-   const { data: domainsData } = useFetchDomains(router);
+   const { data: domainsData } = useFetchDomains(router, false);
    const adwordsConnected = !!(appSettings && appSettings?.settings?.adwords_refresh_token
       && appSettings?.settings?.adwords_developer_token, appSettings?.settings?.adwords_account_id);
    const searchConsoleConnected = !!(appSettings && appSettings?.settings?.search_console_integrated);

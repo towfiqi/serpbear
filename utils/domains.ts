@@ -10,7 +10,6 @@ import { readLocalSCData } from './searchConsole';
  */
 const getdomainStats = async (domains:DomainType[]): Promise<DomainType[]> => {
    const finalDomains: DomainType[] = [];
-   console.log('domains: ', domains.length);
 
    for (const domain of domains) {
       const domainWithStat = domain;
@@ -23,7 +22,7 @@ const getdomainStats = async (domains:DomainType[]): Promise<DomainType[]> => {
       const KeywordsUpdateDates: number[] = keywords.reduce((acc: number[], itm) => [...acc, new Date(itm.lastUpdated).getTime()], [0]);
       const lastKeywordUpdateDate = Math.max(...KeywordsUpdateDates);
       domainWithStat.keywordsUpdated = new Date(lastKeywordUpdateDate || new Date(domain.lastUpdated).getTime()).toJSON();
-      domainWithStat.avgPosition = Math.round(keywordPositions / keywords.length);
+      domainWithStat.avgPosition = keywords.length ? Math.round(keywordPositions / keywords.length) : 0;
 
       // Then Load the SC File and read the stats and calculate the Last 7 days stats
       const localSCData = await readLocalSCData(domain.domain);

@@ -25,7 +25,7 @@ const InsightPage: NextPage = () => {
    const [showAddDomain, setShowAddDomain] = useState(false);
    const [scDateFilter, setSCDateFilter] = useState('thirtyDays');
    const { data: appSettings } = useFetchSettings();
-   const { data: domainsData } = useFetchDomains(router);
+   const { data: domainsData } = useFetchDomains(router, false);
    const scConnected = !!(appSettings && appSettings?.settings?.search_console_integrated);
    const { data: insightData } = useFetchSCInsight(router, !!(domainsData?.domains?.length) && scConnected);
 
