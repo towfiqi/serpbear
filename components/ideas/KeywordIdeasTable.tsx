@@ -41,7 +41,11 @@ const IdeasKeywordsTable = ({
    const [isMobile] = useIsMobile();
    const isResearchPage = router.pathname === '/research';
 
-   const { data: domainsData } = useQuery('domains', () => fetchDomains(router, false), { enabled: selectedKeywords.length > 0, retry: false });
+   const { data: domainsData } = useQuery(
+      ['domains', false],
+      () => fetchDomains(router, false),
+      { enabled: selectedKeywords.length > 0, retry: false },
+   );
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
 
    useWindowResize(() => setListHeight(window.innerHeight - (isMobile ? 200 : 400)));

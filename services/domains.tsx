@@ -19,9 +19,9 @@ export async function fetchDomains(router: NextRouter, withStats:boolean): Promi
    return res.json();
 }
 
-export async function fetchDomain(router: NextRouter, domainName: string): Promise<{domain: DomainType}> {
-   if (!domainName) { throw new Error('No Domain Name Provided!'); }
-   const res = await fetch(`${window.location.origin}/api/domain?domain=${domainName}`, { method: 'GET' });
+export async function fetchDomain(router: NextRouter, slug: string): Promise<{domain: DomainType}> {
+   if (!slug) { throw new Error('No Domain Name Provided!'); }
+   const res = await fetch(`${window.location.origin}/api/domain?domain=${slug}`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
          console.log('Unauthorized!!');
@@ -63,11 +63,11 @@ export async function fetchDomainScreenshot(domain: string, forceFetch = false):
 }
 
 export function useFetchDomains(router: NextRouter, withStats:boolean = false) {
-   return useQuery('domains', () => fetchDomains(router, withStats));
+   return useQuery(['domains', withStats], () => fetchDomains(router, withStats));
 }
 
-export function useFetchDomain(router: NextRouter, domainName:string, onSuccess: Function) {
-   return useQuery('domain', () => fetchDomain(router, domainName), {
+export function useFetchDomain(router: NextRouter, slug:string, onSuccess: Function) {
+   return useQuery(['domain', slug], () => fetchDomain(router, slug), {
       onSuccess: async (data) => {
          console.log('Domain Loaded!!!', data.domain);
          onSuccess(data.domain);
