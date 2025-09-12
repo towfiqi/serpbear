@@ -39,7 +39,11 @@ const getDomainSearchConsoleInsight = async (req: NextApiRequest, res: NextApiRe
    if (localSCData) {
       const oldFetchedDate = localSCData.lastFetched;
       const fetchTimeDiff = new Date().getTime() - (oldFetchedDate ? new Date(oldFetchedDate as string).getTime() : 0);
-      if (localSCData.stats && localSCData.stats.length && fetchTimeDiff <= 86400000) {
+      // Check if we have any data (not just stats) and it's within 24 hours
+      const hasData = (localSCData.threeDays && localSCData.threeDays.length > 0)
+                     || (localSCData.sevenDays && localSCData.sevenDays.length > 0)
+                     || (localSCData.thirtyDays && localSCData.thirtyDays.length > 0);
+      if (hasData && fetchTimeDiff <= 86400000) {
          const response = getInsightFromSCData(localSCData);
          return res.status(200).json({ data: response });
       }
