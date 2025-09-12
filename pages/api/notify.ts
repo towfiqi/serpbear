@@ -54,7 +54,7 @@ const notify = async (req: NextApiRequest, res: NextApiResponse<NotifyResponse>)
    }
 };
 
-const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => {
+const sendNotificationEmail = async (domain: DomainType | Domain, settings: SettingsType) => {
    const {
       smtp_server = '',
       smtp_port = '',
@@ -73,12 +73,13 @@ const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => 
       if (smtp_password) mailerSettings.auth.pass = smtp_password;
    }
    const transporter = nodeMailer.createTransport(mailerSettings);
-   const domainName = domain.domain;
+   const domainObj: DomainType = (domain as any).get ? (domain as any).get({ plain: true }) : domain as DomainType;
+   const domainName = domainObj.domain;
    const query = { where: { domain: domainName } };
    const domainKeywords:Keyword[] = await Keyword.findAll(query);
    const keywordsArray = domainKeywords.map((el) => el.get({ plain: true }));
    const keywords: KeywordType[] = parseKeywords(keywordsArray);
-   const emailHTML = await generateEmail(domainName, keywords, settings);
+   const emailHTML = await generateEmail(domainObj, keywords, settings);
    await transporter.sendMail({
       from: fromEmail,
       to: domain.notification_emails || notification_email,

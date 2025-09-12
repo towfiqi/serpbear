@@ -16,7 +16,7 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 - **Email Notification:** Get notified of your keyword position changes daily/weekly/monthly through email.
 - **SERP API:** SerpBear comes with built-in API that you can use for your marketing & data reporting tools.
 - **Keyword Research:** Ability to research keywords and auto-generate keyword ideas from your tracked website's content by integrating your Google Ads test account.
-- **Google Search Console Integration:** Get the actual visit count, impressions & more for Each keyword.
+- **Google Search Console Integration:** Get the actual visit count, impressions & more for each keyword. Cached data refreshes automatically and falls back to global credentials when domain-level credentials aren't configured.
 - **Mobile App:** Add the PWA app to your mobile for a better mobile experience.
 - **Zero Cost to RUN:** Run the App on mogenius.com or Fly.io for free.
 

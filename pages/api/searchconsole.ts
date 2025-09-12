@@ -33,19 +33,29 @@ const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiRespo
    if (!req.query.domain || typeof req.query.domain !== 'string') return res.status(400).json({ data: null, error: 'Domain is Missing.' });
    const domainname = (req.query.domain as string).replaceAll('-', '.').replaceAll('_', '-');
    const localSCData = await readLocalSCData(domainname);
-   if (localSCData && localSCData.thirtyDays && localSCData.thirtyDays.length) {
+   const isFresh = localSCData && localSCData.threeDays && localSCData.threeDays.length
+      && localSCData.sevenDays && localSCData.sevenDays.length
+      && localSCData.thirtyDays && localSCData.thirtyDays.length
+      && localSCData.lastFetched
+      && (new Date().getTime() - new Date(localSCData.lastFetched).getTime() <= 86400000);
+   if (isFresh) {
       return res.status(200).json({ data: localSCData });
    }
    try {
       const query = { domain: domainname };
       const foundDomain:Domain| null = await Domain.findOne({ where: query });
       const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
-      const scDomainAPI = await getSearchConsoleApiInfo(domainObj);
-      if (!(scDomainAPI.client_email && scDomainAPI.private_key)) {
+      const scDomainAPI = domainObj?.search_console ? await getSearchConsoleApiInfo(domainObj) : { client_email: '', private_key: '' };
+      const scGlobalAPI = await getSearchConsoleApiInfo({} as DomainType);
+      if (!(scDomainAPI.client_email && scDomainAPI.private_key)
+          && !(scGlobalAPI.client_email && scGlobalAPI.private_key)) {
          return res.status(200).json({ data: null, error: 'Google Search Console is not Integrated.' });
       }
-      const scData = await fetchDomainSCData(domainObj, scDomainAPI);
-      return res.status(200).json({ data: scData });
+      const scData = await fetchDomainSCData(domainObj, scDomainAPI, scGlobalAPI);
+      if (scData && scData.thirtyDays && scData.thirtyDays.length) {
+         return res.status(200).json({ data: scData });
+      }
+      return res.status(400).json({ data: null, error: 'Error Fetching Data from Google Search Console.' });
    } catch (error) {
       console.log('[ERROR] Getting Search Console Data for: ', domainname, error);
       return res.status(400).json({ data: null, error: 'Error Fetching Data from Google Search Console.' });
@@ -58,10 +68,15 @@ const cronRefreshSearchConsoleData = async (req: NextApiRequest, res: NextApiRes
       const Domains: DomainType[] = allDomainsRaw.map((el) => el.get({ plain: true }));
       for (const domain of Domains) {
          try {
-            const scDomainAPI = await getSearchConsoleApiInfo(domain);
-            if (scDomainAPI.client_email && scDomainAPI.private_key) {
-               await fetchDomainSCData(domain, scDomainAPI);
-               console.log(`[SUCCESS] Updated Search Console data for domain: ${domain.domain}`);
+            const scDomainAPI = domain.search_console ? await getSearchConsoleApiInfo(domain) : { client_email: '', private_key: '' };
+            const scGlobalAPI = await getSearchConsoleApiInfo({} as DomainType);
+            if (scDomainAPI.client_email || scGlobalAPI.client_email) {
+               const scData = await fetchDomainSCData(domain, scDomainAPI, scGlobalAPI);
+               if (scData && scData.thirtyDays && scData.thirtyDays.length) {
+                  console.log(`[SUCCESS] Updated Search Console data for domain: ${domain.domain}`);
+               } else {
+                  console.log(`[ERROR] Failed to update Search Console data for domain: ${domain.domain}`);
+               }
             } else {
                console.log(`[SKIP] No Search Console API credentials found for domain: ${domain.domain}`);
             }
