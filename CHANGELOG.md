@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 * Automatically refreshes Search Console data and falls back to global credentials when domain-specific credentials are unavailable.
+* Added manual refresh button for Search Console data.
 
 ### [2.0.8](https://github.com/djav1985/v-serpbear/compare/v2.0.7...v2.0.8) (2025-08-12)
 

@@ -1,4 +1,5 @@
 import { NextRouter } from 'next/router';
+import toast from 'react-hot-toast';
 import { useQuery } from 'react-query';
 
 export async function fetchSCKeywords(router: NextRouter) {
@@ -36,3 +37,18 @@ export function useFetchSCInsight(router: NextRouter, domainLoaded: boolean = fa
    // console.log('ROUTER: ', router);
    return useQuery('scinsight', () => router.query.slug && fetchSCInsight(router), { enabled: domainLoaded });
 }
+
+export const refreshSearchConsoleData = async () => {
+   try {
+      const res = await fetch(`${window.location.origin}/api/searchconsole`, { method: 'POST' });
+      if (res.status >= 400 && res.status < 600) {
+         throw new Error('Bad response from server');
+      }
+      toast('Search Console Data Refreshed!', { icon: '✔️' });
+      return res.json();
+   } catch (error) {
+      console.log('Error Refreshing Search Console Data!!!', error);
+      toast('Error Refreshing Search Console Data', { icon: '⚠️' });
+      throw error;
+   }
+};
