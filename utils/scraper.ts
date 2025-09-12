@@ -325,7 +325,7 @@ export const getSerp = (domainURL:string, result:SearchResult[]) : SERPObject =>
  * @returns {void}
  */
 export const retryScrape = async (keywordID: number) : Promise<void> => {
-   if (!keywordID && !Number.isInteger(keywordID)) { return; }
+   if (!keywordID || !Number.isInteger(keywordID)) { return; }
    let currentQueue: number[] = [];
 
    const filePath = `${process.cwd()}/data/failed_queue.json`;
@@ -345,7 +345,7 @@ export const retryScrape = async (keywordID: number) : Promise<void> => {
  * @returns {void}
  */
 export const removeFromRetryQueue = async (keywordID: number) : Promise<void> => {
-   if (!keywordID && !Number.isInteger(keywordID)) { return; }
+   if (!keywordID || !Number.isInteger(keywordID)) { return; }
    let currentQueue: number[] = [];
 
    const filePath = `${process.cwd()}/data/failed_queue.json`;

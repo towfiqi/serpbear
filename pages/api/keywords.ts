@@ -132,7 +132,7 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
 };
 
 const deleteKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsDeleteRes>) => {
-   if (!req.query.id && typeof req.query.id !== 'string') {
+   if (!req.query.id || typeof req.query.id !== 'string') {
       return res.status(400).json({ error: 'keyword ID is Required!' });
    }
    console.log('req.query.id: ', req.query.id);
@@ -149,7 +149,7 @@ const deleteKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
 };
 
 const updateKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGetResponse>) => {
-   if (!req.query.id && typeof req.query.id !== 'string') {
+   if (!req.query.id || typeof req.query.id !== 'string') {
       return res.status(400).json({ error: 'keyword ID is Required!' });
    }
    if (req.body.sticky === undefined && req.body.tags === undefined) {

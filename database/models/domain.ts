@@ -11,11 +11,11 @@ class Domain extends Model {
    ID!: number;
 
    @Unique
-   @Column({ type: DataType.STRING, allowNull: false, defaultValue: true, unique: true })
+   @Column({ type: DataType.STRING, allowNull: false, defaultValue: '', unique: true })
    domain!: string;
 
    @Unique
-   @Column({ type: DataType.STRING, allowNull: false, defaultValue: true, unique: true })
+   @Column({ type: DataType.STRING, allowNull: false, defaultValue: '', unique: true })
    slug!: string;
 
    @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })

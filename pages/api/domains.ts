@@ -61,7 +61,7 @@ export const getDomains = async (req: NextApiRequest, res: NextApiResponse<Domai
          const searchConsoleData = scData ? { ...scData, client_email: client_email ? 'true' : '', private_key: private_key ? 'true' : '' } : {};
          return { ...domainItem, search_console: JSON.stringify(searchConsoleData) };
       });
-      const theDomains: DomainType[] = withStats ? await getdomainStats(formattedDomains) : allDomains;
+      const theDomains: DomainType[] = withStats ? await getdomainStats(formattedDomains) : formattedDomains;
       return res.status(200).json({ domains: theDomains });
    } catch (error) {
       return res.status(400).json({ domains: [], error: 'Error Getting Domains.' });

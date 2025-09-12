@@ -24,37 +24,33 @@ window.matchMedia = (query) => ({
 global.ResizeObserver = require('resize-observer-polyfill');
 
 // polyfill TextEncoder/TextDecoder for msw
-if (typeof global.TextEncoder === 'undefined') {
-   global.TextEncoder = TextEncoder;
-   global.TextDecoder = TextDecoder;
-}
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 // polyfill BroadcastChannel for msw
-if (typeof global.BroadcastChannel === 'undefined') {
-   class BroadcastChannelMock {
-      constructor(name) {
-         this.name = name;
-         this.messages = [];
-      }
-
-      postMessage(message) {
-         this.messages.push(message);
-      }
-
-      close() {
-         this.messages = [];
-      }
-
-      addEventListener() {
-         return this;
-      }
-
-      removeEventListener() {
-         return this;
-      }
+class BroadcastChannelMock {
+   constructor(name) {
+      this.name = name;
+      this.messages = [];
    }
-   global.BroadcastChannel = BroadcastChannelMock;
+
+   postMessage(message) {
+      this.messages.push(message);
+   }
+
+   close() {
+      this.messages = [];
+   }
+
+   addEventListener() {
+      return this;
+   }
+
+   removeEventListener() {
+      return this;
+   }
 }
+global.BroadcastChannel = BroadcastChannelMock;
 
 // Enable Fetch Mocking
 enableFetchMocks();

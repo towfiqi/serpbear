@@ -26,7 +26,16 @@ const serpapi:ScraperSettings = {
    resultObjectKey: 'organic_results',
    serpExtractor: (content) => {
       const extractedResult = [];
-      const results: SerpApiResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerpApiResult[];
+      let results: SerpApiResult[];
+      if (typeof content === 'string') {
+         try {
+            results = JSON.parse(content) as SerpApiResult[];
+         } catch (error) {
+            throw new Error(`Invalid JSON response for SerpApi.com: ${error instanceof Error ? error.message : error}`);
+         }
+      } else {
+         results = content as SerpApiResult[];
+      }
 
       for (const { link, title, position } of results) {
          if (title && link) {

@@ -10,6 +10,12 @@ All notable changes to this project will be documented in this file. See [standa
 * Automatically refreshes Search Console data and falls back to global credentials when domain-specific credentials are unavailable.
 * Added manual refresh button for Search Console data.
 
+### Bug Fixes
+* Hardened API ID validation and corrected domain responses.
+* Added default empty strings for domain-related model fields.
+* Wrapped scraper and keyword JSON parsing with error handling.
+* Removed stray console logs and simplified Jest polyfills.
+
 ### [2.0.8](https://github.com/djav1985/v-serpbear/compare/v2.0.7...v2.0.8) (2025-08-12)
 
 ### Features

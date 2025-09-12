@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const getKeyword = async (req: NextApiRequest, res: NextApiResponse<KeywordGetResponse>) => {
-   if (!req.query.id && typeof req.query.id !== 'string') {
+   if (!req.query.id || typeof req.query.id !== 'string') {
        return res.status(400).json({ error: 'Keyword ID is Required!' });
    }
 

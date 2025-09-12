@@ -24,7 +24,16 @@ const spaceSerp:ScraperSettings = {
    resultObjectKey: 'organic_results',
    serpExtractor: (content) => {
       const extractedResult = [];
-      const results: SpaceSerpResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SpaceSerpResult[];
+      let results: SpaceSerpResult[];
+      if (typeof content === 'string') {
+         try {
+            results = JSON.parse(content) as SpaceSerpResult[];
+         } catch (error) {
+            throw new Error(`Invalid JSON response for Space Serp: ${error instanceof Error ? error.message : error}`);
+         }
+      } else {
+         results = content as SpaceSerpResult[];
+      }
       for (const result of results) {
          if (result.title && result.link) {
             extractedResult.push({

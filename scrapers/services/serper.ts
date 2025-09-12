@@ -18,7 +18,16 @@ const serper:ScraperSettings = {
    resultObjectKey: 'organic',
    serpExtractor: (content) => {
       const extractedResult = [];
-      const results: SerperResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerperResult[];
+      let results: SerperResult[];
+      if (typeof content === 'string') {
+         try {
+            results = JSON.parse(content) as SerperResult[];
+         } catch (error) {
+            throw new Error(`Invalid JSON response for Serper.dev: ${error instanceof Error ? error.message : error}`);
+         }
+      } else {
+         results = content as SerperResult[];
+      }
 
       for (const { link, title, position } of results) {
          if (title && link) {
