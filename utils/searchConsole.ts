@@ -94,34 +94,54 @@ const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:stri
 
 /**
  * The function fetches search console data for a given domain and returns it in a structured format.
- * @param {DomainType} domain - The `domain` parameter is a Domain object that represents the domain for which we
- * want to fetch search console data.
- * @returns The function `fetchDomainSCData` is returning a Promise that resolves to an object of type
- * `SCDomainDataType`.
+ * Domain level credentials take precedence over global credentials if both are provided.
+ * @param {DomainType} domain - The domain for which to fetch search console data.
+ * @param {SCAPISettings} [scDomainAPI] - Domain specific Search Console credentials.
+ * @param {SCAPISettings} [scGlobalAPI] - Global Search Console credentials used as fallback.
+ * @returns {Promise<SCDomainDataType|null>}
  */
-export const fetchDomainSCData = async (domain:DomainType, scAPI?: SCAPISettings): Promise<SCDomainDataType> => {
+export const fetchDomainSCData = async (
+   domain:DomainType,
+   scDomainAPI?: SCAPISettings,
+   scGlobalAPI?: SCAPISettings,
+): Promise<SCDomainDataType | null> => {
    const days = [3, 7, 30];
-   const scDomainData:SCDomainDataType = { threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '', stats: [] };
-   if (domain.domain && scAPI) {
+   const existingData = await readLocalSCData(domain.domain) || {
+      threeDays: [], sevenDays: [], thirtyDays: [], lastFetched: '', lastFetchError: '', stats: [],
+   } as SCDomainDataType;
+   const scDomainData:SCDomainDataType = {
+      threeDays: [],
+      sevenDays: [],
+      thirtyDays: [],
+      lastFetched: existingData.lastFetched || '',
+      lastFetchError: '',
+      stats: [],
+   };
+   const apiCreds = (scDomainAPI?.client_email && scDomainAPI?.private_key)
+      ? scDomainAPI
+      : scGlobalAPI;
+   if (domain.domain && apiCreds?.client_email && apiCreds?.private_key) {
       const theDomain = domain;
       for (const day of days) {
-         const items = await fetchSearchConsoleData(theDomain, day, undefined, scAPI);
-          scDomainData.lastFetched = new Date().toJSON();
-         if (Array.isArray(items)) {
+         const items = await fetchSearchConsoleData(theDomain, day, undefined, apiCreds);
+         if (Array.isArray(items) && items.length > 0) {
+            scDomainData.lastFetched = new Date().toJSON();
             if (day === 3) scDomainData.threeDays = items as SearchAnalyticsItem[];
             if (day === 7) scDomainData.sevenDays = items as SearchAnalyticsItem[];
             if (day === 30) scDomainData.thirtyDays = items as SearchAnalyticsItem[];
-         } else if (items.error) {
-            scDomainData.lastFetchError = items.errorMsg;
+         } else if ((items as SCDomainFetchError)?.error) {
+            scDomainData.lastFetchError = (items as SCDomainFetchError).errorMsg;
          }
       }
-      const stats = await fetchSearchConsoleData(theDomain, 30, 'stat', scAPI);
-      if (stats && Array.isArray(stats) && stats.length > 0) {
+      const stats = await fetchSearchConsoleData(theDomain, 30, 'stat', apiCreds);
+      if (Array.isArray(stats) && stats.length > 0) {
          scDomainData.stats = stats as SearchAnalyticsStat[];
       }
-      await updateLocalSCData(domain.domain, scDomainData);
+      const writeRes = await updateLocalSCData(domain.domain, scDomainData);
+      if (!writeRes) {
+         return null;
+      }
    }
-
    return scDomainData;
 };
 

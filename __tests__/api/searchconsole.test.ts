@@ -86,10 +86,12 @@ describe('/api/searchconsole - CRON functionality', () => {
         client_email: 'test@example.com',
         private_key: 'mock-private-key',
       })
+      .mockResolvedValueOnce({ client_email: '', private_key: '' })
       .mockResolvedValueOnce({
         client_email: 'test2@example.com',
         private_key: 'mock-private-key-2',
-      });
+      })
+      .mockResolvedValueOnce({ client_email: '', private_key: '' });
 
     // Mock successful data fetching
     mockFetchDomainSCData.mockResolvedValue(mockSCDataResponse);
@@ -111,6 +113,10 @@ describe('/api/searchconsole - CRON functionality', () => {
         client_email: 'test@example.com',
         private_key: 'mock-private-key',
       },
+      {
+        client_email: '',
+        private_key: '',
+      },
     );
     expect(mockFetchDomainSCData).toHaveBeenNthCalledWith(
       2,
@@ -124,6 +130,10 @@ describe('/api/searchconsole - CRON functionality', () => {
       {
         client_email: 'test2@example.com',
         private_key: 'mock-private-key-2',
+      },
+      {
+        client_email: '',
+        private_key: '',
       },
     );
 
@@ -145,10 +155,9 @@ describe('/api/searchconsole - CRON functionality', () => {
     mockDomainFindAll.mockResolvedValue(mockDomains as any);
 
     // Mock no API credentials found
-    mockGetSearchConsoleApiInfo.mockResolvedValue({
-      client_email: '',
-      private_key: '',
-    });
+    mockGetSearchConsoleApiInfo
+      .mockResolvedValueOnce({ client_email: '', private_key: '' })
+      .mockResolvedValueOnce({ client_email: '', private_key: '' });
 
     await handler(req as NextApiRequest, res as NextApiResponse);
 
@@ -187,10 +196,12 @@ describe('/api/searchconsole - CRON functionality', () => {
         client_email: 'error@example.com',
         private_key: 'error-key',
       })
+      .mockResolvedValueOnce({ client_email: '', private_key: '' })
       .mockResolvedValueOnce({
         client_email: 'success@example.com',
         private_key: 'success-key',
-      });
+      })
+      .mockResolvedValueOnce({ client_email: '', private_key: '' });
 
     // Mock error for first domain, success for second
     mockFetchDomainSCData

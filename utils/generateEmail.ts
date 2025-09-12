@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { getKeywordsInsight, getPagesInsight } from './insight';
-import { readLocalSCData } from './searchConsole';
+import { fetchDomainSCData, getSearchConsoleApiInfo, readLocalSCData } from './searchConsole';
 
 const serpBearLogo = 'https://serpbear.b-cdn.net/ikAdjQq.png';
 const mobileIcon = 'https://serpbear.b-cdn.net/SqXD9rd.png';
@@ -87,7 +87,8 @@ const getBestKeywordPosition = (history: KeywordHistory) => {
  * @param {keywords[]} keywords - Keywords to scrape
  * @returns {Promise}
  */
-const generateEmail = async (domainName:string, keywords:KeywordType[], settings: SettingsType) : Promise<string> => {
+const generateEmail = async (domain:DomainType, keywords:KeywordType[], settings: SettingsType) : Promise<string> => {
+   const domainName = domain.domain;
    const emailTemplate = await readFile(path.join(__dirname, '..', '..', '..', '..', 'email', 'email.html'), { encoding: 'utf-8' });
    const currentDate = dayjs(new Date()).format('MMMM D, YYYY');
    const keywordsCount = keywords.length;
@@ -130,7 +131,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
 
       const isConsoleIntegrated = !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL)
       || (settings.search_console_client_email && settings.search_console_private_key);
-      const htmlWithSCStats = isConsoleIntegrated ? await generateGoogleConsoleStats(domainName) : '';
+      const htmlWithSCStats = isConsoleIntegrated ? await generateGoogleConsoleStats(domain) : '';
       const emailHTML = updatedEmail.replace('{{SCStatsTable}}', htmlWithSCStats);
 
       // await writeFile('testemail.html', emailHTML, { encoding: 'utf-8' });
@@ -143,12 +144,25 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
  * @param {string} domainName - The Domain name for which to generate the HTML.
  * @returns {Promise<string>}
  */
-const generateGoogleConsoleStats = async (domainName:string): Promise<string> => {
-      if (!domainName) return '';
+const generateGoogleConsoleStats = async (domain:DomainType): Promise<string> => {
+      if (!domain?.domain) return '';
 
-      const localSCData = await readLocalSCData(domainName);
+      let localSCData = await readLocalSCData(domain.domain);
+      const isFresh = localSCData && localSCData.stats && localSCData.stats.length
+         && localSCData.lastFetched
+         && (new Date().getTime() - new Date(localSCData.lastFetched).getTime() <= 86400000);
+      if (!isFresh) {
+         const scDomainAPI = domain.search_console ? await getSearchConsoleApiInfo(domain) : { client_email: '', private_key: '' };
+         const scGlobalAPI = await getSearchConsoleApiInfo({} as DomainType);
+         if (scDomainAPI.client_email || scGlobalAPI.client_email) {
+            const refreshed = await fetchDomainSCData(domain, scDomainAPI, scGlobalAPI);
+            if (refreshed && refreshed.stats && refreshed.stats.length) {
+               localSCData = refreshed;
+            }
+         }
+      }
       if (!localSCData || !localSCData.stats || !localSCData.stats.length) {
-         return ''; // IF No SC Data Found, Abot the process.
+         return '';
       }
 
       const scData:SCStatsObject = {

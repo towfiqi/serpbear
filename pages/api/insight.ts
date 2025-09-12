@@ -54,13 +54,18 @@ const getDomainSearchConsoleInsight = async (req: NextApiRequest, res: NextApiRe
       const query = { domain: domainname };
       const foundDomain:Domain| null = await Domain.findOne({ where: query });
       const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
-      const scDomainAPI = await getSearchConsoleApiInfo(domainObj);
-      if (!(scDomainAPI.client_email && scDomainAPI.private_key)) {
+      const scDomainAPI = domainObj?.search_console ? await getSearchConsoleApiInfo(domainObj) : { client_email: '', private_key: '' };
+      const scGlobalAPI = await getSearchConsoleApiInfo({} as DomainType);
+      if (!(scDomainAPI.client_email && scDomainAPI.private_key)
+          && !(scGlobalAPI.client_email && scGlobalAPI.private_key)) {
          return res.status(200).json({ data: null, error: 'Google Search Console is not Integrated.' });
       }
-      const scData = await fetchDomainSCData(domainObj, scDomainAPI);
-      const response = getInsightFromSCData(scData);
-      return res.status(200).json({ data: response });
+      const scData = await fetchDomainSCData(domainObj, scDomainAPI, scGlobalAPI);
+      if (scData && scData.thirtyDays && scData.thirtyDays.length) {
+         const response = getInsightFromSCData(scData);
+         return res.status(200).json({ data: response });
+      }
+      return res.status(400).json({ data: null, error: 'Error Fetching Stats from Google Search Console.' });
    } catch (error) {
       console.log('[ERROR] Getting Domain Insight: ', domainname, error);
       return res.status(400).json({ data: null, error: 'Error Fetching Stats from Google Search Console.' });

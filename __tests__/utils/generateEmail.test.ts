@@ -36,7 +36,7 @@ describe('generateEmail', () => {
 
     const settings = { search_console_client_email: '', search_console_private_key: '', keywordsColumns: [] } as any;
 
-    const html = await generateEmail('example.com', keywords, settings);
+    const html = await generateEmail({ domain: 'example.com' } as any, keywords, settings);
     expect(html).toContain('(Berlin, Berlin State)');
   });
 });
