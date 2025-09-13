@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.8](https://github.com/ChgoChad/serpbear/compare/v2.0.7...v2.0.8) (2025-09-13)
+
+
+### Bug Fixes
+
+* update Google Ads API version from v18 to v20 in keyword ideas and volume functions ([5c06ee5](https://github.com/ChgoChad/serpbear/commit/5c06ee5f08174c402181e280b3f804ade4d33124))
+
 ### [2.0.7](https://github.com/towfiqi/serpbear/compare/v2.0.6...v2.0.7) (2025-02-23)
 
 
