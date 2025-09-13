@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const refreshTheKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsRefreshRes>) => {
-   if (!req.query.id && typeof req.query.id !== 'string') {
+   if (!req.query.id || typeof req.query.id !== 'string') {
       return res.status(400).json({ error: 'keyword ID is Required!' });
    }
    if (req.query.id === 'all' && !req.query.domain) {

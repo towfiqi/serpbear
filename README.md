@@ -19,6 +19,7 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 - **Google Search Console Integration:** Get the actual visit count, impressions & more for each keyword. Cached data refreshes automatically, can be manually refreshed from settings, and falls back to global credentials when domain-level credentials aren't configured.
 - **Mobile App:** Add the PWA app to your mobile for a better mobile experience.
 - **Zero Cost to RUN:** Run the App on mogenius.com or Fly.io for free.
+- **Robust Error Handling:** Improved input validation and safer JSON parsing across the app.
 
 #### How it Works
 

@@ -25,7 +25,16 @@ const serply:ScraperSettings = {
    resultObjectKey: 'result',
    serpExtractor: (content) => {
       const extractedResult = [];
-      const results: SerplyResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerplyResult[];
+      let results: SerplyResult[];
+      if (typeof content === 'string') {
+         try {
+            results = JSON.parse(content) as SerplyResult[];
+         } catch (error) {
+            throw new Error(`Invalid JSON response for Serply: ${error instanceof Error ? error.message : error}`);
+         }
+      } else {
+         results = content as SerplyResult[];
+      }
       for (const result of results) {
          if (result.title && result.link) {
             extractedResult.push({

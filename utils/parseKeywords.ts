@@ -6,13 +6,29 @@ import Keyword from '../database/models/keyword';
  * @returns {KeywordType[]}
  */
 const parseKeywords = (allKeywords: Keyword[]) : KeywordType[] => {
-   const parsedItems = allKeywords.map((keywrd:Keyword) => ({
+   const parsedItems = allKeywords.map((keywrd:Keyword) => {
+      let history: KeywordHistory = {};
+      try { history = JSON.parse(keywrd.history); } catch { history = {}; }
+
+      let tags: string[] = [];
+      try { tags = JSON.parse(keywrd.tags); } catch { tags = []; }
+
+      let lastResult: any[] = [];
+      try { lastResult = JSON.parse(keywrd.lastResult); } catch { lastResult = []; }
+
+      let lastUpdateError: any = false;
+      if (keywrd.lastUpdateError !== 'false' && keywrd.lastUpdateError.includes('{')) {
+         try { lastUpdateError = JSON.parse(keywrd.lastUpdateError); } catch { lastUpdateError = {}; }
+      }
+
+      return {
          ...keywrd,
-         history: JSON.parse(keywrd.history),
-         tags: JSON.parse(keywrd.tags),
-         lastResult: JSON.parse(keywrd.lastResult),
-         lastUpdateError: keywrd.lastUpdateError !== 'false' && keywrd.lastUpdateError.includes('{') ? JSON.parse(keywrd.lastUpdateError) : false,
-      }));
+         history,
+         tags,
+         lastResult,
+         lastUpdateError,
+      };
+   });
    return parsedItems;
 };
 

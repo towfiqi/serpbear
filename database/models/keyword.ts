@@ -28,7 +28,7 @@ class Keyword extends Model {
    @Column({ type: DataType.STRING, allowNull: true, defaultValue: '' })
    latlong!: string;
 
-   @Column({ type: DataType.STRING, allowNull: false, defaultValue: '{}' })
+   @Column({ type: DataType.STRING, allowNull: false, defaultValue: '' })
    domain!: string;
 
    // @ForeignKey(() => Domain)

@@ -27,7 +27,16 @@ const searchapi:ScraperSettings = {
   resultObjectKey: 'organic_results',
   serpExtractor: (content) => {
      const extractedResult = [];
-     const results: SearchApiResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SearchApiResult[];
+     let results: SearchApiResult[];
+     if (typeof content === 'string') {
+        try {
+           results = JSON.parse(content) as SearchApiResult[];
+        } catch (error) {
+           throw new Error(`Invalid JSON response for SearchApi.io: ${error instanceof Error ? error.message : error}`);
+        }
+     } else {
+        results = content as SearchApiResult[];
+     }
 
      for (const { link, title, position } of results) {
         if (title && link) {

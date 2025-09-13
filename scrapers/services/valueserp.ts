@@ -25,7 +25,16 @@ const valueSerp:ScraperSettings = {
    resultObjectKey: 'organic_results',
    serpExtractor: (content) => {
       const extractedResult = [];
-      const results: ValueSerpResult[] = (typeof content === 'string') ? JSON.parse(content) : content as ValueSerpResult[];
+      let results: ValueSerpResult[];
+      if (typeof content === 'string') {
+         try {
+            results = JSON.parse(content) as ValueSerpResult[];
+         } catch (error) {
+            throw new Error(`Invalid JSON response for Value Serp: ${error instanceof Error ? error.message : error}`);
+         }
+      } else {
+         results = content as ValueSerpResult[];
+      }
       for (const result of results) {
          if (result.title && result.link) {
             extractedResult.push({

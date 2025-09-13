@@ -27,7 +27,16 @@ const hasdata:ScraperSettings = {
    resultObjectKey: 'organicResults',
    serpExtractor: (content) => {
       const extractedResult = [];
-      const results: HasDataResult[] = (typeof content === 'string') ? JSON.parse(content) : content as HasDataResult[];
+      let results: HasDataResult[];
+      if (typeof content === 'string') {
+         try {
+            results = JSON.parse(content) as HasDataResult[];
+         } catch (error) {
+            throw new Error(`Invalid JSON response for HasData: ${error instanceof Error ? error.message : error}`);
+         }
+      } else {
+         results = content as HasDataResult[];
+      }
 
       for (const { link, title, position } of results) {
          if (title && link) {
