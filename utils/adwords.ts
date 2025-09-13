@@ -178,7 +178,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
             reqPayload.siteSeed = { site: domain };
          }
 
-         const resp = await fetch(`https://googleads.googleapis.com/v18/customers/${customerID}:generateKeywordIdeas`, {
+         const resp = await fetch(`https://googleads.googleapis.com/v20/customers/${customerID}:generateKeywordIdeas`, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
@@ -306,7 +306,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
                   geoTargetConstants: `geoTargetConstants/${geoTargetConstants}`,
                   // language: `languageConstants/${language}`,
                };
-               const resp = await fetch(`https://googleads.googleapis.com/v18/customers/${customerID}:generateKeywordHistoricalMetrics`, {
+               const resp = await fetch(`https://googleads.googleapis.com/v20/customers/${customerID}:generateKeywordHistoricalMetrics`, {
                   method: 'POST',
                   headers: {
                      'Content-Type': 'application/json',
