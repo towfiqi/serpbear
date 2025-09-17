@@ -47,5 +47,5 @@ USER nextjs
 
 EXPOSE 3000
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["concurrently","node server.js", "node cron.js"]
