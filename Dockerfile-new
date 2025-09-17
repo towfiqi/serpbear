@@ -1,0 +1,13 @@
+FROM chgochad/serpbear:latest
+
+WORKDIR /opt/elestio
+
+USER root
+
+RUN apk update && apk add ncdu
+
+COPY ./elestio /opt/elestio
+
+WORKDIR /app
+
+USER nextjs
