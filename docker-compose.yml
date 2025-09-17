@@ -1,0 +1,18 @@
+version: "3.3"
+services:
+  app:
+    image: chgochad/serpbear:${SOFTWARE_VERSION_TAG}
+    restart: always
+    ports:
+      - 172.17.0.1:3333:3000
+    environment:
+      - USER=${USER}
+      - PASSWORD=${PASSWORD}
+      - SECRET=${SECRET}
+      - APIKEY=${APIKEY}
+      - NEXT_PUBLIC_APP_URL=https://${DOMAIN}
+      - SESSION_DURATION=${SESSION_DURATION}
+    volumes:
+      - serpbear_appdata:/app/data
+volumes:
+  serpbear_appdata:
