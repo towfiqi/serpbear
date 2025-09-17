@@ -27,14 +27,13 @@ environments:
   - key: "SMTP_PASSWORD"
     value: ""
 config:
-  runTime: "dockerCompose"
+  runTime: "docker"
   version: ""
-  framework: ""
-  buildCommand: "docker-compose build"
+  framework: "Next.js"
+  buildCommand: "npm run build"
   buildDir: "/"
-  runCommand: "docker-compose up -d"
+  runCommand: "npm run start:all"
   icon: ""
-  screenshot: "serpbear.gif"
 lifeCycleConfig:
   preInstallCommand: "./scripts/preInstall.sh"
   postInstallCommand: "./scripts/postInstall.sh"
