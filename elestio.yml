@@ -30,9 +30,9 @@ config:
   runTime: "docker"
   version: ""
   framework: "Next.js"
-  buildCommand: "npm run build"
+  buildCommand: "build.sh"
   buildDir: "/"
-  runCommand: "npm run start:all"
+  runCommand: "run.sh"
   icon: ""
 lifeCycleConfig:
   preInstallCommand: "./scripts/preInstall.sh"
