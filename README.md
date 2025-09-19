@@ -23,6 +23,7 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 - **Reliable Sessions:** Configurable login durations now persist correctly and logging out clears authentication cookies immediately.
 - **API Hardening:** Notification email endpoint now enforces authentication for both UI and API key access.
 - **Safer Integrations:** Google Ads refresh-token retrieval handles incomplete error payloads and Search Console storage differentiates hyphenated and dotted domains.
+- **Stable Search Console Emails:** Email summaries gracefully skip Search Console stats when cached data is unavailable, keeping Docker builds and cron runs healthy.
 
 #### How it Works
 

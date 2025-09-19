@@ -147,10 +147,12 @@ const generateEmail = async (domain:DomainType, keywords:KeywordType[], settings
 export const generateGoogleConsoleStats = async (domain:DomainType): Promise<string> => {
       if (!domain?.domain) return '';
 
-      let localSCData = await readLocalSCData(domain.domain);
+      const initialSCData = await readLocalSCData(domain.domain);
+      let localSCData:SCDomainDataType | null = initialSCData === false ? null : initialSCData;
       const cronTimezone = process.env.CRON_TIMEZONE || 'America/New_York';
-      const hasStats = !!(localSCData && localSCData.stats && localSCData.stats.length);
-      const isFresh = hasStats && isSearchConsoleDataFreshForToday(localSCData?.lastFetched, cronTimezone);
+      const hasStats = !!(localSCData?.stats && localSCData.stats.length);
+      const lastFetched = localSCData?.lastFetched;
+      const isFresh = hasStats && isSearchConsoleDataFreshForToday(lastFetched, cronTimezone);
       if (!isFresh) {
          const scDomainAPI = domain.search_console ? await getSearchConsoleApiInfo(domain) : { client_email: '', private_key: '' };
          const scGlobalAPI = await getSearchConsoleApiInfo({} as DomainType);
@@ -170,7 +172,8 @@ export const generateGoogleConsoleStats = async (domain:DomainType): Promise<str
                         keywords: { html: '', label: 'Top 5 Keywords' },
                         pages: { html: '', label: 'Top 5 Pages' },
                      };
-      const SCStats = localSCData && localSCData.stats && Array.isArray(localSCData.stats) ? localSCData.stats.reverse().slice(0, 7) : [];
+      const stats = Array.isArray(localSCData.stats) ? localSCData.stats : [];
+      const SCStats = [...stats].reverse().slice(0, 7);
       const keywords = getKeywordsInsight(localSCData, 'clicks', 'sevenDays');
       const pages = getPagesInsight(localSCData, 'clicks', 'sevenDays');
       const genColumn = (item:SCInsightItem, firstColumKey:string):string => {
