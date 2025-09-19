@@ -10,4 +10,5 @@ services:
     environment:
       CRON_TIMEZONE: ${CRON_TIMEZONE:-America/New_York}
       CRON_MAIN_SCHEDULE: "${CRON_MAIN_SCHEDULE:-0 0 0 * * *}"
+      CRON_FAILED_SCHEDULE: "${CRON_FAILED_SCHEDULE:-0 0 */1 * * *}"
       CRON_EMAIL_SCHEDULE: "${CRON_EMAIL_SCHEDULE:-0 0 6 * * *}"

@@ -8,6 +8,7 @@ require('dotenv').config({ path: './.env.local' });
 const CRON_TIMEZONE = process.env.CRON_TIMEZONE || 'America/New_York';
 const CRON_MAIN_SCHEDULE = process.env.CRON_MAIN_SCHEDULE || '0 0 0 * * *';
 const CRON_EMAIL_SCHEDULE = process.env.CRON_EMAIL_SCHEDULE || '0 0 6 * * *';
+const CRON_FAILED_SCHEDULE = process.env.CRON_FAILED_SCHEDULE || '0 0 */1 * * *';
 
 const getAppSettings = async () => {
    const defaultSettings = {
@@ -49,7 +50,7 @@ const getAppSettings = async () => {
 const generateCronTime = (interval) => {
    let cronTime = false;
    if (interval === 'hourly') {
-      cronTime = '0 0 */1 * * *';
+      cronTime = CRON_FAILED_SCHEDULE;
    }
    if (interval === 'daily') {
       cronTime = CRON_MAIN_SCHEDULE;
@@ -110,8 +111,8 @@ const runAppCronJobs = () => {
       }
    });
 
-   // Run Failed scraping CRON using configured main schedule
-   const failedCronTime = CRON_MAIN_SCHEDULE;
+   // Run Failed scraping CRON using configured failed queue schedule
+   const failedCronTime = CRON_FAILED_SCHEDULE;
    new Cron(failedCronTime, () => {
       // console.log('### Retrying Failed Scrapes...');
 

@@ -46,8 +46,9 @@ SerpBear relies on cron jobs to run scrapes, retries, and notification emails. Y
 code by adjusting the following environment variables:
 
 - `CRON_TIMEZONE` (default `America/New_York`) — IANA timezone used for all cron jobs.
-- `CRON_MAIN_SCHEDULE` (default `0 0 0 * * *`) — Cron expression used for the main scraping jobs, failed queue retries, and
-  scheduled Google Search Console refreshes.
+- `CRON_MAIN_SCHEDULE` (default `0 0 0 * * *`) — Cron expression used for the main scraping jobs and scheduled Google Search
+  Console refreshes.
+- `CRON_FAILED_SCHEDULE` (default `0 0 */1 * * *`) — Cron expression used for retrying failed scrapes.
 - `CRON_EMAIL_SCHEDULE` (default `0 0 6 * * *`) — Cron expression used for the daily notification email job.
 
 Update these variables in your `.env`/`.env.local` files or Docker environment to control when background tasks run.
