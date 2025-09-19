@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Changed
 * Added configurable cron timezone and schedule environment variables for scraping, retries, and notification jobs.
 * Google Search Console email summaries reuse cached data for the active cron day to avoid redundant refreshes.
+* Hardened `/api/notify` to require authentication before sending notification emails.
 
 
 

@@ -5,6 +5,7 @@ import Domain from '../../database/models/domain';
 import Keyword from '../../database/models/keyword';
 import generateEmail from '../../utils/generateEmail';
 import parseKeywords from '../../utils/parseKeywords';
+import verifyUser from '../../utils/verifyUser';
 import { getAppSettings } from './settings';
 
 type NotifyResponse = {
@@ -13,8 +14,12 @@ type NotifyResponse = {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+   await db.sync();
+   const authorized = verifyUser(req, res);
+   if (authorized !== 'authorized') {
+      return res.status(401).json({ success: false, error: authorized });
+   }
    if (req.method === 'POST') {
-      await db.sync();
       return notify(req, res);
    }
    return res.status(401).json({ success: false, error: 'Invalid Method' });
