@@ -20,6 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const logout = async (req: NextApiRequest, res: NextApiResponse<logoutResponse>) => {
    const cookies = new Cookies(req, res);
-   cookies.set('token', null, { maxAge: new Date().getTime() });
+   cookies.set('token', null, {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 0,
+      expires: new Date(0),
+   });
    return res.status(200).json({ success: true, error: null });
 };
