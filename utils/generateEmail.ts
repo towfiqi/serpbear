@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import { getKeywordsInsight, getPagesInsight } from './insight';
-import { fetchDomainSCData, getSearchConsoleApiInfo, readLocalSCData } from './searchConsole';
+import { fetchDomainSCData, getSearchConsoleApiInfo, isSearchConsoleDataFreshForToday, readLocalSCData } from './searchConsole';
 
 const serpBearLogo = 'https://serpbear.b-cdn.net/ikAdjQq.png';
 const mobileIcon = 'https://serpbear.b-cdn.net/SqXD9rd.png';
@@ -144,13 +144,13 @@ const generateEmail = async (domain:DomainType, keywords:KeywordType[], settings
  * @param {string} domainName - The Domain name for which to generate the HTML.
  * @returns {Promise<string>}
  */
-const generateGoogleConsoleStats = async (domain:DomainType): Promise<string> => {
+export const generateGoogleConsoleStats = async (domain:DomainType): Promise<string> => {
       if (!domain?.domain) return '';
 
       let localSCData = await readLocalSCData(domain.domain);
-      const isFresh = localSCData && localSCData.stats && localSCData.stats.length
-         && localSCData.lastFetched
-         && (new Date().getTime() - new Date(localSCData.lastFetched).getTime() <= 86400000);
+      const cronTimezone = process.env.CRON_TIMEZONE || 'America/New_York';
+      const hasStats = !!(localSCData && localSCData.stats && localSCData.stats.length);
+      const isFresh = hasStats && isSearchConsoleDataFreshForToday(localSCData?.lastFetched, cronTimezone);
       if (!isFresh) {
          const scDomainAPI = domain.search_console ? await getSearchConsoleApiInfo(domain) : { client_email: '', private_key: '' };
          const scGlobalAPI = await getSearchConsoleApiInfo({} as DomainType);
