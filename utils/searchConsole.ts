@@ -1,8 +1,16 @@
 import { auth, searchconsole_v1 } from '@googleapis/searchconsole';
 import Cryptr from 'cryptr';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { readFile, writeFile, unlink } from 'fs/promises';
 import * as path from 'path';
 import { getCountryCodeFromAlphaThree } from './countries';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const DEFAULT_CRON_TIMEZONE = 'America/New_York';
 
 export type SCDomainFetchError = {
    error: boolean,
@@ -12,6 +20,19 @@ export type SCDomainFetchError = {
 type SCAPISettings = { client_email: string, private_key: string }
 
 type fetchConsoleDataResponse = SearchAnalyticsItem[] | SearchAnalyticsStat[] | SCDomainFetchError;
+
+export const isSearchConsoleDataFreshForToday = (
+   lastFetched?: string | null,
+   timezoneSetting?: string,
+): boolean => {
+   const tz = timezoneSetting || process.env.CRON_TIMEZONE || DEFAULT_CRON_TIMEZONE;
+   if (!lastFetched) return false;
+   const parsedDate = dayjs(lastFetched);
+   if (!parsedDate.isValid()) return false;
+   const lastFetchedInTz = dayjs.tz(parsedDate.toDate(), tz);
+   const nowInTz = dayjs.tz(new Date(Date.now()), tz);
+   return lastFetchedInTz.isSame(nowInTz, 'day');
+};
 
 /**
  * Retrieves data from the Google Search Console API based on the provided domain name, number of days, and optional type.
