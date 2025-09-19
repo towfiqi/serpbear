@@ -40,6 +40,19 @@ You can also manually refresh Search Console data anytime from the Settings page
 - **Step 6:** Add your keywords and start tracking.
 - **Step 7:** Optional. From the Settings panel, setup SMTP details to get notified of your keywords positions through email. You can use ElasticEmail and Sendpulse SMTP services that are free.
 
+#### Cron scheduling configuration
+
+SerpBear relies on cron jobs to run scrapes, retries, and notification emails. You can customise their cadence without editing
+code by adjusting the following environment variables:
+
+- `CRON_TIMEZONE` (default `America/New_York`) — IANA timezone used for all cron jobs.
+- `CRON_MAIN_SCHEDULE` (default `0 0 0 * * *`) — Cron expression used for the main scraping jobs and scheduled Google Search
+  Console refreshes.
+- `CRON_FAILED_SCHEDULE` (default `0 0 */1 * * *`) — Cron expression used for retrying failed scrapes.
+- `CRON_EMAIL_SCHEDULE` (default `0 0 6 * * *`) — Cron expression used for the daily notification email job.
+
+Update these variables in your `.env`/`.env.local` files or Docker environment to control when background tasks run.
+
 #### SerpBear Integrates with popular SERP scraping services
 
 If you don't want to use proxies, you can use third party Scraping services to scrape Google Search results.
