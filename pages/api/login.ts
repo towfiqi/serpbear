@@ -24,10 +24,16 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<loginResponse
       && req.body.password === process.env.PASSWORD && process.env.SECRET) {
       const token = jwt.sign({ user: userName }, process.env.SECRET);
       const cookies = new Cookies(req, res);
-      const expireDate = new Date();
-      const sessDuration = process.env.SESSION_DURATION;
-      expireDate.setHours((sessDuration && parseInt(sessDuration, 10)) || 24);
-      cookies.set('token', token, { httpOnly: true, sameSite: 'lax', maxAge: expireDate.getTime() });
+      const parsedDuration = Number.parseInt(process.env.SESSION_DURATION ?? '', 10);
+      const sessionDurationHours = Number.isFinite(parsedDuration) && parsedDuration > 0 ? parsedDuration : 24;
+      const sessionDurationMs = sessionDurationHours * 60 * 60 * 1000;
+      const expiryDate = new Date(Date.now() + sessionDurationMs);
+      cookies.set('token', token, {
+         httpOnly: true,
+         sameSite: 'lax',
+         maxAge: sessionDurationMs,
+         expires: expiryDate,
+      });
       return res.status(200).json({ success: true, error: null });
    }
 

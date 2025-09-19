@@ -20,7 +20,9 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 - **Mobile App:** Add the PWA app to your mobile for a better mobile experience.
 - **Zero Cost to RUN:** Run the App on mogenius.com or Fly.io for free.
 - **Robust Error Handling:** Improved input validation and safer JSON parsing across the app.
+- **Reliable Sessions:** Configurable login durations now persist correctly and logging out clears authentication cookies immediately.
 - **API Hardening:** Notification email endpoint now enforces authentication for both UI and API key access.
+- **Safer Integrations:** Google Ads refresh-token retrieval handles incomplete error payloads and Search Console storage differentiates hyphenated and dotted domains.
 
 #### How it Works
 

@@ -331,13 +331,31 @@ export const removeLocalSCData = async (domain:string): Promise<boolean> => {
 };
 
 /**
+ * Normalize a domain identifier that may be a slug into a real domain name.
+ * - Slugs replace `.` with `-` and `-` with `_`. Detect that pattern and reverse it.
+ * - Preserve hyphenated domains that already include dots.
+ */
+export function resolveDomainIdentifier(domain: string): string {
+   const trimmed = (domain ?? '').trim();
+   if (!trimmed) {
+      return '';
+   }
+   const isSlugCandidate = !trimmed.includes('.') && /^[a-zA-Z0-9_-]+$/.test(trimmed);
+   if (isSlugCandidate) {
+      return trimmed.replace(/-/g, '.').replace(/_/g, '-');
+   }
+   return trimmed.replace(/_/g, '-');
+}
+
+/**
  * Helper to safely construct the SC data file path for a given domain.
  * Returns the absolute path if safe, or null if the domain is invalid.
  */
 export function getSafeSCDataFilePath(domain: string): string | null {
-   // Convert domain slug format (with hyphens) back to domain format (with dots)
-   // Replace hyphens with dots to get the actual domain name for file storage
-   const domainName = domain.replace(/-/g, '.');
+   const domainName = resolveDomainIdentifier(domain);
+   if (!domainName) {
+      return null;
+   }
    // Only allow alphanumeric, dash, dot, and underscore in domain - preserve dots for domains
    const safeDomain = domainName.replace(/[^a-zA-Z0-9.\-_]/g, '_');
    const dataDir = path.resolve(process.cwd(), 'data');

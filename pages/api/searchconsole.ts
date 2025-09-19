@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../database/database';
 import Domain from '../../database/models/domain';
-import { fetchDomainSCData, getSearchConsoleApiInfo, readLocalSCData } from '../../utils/searchConsole';
+import { fetchDomainSCData, getSearchConsoleApiInfo, readLocalSCData, resolveDomainIdentifier } from '../../utils/searchConsole';
 import verifyUser from '../../utils/verifyUser';
 
 type searchConsoleRes = {
@@ -31,7 +31,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiResponse<searchConsoleRes>) => {
    if (!req.query.domain || typeof req.query.domain !== 'string') return res.status(400).json({ data: null, error: 'Domain is Missing.' });
-   const domainname = (req.query.domain as string).replaceAll('-', '.').replaceAll('_', '-');
+   const domainname = resolveDomainIdentifier(req.query.domain as string);
+   if (!domainname) {
+      return res.status(400).json({ data: null, error: 'Domain is Missing.' });
+   }
    const localSCData = await readLocalSCData(domainname);
    const isFresh = localSCData && localSCData.threeDays && localSCData.threeDays.length
       && localSCData.sevenDays && localSCData.sevenDays.length

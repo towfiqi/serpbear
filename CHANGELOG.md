@@ -18,6 +18,9 @@ All notable changes to this project will be documented in this file. See [standa
 * Added manual refresh button for Search Console data.
 
 ### Bug Fixes
+* Fixed session cookie expiry handling so configured durations are respected and logout immediately clears authentication cookies.
+* Hardened Google Ads refresh-token retrieval when error payloads omit an `error` string.
+* Prevented Search Console cache filenames for hyphenated domains from colliding with dotted domains.
 * Hardened API ID validation and corrected domain responses.
 * Added default empty strings for domain-related model fields.
 * Wrapped scraper and keyword JSON parsing with error handling.
