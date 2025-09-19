@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### Unreleased
+
+### Changed
+* Added configurable cron timezone and schedule environment variables for scraping, retries, and notification jobs.
+
 
 
 ### [2.0.9](https://github.com/djav1985/v-serpbear/compare/v2.0.8...v2.0.9) (2025-09-12)

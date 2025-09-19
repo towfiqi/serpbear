@@ -5,6 +5,10 @@ const { readFile } = require('fs');
 const { Cron } = require('croner');
 require('dotenv').config({ path: './.env.local' });
 
+const CRON_TIMEZONE = process.env.CRON_TIMEZONE || 'America/New_York';
+const CRON_MAIN_SCHEDULE = process.env.CRON_MAIN_SCHEDULE || '0 0 0 * * *';
+const CRON_EMAIL_SCHEDULE = process.env.CRON_EMAIL_SCHEDULE || '0 0 6 * * *';
+
 const getAppSettings = async () => {
    const defaultSettings = {
       scraper_type: 'none',
@@ -48,14 +52,13 @@ const generateCronTime = (interval) => {
       cronTime = '0 0 */1 * * *';
    }
    if (interval === 'daily') {
-      cronTime = '0 0 0 * * *';
+      cronTime = CRON_MAIN_SCHEDULE;
    }
    if (interval === 'other_day') {
       cronTime = '0 0 2-30/2 * *';
    }
    if (interval === 'daily_morning') {
-      // Run at 1PM instead of 3AM for daily notification emails
-      cronTime = '0 0 13 * * *';
+      cronTime = CRON_EMAIL_SCHEDULE;
    }
    if (interval === 'weekly') {
       cronTime = '0 0 * * 1';
@@ -68,11 +71,12 @@ const generateCronTime = (interval) => {
 };
 
 const runAppCronJobs = () => {
+   const cronOptions = { scheduled: true, timezone: CRON_TIMEZONE };
    getAppSettings().then((settings) => {
-      // RUN SERP Scraping CRON (EveryDay at Midnight) 0 0 0 * *
+      // RUN SERP Scraping CRON using configured schedule
       const scrape_interval = settings.scrape_interval || 'daily';
       if (scrape_interval !== 'never') {
-         const scrapeCronTime = generateCronTime(scrape_interval);
+         const scrapeCronTime = generateCronTime(scrape_interval) || CRON_MAIN_SCHEDULE;
          new Cron(scrapeCronTime, () => {
             // console.log('### Running Keyword Position Cron Job!');
             const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
@@ -83,13 +87,13 @@ const runAppCronJobs = () => {
                console.log('ERROR Making SERP Scraper Cron Request..');
                console.log(err);
             });
-         }, { scheduled: true });
+         }, cronOptions);
       }
 
       // RUN Email Notification CRON
       const notif_interval = (!settings.notification_interval || settings.notification_interval === 'never') ? false : settings.notification_interval;
       if (notif_interval) {
-         const cronTime = generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval);
+         const cronTime = generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval) || CRON_EMAIL_SCHEDULE;
          if (cronTime) {
             new Cron(cronTime, () => {
                // console.log('### Sending Notification Email...');
@@ -101,13 +105,13 @@ const runAppCronJobs = () => {
                   console.log('ERROR Making Cron Email Notification Request..');
                   console.log(err);
                });
-            }, { scheduled: true });
+            }, cronOptions);
          }
       }
    });
 
-   // Run Failed scraping CRON (Every Hour)
-   const failedCronTime = generateCronTime('hourly');
+   // Run Failed scraping CRON using configured main schedule
+   const failedCronTime = CRON_MAIN_SCHEDULE;
    new Cron(failedCronTime, () => {
       // console.log('### Retrying Failed Scrapes...');
 
@@ -132,11 +136,11 @@ const runAppCronJobs = () => {
             console.log('ERROR Reading Failed Scrapes Queue File..', err);
          }
       });
-   }, { scheduled: true });
+   }, cronOptions);
 
-   // Run Google Search Console Scraper Daily
+   // Run Google Search Console Scraper on configured main schedule
    // Always run the CRON as the API endpoint will check for credentials per domain
-   const searchConsoleCRONTime = generateCronTime('daily');
+   const searchConsoleCRONTime = CRON_MAIN_SCHEDULE;
    new Cron(searchConsoleCRONTime, () => {
       const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
       fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/searchconsole`, fetchOpts)
@@ -146,7 +150,7 @@ const runAppCronJobs = () => {
          console.log('ERROR Making Google Search Console Scraper Cron Request..');
          console.log(err);
       });
-   }, { scheduled: true });
+   }, cronOptions);
 };
 
 runAppCronJobs();
