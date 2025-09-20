@@ -7,15 +7,15 @@ describe('Error Handling Utilities', () => {
       body: 'Request failed',
       request_info: {
         success: false,
-        error: 'Rate limited'
-      }
+        error: 'Rate limited',
+      },
     };
 
     // Test that JSON.stringify works for complex objects
     const serialized = JSON.stringify(errorObject);
     expect(serialized).toContain('400');
     expect(serialized).toContain('API rate limit exceeded');
-    
+
     // Test that object toString returns [object Object]
     const toStringResult = errorObject.toString();
     expect(toStringResult).toBe('[object Object]');
@@ -28,9 +28,9 @@ describe('Error Handling Utilities', () => {
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Internal server error',
-          details: { requestId: 'req-123' }
-        }
-      }
+          details: { requestId: 'req-123' },
+        },
+      },
     };
 
     const serialized = JSON.stringify(nestedError);
@@ -41,11 +41,11 @@ describe('Error Handling Utilities', () => {
 
   it('should demonstrate the issue with Error constructor and object serialization', () => {
     const errorObject = { message: 'Test error', code: 500 };
-    
+
     // This is what happens currently - creating Error from object
     const error = new Error(errorObject as any);
     expect(error.message).toBe('[object Object]');
-    
+
     // This is what should happen - proper serialization
     const properError = new Error(JSON.stringify(errorObject));
     expect(properError.message).toContain('Test error');
@@ -58,11 +58,11 @@ describe('serializeError function behavior', () => {
   // Mock serializeError function based on implementation
   const serializeError = (error: any): string => {
     if (!error) return 'Unknown error';
-    
+
     if (typeof error === 'string') return error;
-    
+
     if (error instanceof Error) return error.message;
-    
+
     if (typeof error === 'object') {
        // Handle nested error objects by recursively extracting error info
        const extractErrorInfo = (obj: any): string => {
@@ -72,23 +72,23 @@ describe('serializeError function behavior', () => {
           }
           return String(obj);
        };
-       
+
        const message = extractErrorInfo(error.message || error.error || error.detail || error.error_message);
        const status = error.status ? `[${error.status}] ` : '';
        const errorInfo = extractErrorInfo(error.request_info?.error);
-       
+
        if (message || status || errorInfo) {
-          const parts = [status, message, errorInfo].filter(part => part && part !== 'null' && part !== 'undefined');
+          const parts = [status, message, errorInfo].filter((part) => part && part !== 'null' && part !== 'undefined');
           if (parts.length > 0) return parts.join(' ').trim();
        }
-       
+
        try {
           return JSON.stringify(error);
        } catch {
           return error.toString() !== '[object Object]' ? error.toString() : 'Unserializable error object';
        }
     }
-    
+
     return String(error);
   };
 
@@ -108,10 +108,10 @@ describe('serializeError function behavior', () => {
       status: 400,
       error: 'API rate limit exceeded',
       request_info: {
-        error: 'Too many requests'
-      }
+        error: 'Too many requests',
+      },
     };
-    
+
     const result = serializeError(apiError);
     expect(result).toContain('[400]');
     expect(result).toContain('API rate limit exceeded');
@@ -124,11 +124,11 @@ describe('serializeError function behavior', () => {
       request_info: {
         error: {
           code: 'INTERNAL_ERROR',
-          message: 'Internal server error'
-        }
-      }
+          message: 'Internal server error',
+        },
+      },
     };
-    
+
     const result = serializeError(complexError);
     // Should extract the meaningful message and status
     expect(result).toContain('500');
@@ -150,7 +150,7 @@ describe('serializeError function behavior', () => {
   it('should handle objects that cannot be JSON stringified', () => {
     const circularObj: any = { prop: 'value' };
     circularObj.self = circularObj; // Create circular reference
-    
+
     const result = serializeError(circularObj);
     // Should fallback to toString or fallback message
     expect(typeof result).toBe('string');

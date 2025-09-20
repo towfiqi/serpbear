@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import nodeMailer from 'nodemailer';
 import handler from '../../pages/api/notify';
 import db from '../../database/database';
 import Domain from '../../database/models/domain';
@@ -6,7 +7,6 @@ import Keyword from '../../database/models/keyword';
 import verifyUser from '../../utils/verifyUser';
 import parseKeywords from '../../utils/parseKeywords';
 import generateEmail from '../../utils/generateEmail';
-import nodeMailer from 'nodemailer';
 import { getAppSettings } from '../../pages/api/settings';
 
 jest.mock('../../database/database', () => ({
