@@ -149,6 +149,9 @@ class Database extends EventEmitter {
     if (args.length > 0 && typeof args[args.length - 1] === 'function') {
       cb = args.pop();
     }
+    while (args.length > 0 && (args[args.length - 1] === undefined || args[args.length - 1] === null)) {
+      args.pop();
+    }
     let bindings;
     if (args.length === 1) {
       [bindings] = args;

@@ -1,12 +1,22 @@
+const normalizeParams = (params) => {
+  if (!params.length) {
+    return undefined;
+  }
+  if (params.length === 1) {
+    return params[0];
+  }
+  return params;
+};
+
 const createStatement = (driver, sql) => ({
-  run(params) {
-    return driver.execute(sql, params);
+  run(...params) {
+    return driver.execute(sql, normalizeParams(params));
   },
-  all(params) {
-    return driver.select(sql, params);
+  all(...params) {
+    return driver.select(sql, normalizeParams(params));
   },
-  get(params) {
-    const result = driver.select(sql, params);
+  get(...params) {
+    const result = driver.select(sql, normalizeParams(params));
     if (Array.isArray(result)) {
       return result[0];
     }
@@ -57,12 +67,23 @@ class MockBetterSqlite3 {
       const table = this.ensureTable(tableName);
       const columnsMatch = trimmed.match(/\(([^)]+)\)/);
       const columns = columnsMatch ? columnsMatch[1].split(',').map((col) => col.trim().replace(/^[$@:]/, '')) : [];
-      const normalizedParams = params && typeof params === 'object' ? params : {};
+      let normalizedParams;
+      if (Array.isArray(params)) {
+        normalizedParams = params;
+      } else if (params && typeof params === 'object') {
+        normalizedParams = params;
+      } else {
+        normalizedParams = {};
+      }
       const row = {};
 
-      columns.forEach((col) => {
+      columns.forEach((col, index) => {
         const cleanName = col.replace(/[`'"\\]/g, '');
-        row[cleanName] = normalizedParams[cleanName];
+        if (Array.isArray(normalizedParams)) {
+          row[cleanName] = normalizedParams[index];
+        } else {
+          row[cleanName] = normalizedParams[cleanName];
+        }
       });
 
       if (!columns.length) {
