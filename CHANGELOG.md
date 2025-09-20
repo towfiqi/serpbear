@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Downgraded ESLint to `^8.57.1` to keep the flat config workflow compatible with `eslint-config-airbnb-base@15` while preserving existing lint rules.
 * Updated `stylelint-config-standard` to `^34.0.0` so `npm install` succeeds without relying on `--legacy-peer-deps`.
 * Enhanced the mocked `better-sqlite3` driver to support positional parameter bindings used by the sqlite dialect tests.
+* Added regression coverage to confirm single positional placeholders keep their bound values when exercised through the sqlite dialect wrapper.
 * Ensured AdWords keyword volume updates await database writes and bubble up failures instead of silently ignoring errors.
 * Updated keyword and settings API handlers to return HTTP error statuses with diagnostic payloads and added Jest coverage for the new behaviours.
 * Required the `SCREENSHOT_API` environment variable during startup so configuration issues return descriptive errors instead of silently falling back.

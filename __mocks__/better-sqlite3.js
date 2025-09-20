@@ -3,7 +3,11 @@ const normalizeParams = (params) => {
     return undefined;
   }
   if (params.length === 1) {
-    return params[0];
+    const [firstParam] = params;
+    if (firstParam !== null && typeof firstParam === 'object' && !Array.isArray(firstParam)) {
+      return firstParam;
+    }
+    return params;
   }
   return params;
 };
