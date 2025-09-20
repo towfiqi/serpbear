@@ -103,7 +103,7 @@ const validateKeywordData = (kwrd: any): { isValid: boolean, sanitized?: any, er
    
    // Validate domain format (basic validation)
    const domain = typeof kwrd.domain === 'string' ? kwrd.domain.trim().toLowerCase().substring(0, 100) : '';
-   const domainRegex = /^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]?(\.[a-z0-9][a-z0-9-]{0,61}[a-z0-9]?)*$/;
+   const domainRegex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))*$/i;
    if (domain.length === 0 || !domainRegex.test(domain)) {
       errors.push('Invalid domain format');
    }
