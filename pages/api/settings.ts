@@ -38,7 +38,7 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
    const { settings } = req.body || {};
    // console.log('### settings: ', settings);
    if (!settings) {
-      return res.status(200).json({ error: 'Settings Data not Provided!' });
+      return res.status(400).json({ error: 'Settings Data not Provided!' });
    }
    try {
       const cryptr = new Cryptr(process.env.SECRET as string);
@@ -67,7 +67,8 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
       return res.status(200).json({ settings });
    } catch (error) {
       console.log('[ERROR] Updating App Settings. ', error);
-      return res.status(200).json({ error: 'Error Updating Settings!' });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ error: 'Error Updating Settings!', details: message });
    }
 };
 

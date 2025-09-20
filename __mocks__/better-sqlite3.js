@@ -1,5 +1,6 @@
 const normalizeParams = (params) => {
   if (!params.length) {
+
     return undefined;
   }
   if (params.length === 1) {
@@ -10,6 +11,7 @@ const normalizeParams = (params) => {
 
 const createStatement = (driver, sql) => ({
   run(...params) {
+
     return driver.execute(sql, normalizeParams(params));
   },
   all(...params) {
@@ -67,6 +69,7 @@ class MockBetterSqlite3 {
       const table = this.ensureTable(tableName);
       const columnsMatch = trimmed.match(/\(([^)]+)\)/);
       const columns = columnsMatch ? columnsMatch[1].split(',').map((col) => col.trim().replace(/^[$@:]/, '')) : [];
+
       let normalizedParams;
       if (Array.isArray(params)) {
         normalizedParams = params;
@@ -75,10 +78,12 @@ class MockBetterSqlite3 {
       } else {
         normalizedParams = {};
       }
+
       const row = {};
 
       columns.forEach((col, index) => {
         const cleanName = col.replace(/[`'"\\]/g, '');
+
         if (Array.isArray(normalizedParams)) {
           row[cleanName] = normalizedParams[index];
         } else {

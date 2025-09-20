@@ -35,6 +35,27 @@ if (typeof window !== 'undefined') {
       removeEventListener: jest.fn(),
       dispatchEvent: jest.fn(),
    });
+
+   const locationMock = {
+      hash: '',
+      host: 'localhost',
+      hostname: 'localhost',
+      href: 'http://localhost/',
+      origin: 'http://localhost',
+      pathname: '/',
+      port: '',
+      protocol: 'http:',
+      search: '',
+      assign: jest.fn((value) => { locationMock.href = value; }),
+      replace: jest.fn((value) => { locationMock.href = value; }),
+      reload: jest.fn(),
+      toString: () => locationMock.href,
+   };
+
+   Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: locationMock,
+   });
 }
 
 global.ResizeObserver = require('resize-observer-polyfill');

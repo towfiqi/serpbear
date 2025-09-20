@@ -165,7 +165,7 @@ const updateKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
          const updateQuery = { where: { ID: { [Op.in]: keywordIDs } } };
          const updatedKeywords:Keyword[] = await Keyword.findAll(updateQuery);
          const formattedKeywords = updatedKeywords.map((el) => el.get({ plain: true }));
-          keywords = parseKeywords(formattedKeywords);
+         keywords = parseKeywords(formattedKeywords);
          return res.status(200).json({ keywords });
       }
       if (tags) {
@@ -185,6 +185,7 @@ const updateKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
       return res.status(400).json({ error: 'Invalid Payload!' });
    } catch (error) {
       console.log('[ERROR] Updating Keyword. ', error);
-      return res.status(200).json({ error: 'Error Updating keywords!' });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ error: 'Error Updating keywords!', details: message });
    }
 };
