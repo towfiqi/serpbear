@@ -83,7 +83,8 @@ The Docker image now bakes the production build output produced by `npm run buil
 
 - sets `NODE_ENV=production` and runs as the unprivileged `nextjs` user,
 - runs pending database migrations before launching the API,
-- starts the cron worker in the background from the entrypoint, and
+- starts the cron worker in the background from the entrypoint,
+- ships a pruned `node_modules/` directory with only production dependencies so cron jobs and migrations can `require()` their helpers,
 - exposes port `3000` by default while still persisting `/app/data` for SQLite storage.
 
 If you need to seed or snapshot the SQLite database before running the container, populate the `data/` directory locally—those files are now copied into the runtime image without being deleted during the build.

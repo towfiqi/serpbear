@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Unreleased
 
 ### Changed
+* Pruned Docker runtime image to copy production `node_modules` so cron jobs and migrations keep their dependencies at runtime.
 * Bundled `sequelize-cli` as a production dependency so database migration scripts work without manual CLI installs.
 * Added configurable cron timezone and schedule environment variables for scraping, retries, and notification jobs.
 * Google Search Console email summaries reuse cached data for the active cron day to avoid redundant refreshes.
