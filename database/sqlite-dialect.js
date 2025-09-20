@@ -107,16 +107,16 @@ class Database extends EventEmitter {
     return this;
   }
 
-  run(sql, params, callback) {
-    return this.executeInternal('run', sql, params, callback);
+  run(sql, ...params) {
+    return this.executeInternal('run', sql, ...params);
   }
 
-  all(sql, params, callback) {
-    return this.executeInternal('all', sql, params, callback);
+  all(sql, ...params) {
+    return this.executeInternal('all', sql, ...params);
   }
 
-  get(sql, params, callback) {
-    return this.executeInternal('get', sql, params, callback);
+  get(sql, ...params) {
+    return this.executeInternal('get', sql, ...params);
   }
 
   exec(sql, callback) {
@@ -144,13 +144,18 @@ class Database extends EventEmitter {
     return this;
   }
 
-  executeInternal(method, sql, params, callback) {
-    let bindings = params;
-    let cb = callback;
-    if (typeof bindings === 'function') {
-      cb = bindings;
-      bindings = undefined;
+  executeInternal(method, sql, ...args) {
+    let cb;
+    if (args.length > 0 && typeof args[args.length - 1] === 'function') {
+      cb = args.pop();
     }
+    let bindings;
+    if (args.length === 1) {
+      [bindings] = args;
+    } else if (args.length > 1) {
+      bindings = args;
+    }
+
     const finalCallback = normalizeCallback(cb);
     const preparedBindings = normalizeNamedBindings(bindings);
     const context = {
