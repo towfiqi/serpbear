@@ -5,10 +5,34 @@ const { readFile } = require('fs');
 const { Cron } = require('croner');
 require('dotenv').config({ path: './.env.local' });
 
-const CRON_TIMEZONE = process.env.CRON_TIMEZONE || 'America/New_York';
-const CRON_MAIN_SCHEDULE = process.env.CRON_MAIN_SCHEDULE || '0 0 0 * * *';
-const CRON_EMAIL_SCHEDULE = process.env.CRON_EMAIL_SCHEDULE || '0 0 6 * * *';
-const CRON_FAILED_SCHEDULE = process.env.CRON_FAILED_SCHEDULE || '0 0 */1 * * *';
+const stripOptionalQuotes = (value) => {
+   if (typeof value !== 'string') {
+      return value;
+   }
+
+   return value.replace(/^['"]+/, '').replace(/['"]+$/, '');
+};
+
+const normalizeValue = (value, fallback) => {
+   if (value === undefined || value === null) {
+      return fallback;
+   }
+
+   const trimmed = value.toString().trim();
+   if (!trimmed) {
+      return fallback;
+   }
+
+   const sanitized = stripOptionalQuotes(trimmed).trim();
+   return sanitized || fallback;
+};
+
+const normalizeCronExpression = (value, fallback) => normalizeValue(value, fallback);
+
+const CRON_TIMEZONE = normalizeValue(process.env.CRON_TIMEZONE, 'America/New_York');
+const CRON_MAIN_SCHEDULE = normalizeCronExpression(process.env.CRON_MAIN_SCHEDULE, '0 0 0 * * *');
+const CRON_EMAIL_SCHEDULE = normalizeCronExpression(process.env.CRON_EMAIL_SCHEDULE, '0 0 6 * * *');
+const CRON_FAILED_SCHEDULE = normalizeCronExpression(process.env.CRON_FAILED_SCHEDULE, '0 0 */1 * * *');
 
 const getAppSettings = async () => {
    const defaultSettings = {
@@ -77,7 +101,7 @@ const runAppCronJobs = () => {
       // RUN SERP Scraping CRON using configured schedule
       const scrape_interval = settings.scrape_interval || 'daily';
       if (scrape_interval !== 'never') {
-         const scrapeCronTime = generateCronTime(scrape_interval) || CRON_MAIN_SCHEDULE;
+         const scrapeCronTime = normalizeCronExpression(generateCronTime(scrape_interval) || CRON_MAIN_SCHEDULE, CRON_MAIN_SCHEDULE);
          new Cron(scrapeCronTime, () => {
             // console.log('### Running Keyword Position Cron Job!');
             const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
@@ -94,7 +118,10 @@ const runAppCronJobs = () => {
       // RUN Email Notification CRON
       const notif_interval = (!settings.notification_interval || settings.notification_interval === 'never') ? false : settings.notification_interval;
       if (notif_interval) {
-         const cronTime = generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval) || CRON_EMAIL_SCHEDULE;
+         const cronTime = normalizeCronExpression(
+            generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval) || CRON_EMAIL_SCHEDULE,
+            CRON_EMAIL_SCHEDULE,
+         );
          if (cronTime) {
             new Cron(cronTime, () => {
                // console.log('### Sending Notification Email...');
@@ -112,7 +139,7 @@ const runAppCronJobs = () => {
    });
 
    // Run Failed scraping CRON using configured failed queue schedule
-   const failedCronTime = CRON_FAILED_SCHEDULE;
+   const failedCronTime = normalizeCronExpression(CRON_FAILED_SCHEDULE, '0 0 */1 * * *');
    new Cron(failedCronTime, () => {
       // console.log('### Retrying Failed Scrapes...');
 

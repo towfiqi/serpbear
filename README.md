@@ -57,6 +57,12 @@ code by adjusting the following environment variables:
 
 Update these variables in your `.env`/`.env.local` files or Docker environment to control when background tasks run.
 
+> **Tip:** Cron expressions and timezone values loaded from `.env` files or Docker configuration are normalised automatically, so wrapping the schedules in quotes or leaving stray whitespace will not break the background jobs.
+
+#### Docker Compose deployment
+
+The bundled `docker-compose.yml` runs the published `vontainment/v-serpbear` image with sensible defaults, persistent storage, and the environment variables listed above. Override the values in that file (or via `.env`) to match your credentials, and adjust the published port if `3030` clashes with another service on your host.
+
 #### SerpBear Integrates with popular SERP scraping services
 
 If you don't want to use proxies, you can use third party Scraping services to scrape Google Search results.
@@ -77,3 +83,7 @@ If you don't want to use proxies, you can use third party Scraping services to s
 
 - Next.js for Frontend & Backend.
 - Sqlite for Database.
+
+### Development Practices
+
+- Group external dependencies before relative paths and keep imports alphabetized in test files to satisfy lint requirements.
