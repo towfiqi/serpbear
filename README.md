@@ -77,3 +77,7 @@ If you don't want to use proxies, you can use third party Scraping services to s
 
 - Next.js for Frontend & Backend.
 - Sqlite for Database.
+
+### Development Practices
+
+- Group external dependencies before relative paths and keep imports alphabetized in test files to satisfy lint requirements.
