@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 type DomainType = {
    ID: number,
    domain: string,

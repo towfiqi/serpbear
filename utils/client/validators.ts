@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 export const isValidDomain = (domain:string): boolean => {
    if (typeof domain !== 'string') return false;
    if (!domain.includes('.')) return false;

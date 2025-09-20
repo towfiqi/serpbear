@@ -18,14 +18,35 @@ const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scD
       fileName = `${domain}-search-console-${scDataDuration}.csv`;
       keywords.forEach((keywordData, index) => {
          const { keyword, position, country, device, clicks, impressions, ctr } = keywordData as SCKeywordType;
-         // eslint-disable-next-line max-len
-         csvBody += `${index}, ${keyword}, ${position === 0 ? '-' : position}, ${impressions}, ${clicks}, ${ctr}, ${countries[country][0]}, ${device}\r\n`;
+         const row = [
+            index,
+            keyword,
+            position === 0 ? '-' : position,
+            impressions,
+            clicks,
+            ctr,
+            countries[country][0],
+            device,
+         ].join(', ');
+         csvBody += `${row}\r\n`;
       });
    } else {
       keywords.forEach((keywordData) => {
          const { ID, keyword, position, url, country, state, city, device, lastUpdated, added, tags } = keywordData as KeywordType;
-         // eslint-disable-next-line max-len
-         csvBody += `${ID}, ${keyword}, ${position === 0 ? '-' : position}, ${url || '-'}, ${countries[country][0]}, ${state || '-'}, ${city || '-'}, ${device}, ${lastUpdated}, ${added}, ${tags.join(',')}\r\n`;
+         const row = [
+            ID,
+            keyword,
+            position === 0 ? '-' : position,
+            url || '-',
+            countries[country][0],
+            state || '-',
+            city || '-',
+            device,
+            lastUpdated,
+            added,
+            tags.join(','),
+         ].join(', ');
+         csvBody += `${row}\r\n`;
       });
    }
 
@@ -45,7 +66,6 @@ export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName:string) =
    const fileName = `${domainName}-keyword_ideas.csv`;
    keywords.forEach((keywordData) => {
       const { keyword, competition, country, domain, competitionIndex, avgMonthlySearches, added, updated, position } = keywordData;
-      // eslint-disable-next-line max-len
       const addedDate = new Intl.DateTimeFormat('en-US').format(new Date(added));
       csvBody += `${keyword}, ${avgMonthlySearches}, ${competition}, ${competitionIndex}, ${countries[country][0]}, ${addedDate}\r\n`;
    });
