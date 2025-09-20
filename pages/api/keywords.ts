@@ -12,12 +12,14 @@ import { getKeywordsVolume, updateKeywordsVolumeData } from '../../utils/adwords
 type KeywordsGetResponse = {
    keywords?: KeywordType[],
    error?: string|null,
+   details?: string,
 }
 
 type KeywordsDeleteRes = {
    domainRemoved?: number,
    keywordsRemoved?: number,
    error?: string|null,
+   details?: string,
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
