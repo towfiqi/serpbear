@@ -8,6 +8,7 @@ import allScrapers from '../../scrapers/index';
 type SettingsGetResponse = {
    settings?: object | null,
    error?: string,
+   details?: string,
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
