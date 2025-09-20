@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Unreleased
 
 ### Changed
+* Preserved explicit SQLite `null` bindings so prepared statements receive them during execution instead of stripping them alongside optional callbacks.
 * Downgraded ESLint to `^8.57.1` to keep the flat config workflow compatible with `eslint-config-airbnb-base@15` while preserving existing lint rules.
 * Updated `stylelint-config-standard` to `^34.0.0` so `npm install` succeeds without relying on `--legacy-peer-deps`.
 * Enhanced the mocked `better-sqlite3` driver to support positional parameter bindings used by the sqlite dialect tests.
