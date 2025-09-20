@@ -1,12 +1,58 @@
+const normalizeBindings = (params) => {
+  if (Array.isArray(params)) {
+    return params;
+  }
+  if (params && typeof params === 'object') {
+    return params;
+  }
+  if (typeof params !== 'undefined') {
+    return [params];
+  }
+  return [];
+};
+
+const readValueFromBindings = (bindings, index, key) => {
+  if (Array.isArray(bindings)) {
+    return bindings[index];
+  }
+
+  if (!bindings || typeof bindings !== 'object') {
+    return undefined;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(bindings, key)) {
+    return bindings[key];
+  }
+
+  const prefixed = [`$${key}`, `:${key}`, `@${key}`];
+  for (const candidate of prefixed) {
+    if (Object.prototype.hasOwnProperty.call(bindings, candidate)) {
+      return bindings[candidate];
+    }
+  }
+
+  return undefined;
+};
+
+const unpackParams = (params) => {
+  if (params.length === 0) {
+    return undefined;
+  }
+  if (params.length === 1) {
+    return params[0];
+  }
+  return params;
+};
+
 const createStatement = (driver, sql) => ({
-  run(params) {
-    return driver.execute(sql, params);
+  run(...params) {
+    return driver.execute(sql, unpackParams(params));
   },
-  all(params) {
-    return driver.select(sql, params);
+  all(...params) {
+    return driver.select(sql, unpackParams(params));
   },
-  get(params) {
-    const result = driver.select(sql, params);
+  get(...params) {
+    const result = driver.select(sql, unpackParams(params));
     if (Array.isArray(result)) {
       return result[0];
     }
@@ -57,12 +103,12 @@ class MockBetterSqlite3 {
       const table = this.ensureTable(tableName);
       const columnsMatch = trimmed.match(/\(([^)]+)\)/);
       const columns = columnsMatch ? columnsMatch[1].split(',').map((col) => col.trim().replace(/^[$@:]/, '')) : [];
-      const normalizedParams = params && typeof params === 'object' ? params : {};
+      const normalizedParams = normalizeBindings(params);
       const row = {};
 
-      columns.forEach((col) => {
+      columns.forEach((col, index) => {
         const cleanName = col.replace(/[`'"\\]/g, '');
-        row[cleanName] = normalizedParams[cleanName];
+        row[cleanName] = readValueFromBindings(normalizedParams, index, cleanName);
       });
 
       if (!columns.length) {

@@ -126,10 +126,10 @@ The Scraping Robot integration now explicitly sends both Google locale parameter
 
 ### Linting & Formatting
 
-- Run `npm run lint` before committing. The command now uses ESLint 9's flat configuration (`eslint.config.mjs`) and fails if any custom rules are violated.
+- Run `npm run lint` before committing. The command now uses ESLint 8's flat configuration (`eslint.config.mjs`) aligned with `eslint-config-airbnb-base@15` and fails if any custom rules are violated.
 - Use `npm run lint -- --fix` to auto-fix issues where possible; re-run the command to confirm the codebase is clean.
 - Continue running `npm run lint:css` for Stylelint checks when you update global CSS.
-- Stylelint is now bundled locally; run `npm install` after pulling so `npm run lint:css` remains available.
+- Stylelint is now bundled locally; run `npm install` after pulling so `npm run lint:css` remains available. The dependency graph resolves without `--legacy-peer-deps`.
 
 ### Testing
 

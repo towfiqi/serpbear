@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file. See [standa
 ### Unreleased
 
 ### Changed
+* Downgraded ESLint to `^8.57.1` to keep the flat config workflow compatible with `eslint-config-airbnb-base@15` while preserving existing lint rules.
+* Updated `stylelint-config-standard` to `^34.0.0` so `npm install` succeeds without relying on `--legacy-peer-deps`.
+* Enhanced the mocked `better-sqlite3` driver to support positional parameter bindings used by the sqlite dialect tests.
 * Ensured AdWords keyword volume updates await database writes and bubble up failures instead of silently ignoring errors.
 * Updated keyword and settings API handlers to return HTTP error statuses with diagnostic payloads and added Jest coverage for the new behaviours.
 * Removed the unused `winston` dependency, pinned `stylelint` so CSS linting is available locally, and stubbed `window.location` in tests to keep Jest stable on modern Node.js.

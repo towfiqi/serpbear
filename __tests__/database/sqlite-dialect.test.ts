@@ -97,7 +97,7 @@ describe('sqlite dialect wrapper', () => {
                   expect(this.lastID).toBe(1);
                   expect(this.changes).toBe(1);
                   res();
-                }
+                },
               );
             });
 
@@ -113,7 +113,7 @@ describe('sqlite dialect wrapper', () => {
                   }
                   expect(row).toEqual({ score: 99 });
                   res();
-                }
+                },
               );
             });
 
@@ -129,7 +129,7 @@ describe('sqlite dialect wrapper', () => {
                   }
                   expect(rows).toEqual([{ name: 'variadic-entry' }]);
                   res();
-                }
+                },
               );
             });
 
