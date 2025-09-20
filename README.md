@@ -127,6 +127,7 @@ The Scraping Robot integration now explicitly sends both Google locale parameter
 ### Development Practices
 
 - Group external dependencies before relative paths and keep imports alphabetized in test files to satisfy lint requirements.
+- Keep API response typings in sync with their JSON payloads; keyword and settings routes now expose an optional `details` string for richer error diagnostics and the TypeScript definitions mirror that contract.
 
 ### Linting & Formatting
 
@@ -134,8 +135,10 @@ The Scraping Robot integration now explicitly sends both Google locale parameter
 - Use `npm run lint -- --fix` to auto-fix issues where possible; re-run the command to confirm the codebase is clean.
 - Continue running `npm run lint:css` for Stylelint checks when you update global CSS.
 - Stylelint is now bundled locally; run `npm install` after pulling so `npm run lint:css` remains available. The dependency graph resolves without `--legacy-peer-deps`.
+- The ESLint flat config now ignores the `.next` build output so running `npm run build` before `npm run lint` no longer floods the linter with errors from generated chunks.
 
 ### Testing
 
 - `npm test` runs the unit and integration suites in Node's default worker mode.
+- The sqlite dialect suite now includes a regression test verifying the mocked `better-sqlite3` driver preserves single `?` placeholder bindings end-to-end.
 - Use `npm run test:cv -- --runInBand` to generate coverage serially, which avoids intermittent jsdom worker crashes during long-running suites.

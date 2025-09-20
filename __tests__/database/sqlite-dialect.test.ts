@@ -63,6 +63,76 @@ describe('sqlite dialect wrapper', () => {
     });
   });
 
+  it('preserves positional bindings for single placeholder statements', async () => {
+    await new Promise<void>((resolve, reject) => {
+      const sqliteFlags = sqlite.OPEN_READWRITE + sqlite.OPEN_CREATE;
+      const db = new sqlite.Database(':memory:', sqliteFlags, (err) => {
+        if (err) {
+          reject(err instanceof Error ? err : new Error(String(err)));
+          return;
+        }
+
+        db.serialize(async () => {
+          const sentinelValue = 'single-placeholder-entry';
+
+          try {
+            await new Promise<void>((res, rej) => {
+              db.run('CREATE TABLE sample_single (id INTEGER PRIMARY KEY, name TEXT)', (createErr) => {
+                if (createErr) {
+                  rej(createErr instanceof Error ? createErr : new Error(String(createErr)));
+                  return;
+                }
+                res();
+              });
+            });
+
+            await new Promise<void>((res, rej) => {
+              db.run(
+                'INSERT INTO sample_single (name) VALUES (?)',
+                sentinelValue,
+                function insertCallback(insertErr) {
+                  if (insertErr) {
+                    rej(insertErr instanceof Error ? insertErr : new Error(String(insertErr)));
+                    return;
+                  }
+                  expect(this.lastID).toBe(1);
+                  expect(this.changes).toBe(1);
+                  res();
+                },
+              );
+            });
+
+            await new Promise<void>((res, rej) => {
+              db.get<{ name: string }>(
+                'SELECT name FROM sample_single WHERE name = ?',
+                sentinelValue,
+                (queryErr, row) => {
+                  if (queryErr) {
+                    rej(queryErr instanceof Error ? queryErr : new Error(String(queryErr)));
+                    return;
+                  }
+                  expect(row).toEqual({ name: sentinelValue });
+                  res();
+                },
+              );
+            });
+
+            db.close((closeErr) => {
+              if (closeErr) {
+                reject(closeErr instanceof Error ? closeErr : new Error(String(closeErr)));
+                return;
+              }
+              resolve();
+            });
+          } catch (error) {
+            const wrappedError = error instanceof Error ? error : new Error(String(error));
+            reject(wrappedError);
+          }
+        });
+      });
+    });
+  });
+
   it('supports variadic parameter bindings across sqlite APIs', async () => {
     await new Promise<void>((resolve, reject) => {
       const sqliteFlags = sqlite.OPEN_READWRITE + sqlite.OPEN_CREATE;

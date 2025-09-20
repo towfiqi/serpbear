@@ -6,6 +6,34 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
+* Aligned keyword and settings API response typings with their JSON payloads by adding the optional `details` error field so TypeScript stays consistent with runtime responses.
+* Taught ESLint and Git attributes to ignore generated `.next` chunks so build artifacts no longer trigger enormous lint failures after running the production build.
+* Preserved explicit SQLite `null` bindings so prepared statements receive them during execution instead of stripping them alongside optional callbacks.
+* Downgraded ESLint to `^8.57.1` to keep the flat config workflow compatible with `eslint-config-airbnb-base@15` while preserving existing lint rules.
+* Updated `stylelint-config-standard` to `^34.0.0` so `npm install` succeeds without relying on `--legacy-peer-deps`.
+* Enhanced the mocked `better-sqlite3` driver to support positional parameter bindings used by the sqlite dialect tests.
+* Added regression coverage to confirm single positional placeholders keep their bound values when exercised through the sqlite dialect wrapper.
+* Ensured AdWords keyword volume updates await database writes and bubble up failures instead of silently ignoring errors.
+* Updated keyword and settings API handlers to return HTTP error statuses with diagnostic payloads and added Jest coverage for the new behaviours.
+* Required the `SCREENSHOT_API` environment variable during startup so configuration issues return descriptive errors instead of silently falling back.
+* Removed the unused `winston` dependency, pinned `stylelint` so CSS linting is available locally, and stubbed `window.location` in tests to keep Jest stable on modern Node.js.
+* Replaced the legacy `sqlite3` dependency with a `better-sqlite3`-powered dialect wrapper so builds no longer rely on deprecated `node-gyp` tooling and prebuilt binaries are downloaded during installation.
+* Trim trailing `undefined`/`null` arguments in the SQLite shim so optional callbacks are ignored instead of being treated as extra positional bindings.
+* Upgraded ESLint and related tooling to v9 flat config (`eslint.config.mjs`) and refreshed linting instructions.
+* Pruned Docker runtime image to copy production `node_modules` so cron jobs and migrations keep their dependencies at runtime.
+* Bundled `sequelize-cli` as a production dependency so database migration scripts work without manual CLI installs.
+* Added configurable cron timezone and schedule environment variables for scraping, retries, and notification jobs.
+* Google Search Console email summaries reuse cached data for the active cron day to avoid redundant refreshes.
+* Hardened `/api/notify` to require authentication before sending notification emails.
+* Search Console email generation now tolerates missing or invalid cached data, preventing Docker builds from failing during type checks.
+* Scraping Robot requests now pass the `gl` country code along with `hl` when constructing Google query URLs for localized SERP data.
+* Reordered AdWords API test imports to comply with lint-enforced grouping rules.
+* Normalised cron schedule environment variables so surrounding quotes and whitespace no longer break Croner parsing.
+* Refreshed the Docker Compose example to run the published image with updated defaults and cron configuration guidance.
+* Rebuilt the multi-stage Dockerfile to preserve `/app/data`, reuse build caches, and move cron start-up logic into the entrypoint.
+* Enabled GitHub Actions build cache exports for Docker image publishing.
+* Upgraded `google-auth-library` to `^10.3.0`, pulling in `gaxios@7`/`node-fetch@3` to silence Node.js 22 `fetch()` deprecation warnings and keep Google Ads integrations working on current LTS releases.
+* Removed package manifests from the runtime container layer, relying on the standalone server bundle and production dependencies that ship with the image.
 - Raised ESLint to `^9.15.0`, replaced the Airbnb preset with native flat-config presets, and wired the Next.js 15 core web vitals runner directly into `eslint.config.mjs`.
 - Preserved explicit SQLite `null` bindings so prepared statements receive them during execution instead of stripping them alongside optional callbacks.
 - Downgraded ESLint to `^8.57.1` to keep the flat config workflow compatible with `eslint-config-airbnb-base@15` while preserving existing lint rules.
