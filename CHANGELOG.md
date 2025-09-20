@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Google Search Console email summaries reuse cached data for the active cron day to avoid redundant refreshes.
 * Hardened `/api/notify` to require authentication before sending notification emails.
 * Search Console email generation now tolerates missing or invalid cached data, preventing Docker builds from failing during type checks.
+* Reordered AdWords API test imports to comply with lint-enforced grouping rules.
 
 
 
