@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import sqlite3 from 'sqlite3';
+import sqliteDialect from './sqlite-dialect';
 import Domain from './models/domain';
 import Keyword from './models/keyword';
 
@@ -9,7 +9,7 @@ const connection = new Sequelize({
    username: process.env.USER_NAME ? process.env.USER_NAME : process.env.USER,
    password: process.env.PASSWORD,
    database: 'sequelize',
-   dialectModule: sqlite3,
+   dialectModule: sqliteDialect,
    pool: {
       max: 5,
       min: 0,
