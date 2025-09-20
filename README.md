@@ -28,6 +28,7 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 ### Requirements
 
 - **Node.js 18.18 or newer:** The upgraded Google authentication SDK now depends on `gaxios@7` and `node-fetch@3`, eliminating the Node.js 22 `fetch()` deprecation warning while remaining compatible with active LTS releases (18.x, 20.x, and 22.x).
+- **SQLite tooling:** Sequelize now talks to SQLite through a bundled `better-sqlite3` compatibility layer. Most environments can install the prebuilt binaries automatically with `npm install`, but if the download falls back to building from source you will need Python 3, `make`, and a C++ compiler (`build-essential` on Debian/Ubuntu or the Xcode command line tools on macOS).
 
 #### How it Works
 
@@ -73,6 +74,12 @@ Local and self-hosted installs can apply schema changes with the bundled npm scr
 
 The project now ships `sequelize-cli` as a production dependency, so the migration scripts work out of the box without manually installing the CLI or adding it globally.
 
+### SQLite driver upgrade
+
+- **Why:** The legacy `sqlite3` native module depended on deprecated `node-gyp` glue. The project now ships a lightweight wrapper around `better-sqlite3`, which bundles modern tooling and offers prebuilt binaries for current Node.js releases.
+- **What to do after pulling:** Run `npm install` (or `npm ci` in CI) so the new dependency and its lockfile updates are applied. If your environment lacks the prerequisites for native compilation, install Python 3 and a C/C++ toolchain before retrying the install.
+- **Verifying the upgrade:** Run `npm run db:migrate` locally to confirm Sequelize can still open the database, and rerun your Docker/CI builds to ensure no scripts depend on `node-gyp` anymore.
+
 #### Docker Compose deployment
 
 The bundled `docker-compose.yml` runs the published `vontainment/v-serpbear` image with sensible defaults, persistent storage, and the environment variables listed above. Override the values in that file (or via `.env`) to match your credentials, and adjust the published port if `3030` clashes with another service on your host.
@@ -109,7 +116,7 @@ If you don't want to use proxies, you can use third party Scraping services to s
 **Tech Stack**
 
 - Next.js for Frontend & Backend.
-- Sqlite for Database.
+- SQLite (via `better-sqlite3`) for Database.
 
 ### Development Practices
 

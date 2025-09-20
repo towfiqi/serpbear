@@ -24,16 +24,18 @@ const { fetch: undiciFetch, Headers, Request, Response } = require('undici');
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
 
-window.matchMedia = (query) => ({
-   matches: false,
-   media: query,
-   onchange: null,
-   addListener: jest.fn(), // deprecated
-   removeListener: jest.fn(), // deprecated
-   addEventListener: jest.fn(),
-   removeEventListener: jest.fn(),
-   dispatchEvent: jest.fn(),
-});
+if (typeof window !== 'undefined') {
+   window.matchMedia = (query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(), // deprecated
+      removeListener: jest.fn(), // deprecated
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+   });
+}
 
 global.ResizeObserver = require('resize-observer-polyfill');
 

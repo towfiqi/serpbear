@@ -44,9 +44,9 @@
     "react-transition-group": "^4.4.5",
     "react-window": "^1.8.8",
     "reflect-metadata": "^0.1.13",
+    "better-sqlite3": "^12.2.0",
     "sequelize": "^6.34.0",
     "sequelize-typescript": "^2.1.6",
-    "sqlite3": "^5.1.7",
     "umzug": "^3.8.2",
     "sequelize-cli": "^6.6.3"
   },
