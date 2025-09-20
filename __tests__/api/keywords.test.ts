@@ -159,7 +159,10 @@ describe('PUT /api/keywords error handling', () => {
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Keyword payload is required.' });
+    expect(res.json).toHaveBeenCalledWith({ 
+      error: 'Keywords array is required', 
+      details: 'Request body must contain a keywords array' 
+    });
     expect(keywordMock.bulkCreate).not.toHaveBeenCalled();
   });
 });

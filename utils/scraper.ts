@@ -26,12 +26,28 @@ export type RefreshResult = false | {
 }
 
 /**
- * Creates a SERP Scraper client promise based on the app settings.
+ * Implements exponential backoff with jitter for retry attempts
+ */
+const getRetryDelay = (attempt: number, baseDelay: number = 1000): number => {
+   const exponentialDelay = baseDelay * Math.pow(2, attempt);
+   const jitter = Math.random() * 0.1 * exponentialDelay; // 10% jitter
+   return Math.min(exponentialDelay + jitter, 30000); // Max 30 seconds
+};
+
+/**
+ * Creates a SERP Scraper client promise with enhanced error handling and retries
  * @param {KeywordType} keyword - the keyword to get the SERP for.
  * @param {SettingsType} settings - the App Settings that contains the scraper details
+ * @param {ScraperSettings} scraper - the specific scraper configuration
+ * @param {number} retryAttempt - current retry attempt number
  * @returns {Promise}
  */
-export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scraper?: ScraperSettings): Promise<AxiosResponse|Response> | false => {
+export const getScraperClient = (
+   keyword:KeywordType, 
+   settings:SettingsType, 
+   scraper?: ScraperSettings, 
+   retryAttempt: number = 0
+): Promise<AxiosResponse|Response> | false => {
    let apiURL = ''; let client: Promise<AxiosResponse|Response> | false = false;
    const headers: any = {
       'Content-Type': 'application/json',
@@ -67,7 +83,12 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scr
       const axiosConfig: CreateAxiosDefaults = {};
       headers.Accept = 'gzip,deflate,compress;';
       axiosConfig.headers = headers;
-      const proxies = settings.proxy.split(/\r?\n|\r|\n/g);
+      
+      // Enhanced proxy configuration with timeout and error handling
+      axiosConfig.timeout = 30000; // 30 second timeout
+      axiosConfig.maxRedirects = 3;
+      
+      const proxies = settings.proxy.split(/\r?\n|\r|\n/g).filter(proxy => proxy.trim());
       let proxyURL = '';
       if (proxies.length > 1) {
          proxyURL = proxies[Math.floor(Math.random() * proxies.length)];
@@ -81,7 +102,15 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scr
       const axiosClient = axios.create(axiosConfig);
       client = axiosClient.get(`https://www.google.com/search?num=100&q=${encodeURI(keyword.keyword)}`);
    } else {
-      client = fetch(apiURL, { method: 'GET', headers });
+      // Enhanced fetch configuration with timeout and better error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
+      client = fetch(apiURL, { 
+         method: 'GET', 
+         headers,
+         signal: controller.signal
+      }).finally(() => clearTimeout(timeoutId));
    }
 
    return client;
@@ -173,12 +202,13 @@ const handleProxyError = (error: any, settings: SettingsType): string => {
 };
 
 /**
- * Scrape Google Search result as object array from the Google Search's HTML content
- * @param {string} keyword - the keyword to search for in Google.
- * @param {string} settings - the App Settings
- * @returns {RefreshResult[]}
+ * Scrape Google Search result with retry logic and better error handling
+ * @param {KeywordType} keyword - the keyword to search for in Google.
+ * @param {SettingsType} settings - the App Settings
+ * @param {number} maxRetries - Maximum number of retry attempts
+ * @returns {Promise<RefreshResult>}
  */
-export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:SettingsType) : Promise<RefreshResult> => {
+export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:SettingsType, maxRetries: number = 3) : Promise<RefreshResult> => {
    let refreshedResults:RefreshResult = {
       ID: keyword.ID,
       keyword: keyword.keyword,
@@ -187,58 +217,100 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       result: keyword.lastResult,
       error: true,
    };
+   
    const scraperType = settings?.scraper_type || '';
    const scraperObj = allScrapers.find((scraper:ScraperSettings) => scraper.id === scraperType);
-   const scraperClient = getScraperClient(keyword, settings, scraperObj);
+   
+   if (!scraperObj) {
+      return { ...refreshedResults, error: `Scraper type '${scraperType}' not found` };
+   }
 
-   if (!scraperClient) { return false; }
+   let lastError: any = null;
 
-   let scraperError:any = null;
-   try {
-      const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((reslt:any) => reslt.json());
-
-      // Check response status and success indicators
-      if (hasScraperError(res)) {
-         // Build comprehensive error object
-         scraperError = buildScraperError(res);
-
-         // Log status code and error payload
-         console.log('[SCRAPER_ERROR] Status:', scraperError.status);
-         console.log('[SCRAPER_ERROR] Payload:', JSON.stringify(scraperError));
-
-         const errorMessage = `[${scraperError.status}] ${scraperError.error || scraperError.body || 'Request failed'}`;
-         throw new Error(errorMessage);
+   // Retry logic with exponential backoff
+   for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const scraperClient = getScraperClient(keyword, settings, scraperObj, attempt);
+      
+      if (!scraperClient) { 
+         return { ...refreshedResults, error: 'Failed to create scraper client' };
       }
 
-      const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
-      const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
-      if (res && scrapeResult) {
-         const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
-         // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
-        const serp = getSerp(keyword.domain, extracted);
-        refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.position, url: serp.url, result: extracted, error: false };
-        console.log('[SERP]: ', keyword.keyword, serp.position, serp.url);
-      } else {
-         // Enhanced error extraction for empty results
-         const errorInfo = serializeError(
-           res.request_info?.error || res.error_message || res.detail || res.error
-           || 'No valid scrape result returned',
-         );
-         const statusCode = res.status || 'No Status';
-         scraperError = `[${statusCode}] ${errorInfo}`;
-         throw new Error(scraperError);
-      }
-   } catch (error:any) {
-      // Use the enhanced error message if available
-      const errorMessage = scraperError ? serializeError(scraperError) : handleProxyError(error, settings);
-      refreshedResults.error = errorMessage;
+      try {
+         const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((reslt:any) => reslt.json());
 
-      console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
-      console.log('[ERROR_MESSAGE]: ', errorMessage);
+         // Check response status and success indicators
+         if (hasScraperError(res)) {
+            // Build comprehensive error object
+            const scraperError = buildScraperError(res);
 
-      // Log additional error details if available
-      if (scraperError && typeof scraperError === 'object') {
-         console.log('[ERROR_DETAILS]: ', JSON.stringify(scraperError));
+            // Log status code and error payload for debugging
+            console.log(`[SCRAPER_ERROR] Attempt ${attempt + 1}/${maxRetries + 1} - Status:`, scraperError.status);
+            console.log(`[SCRAPER_ERROR] Payload:`, JSON.stringify(scraperError));
+
+            const errorMessage = `[${scraperError.status}] ${scraperError.error || scraperError.body || 'Request failed'}`;
+            lastError = errorMessage;
+            
+            // If this was the last attempt, throw the error
+            if (attempt === maxRetries) {
+               throw new Error(errorMessage);
+            }
+            
+            // Wait before retrying with exponential backoff
+            await new Promise(resolve => setTimeout(resolve, getRetryDelay(attempt)));
+            continue;
+         }
+
+         const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
+         const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
+         
+         if (res && scrapeResult) {
+            const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
+            // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
+            const serp = getSerp(keyword.domain, extracted);
+            refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.position, url: serp.url, result: extracted, error: false };
+            console.log(`[SERP] Success on attempt ${attempt + 1}:`, keyword.keyword, serp.position, serp.url);
+            return refreshedResults; // Success, return immediately
+         } else {
+            // Enhanced error extraction for empty results
+            const errorInfo = serializeError(
+              res.request_info?.error || res.error_message || res.detail || res.error
+              || 'No valid scrape result returned',
+            );
+            const statusCode = res.status || 'No Status';
+            const errorMessage = `[${statusCode}] ${errorInfo}`;
+            lastError = errorMessage;
+            
+            if (attempt === maxRetries) {
+               throw new Error(errorMessage);
+            }
+            
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, getRetryDelay(attempt)));
+            continue;
+         }
+      } catch (error:any) {
+         lastError = error;
+         
+         // Log attempt information
+         console.log(`[ERROR] Scraping Keyword attempt ${attempt + 1}/${maxRetries + 1}:`, keyword.keyword);
+         
+         if (attempt === maxRetries) {
+            // Final attempt failed, process the error
+            const errorMessage = handleProxyError(error, settings);
+            refreshedResults.error = errorMessage;
+            console.log('[ERROR_MESSAGE]:', errorMessage);
+            
+            // Log additional error details if available
+            if (error && typeof error === 'object') {
+               console.log('[ERROR_DETAILS]:', JSON.stringify(error));
+            }
+            break;
+         } else {
+            // Not the final attempt, wait and retry
+            console.log(`[RETRY] Will retry after delay, attempt ${attempt + 1} failed:`, serializeError(error));
+            await new Promise(resolve => setTimeout(resolve, getRetryDelay(attempt)));
+            continue;
+         }
       }
    }
 

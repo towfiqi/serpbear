@@ -81,60 +81,151 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
    }
 };
 
+/**
+ * Validates and sanitizes keyword input data
+ */
+const validateKeywordData = (kwrd: any): { isValid: boolean, sanitized?: any, errors?: string[] } => {
+   const errors: string[] = [];
+   
+   // Required fields validation
+   if (!kwrd.keyword || typeof kwrd.keyword !== 'string') {
+      errors.push('Keyword is required and must be a string');
+   }
+   if (!kwrd.domain || typeof kwrd.domain !== 'string') {
+      errors.push('Domain is required and must be a string');
+   }
+   
+   // Sanitize and validate keyword
+   const keyword = typeof kwrd.keyword === 'string' ? kwrd.keyword.trim().substring(0, 200) : '';
+   if (keyword.length === 0) {
+      errors.push('Keyword cannot be empty');
+   }
+   
+   // Validate domain format (basic validation)
+   const domain = typeof kwrd.domain === 'string' ? kwrd.domain.trim().toLowerCase().substring(0, 100) : '';
+   const domainRegex = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))*$/i;
+   if (domain.length === 0 || !domainRegex.test(domain)) {
+      errors.push('Invalid domain format');
+   }
+   
+   // Validate device
+   const validDevices = ['desktop', 'mobile'];
+   const device = validDevices.includes(kwrd.device) ? kwrd.device : 'desktop';
+   
+   // Validate country code (basic validation)
+   const country = typeof kwrd.country === 'string' && /^[A-Z]{2}$/.test(kwrd.country) ? kwrd.country : 'US';
+   
+   // Sanitize optional fields
+   const city = typeof kwrd.city === 'string' ? kwrd.city.trim().substring(0, 100) : '';
+   const state = typeof kwrd.state === 'string' ? kwrd.state.trim().substring(0, 100) : '';
+   const tags = typeof kwrd.tags === 'string' ? kwrd.tags.trim().substring(0, 500) : '';
+   
+   if (errors.length > 0) {
+      return { isValid: false, errors };
+   }
+   
+   return {
+      isValid: true,
+      sanitized: {
+         keyword,
+         domain,
+         device,
+         country,
+         city,
+         state,
+         tags
+      }
+   };
+};
+
 const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGetResponse>) => {
    const { keywords } = req.body;
-   if (keywords && Array.isArray(keywords) && keywords.length > 0) {
-      // const keywordsArray = keywords.replaceAll('\n', ',').split(',').map((item:string) => item.trim());
-      const keywordsToAdd: any = []; // QuickFIX for bug: https://github.com/sequelize/sequelize-typescript/issues/936
-
-      keywords.forEach((kwrd: KeywordAddPayload) => {
-         const { keyword, device, country, domain, tags, city, state } = kwrd;
-         const tagsArray = tags ? tags.split(',').map((item:string) => item.trim()) : [];
-         const newKeyword = {
-            keyword,
-            device,
-            domain,
-            country,
-            city,
-            state,
-            position: 0,
-            updating: true,
-            history: JSON.stringify({}),
-            url: '',
-            tags: JSON.stringify(tagsArray),
-            sticky: false,
-            lastUpdated: new Date().toJSON(),
-            added: new Date().toJSON(),
-         };
-         keywordsToAdd.push(newKeyword);
-      });
-
-      try {
-         const newKeywords:Keyword[] = await Keyword.bulkCreate(keywordsToAdd);
-         const formattedkeywords = newKeywords.map((el) => el.get({ plain: true }));
-         const keywordsParsed: KeywordType[] = parseKeywords(formattedkeywords);
-
-         // Queue the SERP Scraping Process
-         const settings = await getAppSettings();
-         refreshAndUpdateKeywords(newKeywords, settings);
-
-         // Update the Keyword Volume
-         const { adwords_account_id, adwords_client_id, adwords_client_secret, adwords_developer_token } = settings;
-         if (adwords_account_id && adwords_client_id && adwords_client_secret && adwords_developer_token) {
-            const keywordsVolumeData = await getKeywordsVolume(keywordsParsed);
-            if (keywordsVolumeData.volumes !== false) {
-               await updateKeywordsVolumeData(keywordsVolumeData.volumes);
-            }
-         }
-
-         return res.status(201).json({ keywords: keywordsParsed });
-      } catch (error) {
-         console.log('[ERROR] Adding New Keywords ', error);
-         const message = error instanceof Error ? error.message : 'Unknown error';
-         return res.status(500).json({ error: 'Failed to add keywords.', details: message });
-      }
+   
+   // Enhanced input validation
+   if (!keywords) {
+      return res.status(400).json({ error: 'Keywords array is required', details: 'Request body must contain a keywords array' });
    }
-   return res.status(400).json({ error: 'Keyword payload is required.' });
+   
+   if (!Array.isArray(keywords)) {
+      return res.status(400).json({ error: 'Keywords must be an array', details: 'The keywords field must be an array of keyword objects' });
+   }
+   
+   if (keywords.length === 0) {
+      return res.status(400).json({ error: 'At least one keyword is required', details: 'Keywords array cannot be empty' });
+   }
+   
+   if (keywords.length > 100) {
+      return res.status(400).json({ error: 'Too many keywords', details: 'Maximum 100 keywords can be added at once' });
+   }
+
+   const keywordsToAdd: any = []; // QuickFIX for bug: https://github.com/sequelize/sequelize-typescript/issues/936
+   const validationErrors: string[] = [];
+
+   keywords.forEach((kwrd: KeywordAddPayload, index: number) => {
+      const validation = validateKeywordData(kwrd);
+      
+      if (!validation.isValid) {
+         validationErrors.push(`Keyword ${index + 1}: ${validation.errors?.join(', ')}`);
+         return;
+      }
+      
+      const { keyword, domain, device, country, city, state, tags } = validation.sanitized!;
+      const tagsArray = tags ? tags.split(',').map((item:string) => item.trim()).filter((tag: string) => tag.length > 0) : [];
+      
+      const newKeyword = {
+         keyword,
+         device,
+         domain,
+         country,
+         city,
+         state,
+         position: 0,
+         updating: true,
+         history: JSON.stringify({}),
+         url: '',
+         tags: JSON.stringify(tagsArray.slice(0, 10)), // Limit to 10 tags
+         sticky: false,
+         lastUpdated: new Date().toJSON(),
+         added: new Date().toJSON(),
+      };
+      keywordsToAdd.push(newKeyword);
+   });
+   
+   if (validationErrors.length > 0) {
+      return res.status(400).json({ 
+         error: 'Validation failed', 
+         details: validationErrors.join('; ')
+      });
+   }
+   
+   if (keywordsToAdd.length === 0) {
+      return res.status(400).json({ error: 'No valid keywords to add', details: 'All provided keywords failed validation' });
+   }
+
+   try {
+      const newKeywords:Keyword[] = await Keyword.bulkCreate(keywordsToAdd);
+      const formattedkeywords = newKeywords.map((el) => el.get({ plain: true }));
+      const keywordsParsed: KeywordType[] = parseKeywords(formattedkeywords);
+
+      // Queue the SERP Scraping Process
+      const settings = await getAppSettings();
+      refreshAndUpdateKeywords(newKeywords, settings);
+
+      // Update the Keyword Volume
+      const { adwords_account_id, adwords_client_id, adwords_client_secret, adwords_developer_token } = settings;
+      if (adwords_account_id && adwords_client_id && adwords_client_secret && adwords_developer_token) {
+         const keywordsVolumeData = await getKeywordsVolume(keywordsParsed);
+         if (keywordsVolumeData.volumes !== false) {
+            await updateKeywordsVolumeData(keywordsVolumeData.volumes);
+         }
+      }
+
+      return res.status(201).json({ keywords: keywordsParsed });
+   } catch (error) {
+      console.log('[ERROR] Adding New Keywords ', error);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ error: 'Failed to add keywords.', details: message });
+   }
 };
 
 const deleteKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsDeleteRes>) => {

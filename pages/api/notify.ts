@@ -6,6 +6,7 @@ import Keyword from '../../database/models/keyword';
 import generateEmail from '../../utils/generateEmail';
 import parseKeywords from '../../utils/parseKeywords';
 import verifyUser from '../../utils/verifyUser';
+import { canSendEmail, recordEmailSent } from '../../utils/emailThrottle';
 import { getAppSettings } from './settings';
 
 type NotifyResponse = {
@@ -60,6 +61,16 @@ const notify = async (req: NextApiRequest, res: NextApiResponse<NotifyResponse>)
 };
 
 const sendNotificationEmail = async (domain: DomainType | Domain, settings: SettingsType) => {
+   const domainObj: DomainType = (domain as any).get ? (domain as any).get({ plain: true }) : domain as DomainType;
+   const domainName = domainObj.domain;
+   
+   // Check email throttling
+   const throttleCheck = await canSendEmail(domainName);
+   if (!throttleCheck.canSend) {
+      console.log(`[EMAIL_THROTTLE] Skipping email for ${domainName}: ${throttleCheck.reason}`);
+      return;
+   }
+
    const {
       smtp_server = '',
       smtp_port = '',
@@ -77,18 +88,28 @@ const sendNotificationEmail = async (domain: DomainType | Domain, settings: Sett
       if (smtp_username) mailerSettings.auth.user = smtp_username;
       if (smtp_password) mailerSettings.auth.pass = smtp_password;
    }
-   const transporter = nodeMailer.createTransport(mailerSettings);
-   const domainObj: DomainType = (domain as any).get ? (domain as any).get({ plain: true }) : domain as DomainType;
-   const domainName = domainObj.domain;
-   const query = { where: { domain: domainName } };
-   const domainKeywords:Keyword[] = await Keyword.findAll(query);
-   const keywordsArray = domainKeywords.map((el) => el.get({ plain: true }));
-   const keywords: KeywordType[] = parseKeywords(keywordsArray);
-   const emailHTML = await generateEmail(domainObj, keywords, settings);
-   await transporter.sendMail({
-      from: fromEmail,
-      to: domain.notification_emails || notification_email,
-      subject: `[${domainName}] Keyword Positions Update`,
-      html: emailHTML,
-   }).catch((err:any) => console.log('[ERROR] Sending Notification Email for', domainName, err?.response || err));
+
+   try {
+      const transporter = nodeMailer.createTransport(mailerSettings);
+      const query = { where: { domain: domainName } };
+      const domainKeywords:Keyword[] = await Keyword.findAll(query);
+      const keywordsArray = domainKeywords.map((el) => el.get({ plain: true }));
+      const keywords: KeywordType[] = parseKeywords(keywordsArray);
+      const emailHTML = await generateEmail(domainObj, keywords, settings);
+      
+      await transporter.sendMail({
+         from: fromEmail,
+         to: domain.notification_emails || notification_email,
+         subject: `[${domainName}] Keyword Positions Update`,
+         html: emailHTML,
+      });
+      
+      // Record successful email send
+      await recordEmailSent(domainName);
+      console.log(`[EMAIL] Successfully sent notification for ${domainName}`);
+      
+   } catch (error:any) {
+      console.log('[ERROR] Sending Notification Email for', domainName, error?.response || error);
+      throw error; // Re-throw to let caller handle
+   }
 };
