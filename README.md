@@ -113,6 +113,8 @@ If you don't want to use proxies, you can use third party Scraping services to s
 | serper.dev        | Pay As You Go | $1.00/1000 req | No  |
 | hasdata.com       | From $29/mo   | From 10,000/mo | Yes |
 
+The Scraping Robot integration now explicitly sends both Google locale parameters—`hl` for language and `gl` for geographic targeting—so the returned SERP data matches the country configured for each keyword.
+
 **Tech Stack**
 
 - Next.js for Frontend & Backend.

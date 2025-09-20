@@ -21,6 +21,7 @@ const customJestConfig = {
   ],
   moduleNameMapper: {
     '^uuid$': uuidPath,
+    'better-sqlite3': '<rootDir>/__mocks__/better-sqlite3.js',
   },
   modulePathIgnorePatterns: ['<rootDir>/.next/'],
 };
