@@ -56,6 +56,7 @@ code by adjusting the following environment variables:
 - `CRON_EMAIL_SCHEDULE` (default `0 0 6 * * *`) — Cron expression used for the daily notification email job.
 
 Update these variables in your `.env`/`.env.local` files or Docker environment to control when background tasks run.
+Cron expressions are automatically normalized at runtime, so surrounding quotes and stray whitespace are stripped before jobs are scheduled.
 
 #### SerpBear Integrates with popular SERP scraping services
 
