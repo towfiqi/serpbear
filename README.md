@@ -129,3 +129,9 @@ The Scraping Robot integration now explicitly sends both Google locale parameter
 - Run `npm run lint` before committing. The command now uses ESLint 9's flat configuration (`eslint.config.mjs`) and fails if any custom rules are violated.
 - Use `npm run lint -- --fix` to auto-fix issues where possible; re-run the command to confirm the codebase is clean.
 - Continue running `npm run lint:css` for Stylelint checks when you update global CSS.
+- Stylelint is now bundled locally; run `npm install` after pulling so `npm run lint:css` remains available.
+
+### Testing
+
+- `npm test` runs the unit and integration suites in Node's default worker mode.
+- Use `npm run test:cv -- --runInBand` to generate coverage serially, which avoids intermittent jsdom worker crashes during long-running suites.

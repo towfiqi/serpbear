@@ -52,3 +52,33 @@ describe('getAdwordsKeywordIdeas', () => {
     ).rejects.toThrow('No search console keywords found for this domain');
   });
 });
+
+describe('updateKeywordsVolumeData', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('awaits all keyword updates before resolving', async () => {
+    const completionOrder: number[] = [];
+    jest.spyOn(Keyword, 'update').mockImplementation((_, options: any) =>
+      new Promise((resolve) => {
+        setTimeout(() => {
+          completionOrder.push(options?.where?.ID);
+          resolve([1] as any);
+        }, 0);
+      }),
+    );
+
+    const promise = adwordsUtils.updateKeywordsVolumeData({ 1: 100, 2: 200 });
+    await expect(promise).resolves.toBe(true);
+    expect(completionOrder).toHaveLength(2);
+    expect(completionOrder).toEqual(expect.arrayContaining([1, 2]));
+  });
+
+  it('propagates update errors', async () => {
+    const failure = new Error('db failure');
+    jest.spyOn(Keyword, 'update').mockRejectedValue(failure);
+
+    await expect(adwordsUtils.updateKeywordsVolumeData({ 3: 500 })).rejects.toThrow('db failure');
+  });
+});
