@@ -25,6 +25,10 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 - **Safer Integrations:** Google Ads refresh-token retrieval handles incomplete error payloads and Search Console storage differentiates hyphenated and dotted domains.
 - **Stable Search Console Emails:** Email summaries gracefully skip Search Console stats when cached data is unavailable, keeping Docker builds and cron runs healthy.
 
+### Requirements
+
+- **Node.js 18.18 or newer:** The upgraded Google authentication SDK now depends on `gaxios@7` and `node-fetch@3`, eliminating the Node.js 22 `fetch()` deprecation warning while remaining compatible with active LTS releases (18.x, 20.x, and 22.x).
+
 #### How it Works
 
 The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SearchApi, SerpApi, HasData or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword.

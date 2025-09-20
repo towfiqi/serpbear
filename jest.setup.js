@@ -1,9 +1,23 @@
-// eslint-disable-next-line no-unused-vars
-import 'isomorphic-fetch';
 import './styles/globals.css';
 import '@testing-library/jest-dom';
-import { enableFetchMocks } from 'jest-fetch-mock';
 import { TextEncoder, TextDecoder } from 'util';
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+const { ReadableStream, WritableStream, TransformStream } = require('stream/web');
+
+if (!global.ReadableStream) {
+   global.ReadableStream = ReadableStream;
+}
+if (!global.WritableStream) {
+   global.WritableStream = WritableStream;
+}
+if (!global.TransformStream) {
+   global.TransformStream = TransformStream;
+}
+
+const { fetch: undiciFetch, Headers, Request, Response } = require('undici');
 // Optional: configure or set up a testing framework before each test.
 // If you delete this file, remove `setupFilesAfterEnv` from `jest.config.js`
 
@@ -23,9 +37,12 @@ window.matchMedia = (query) => ({
 
 global.ResizeObserver = require('resize-observer-polyfill');
 
-// polyfill TextEncoder/TextDecoder for msw
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+if (!global.fetch) {
+   global.fetch = undiciFetch;
+}
+global.Headers = Headers;
+global.Request = Request;
+global.Response = Response;
 
 // polyfill BroadcastChannel for msw
 class BroadcastChannelMock {
@@ -51,6 +68,3 @@ class BroadcastChannelMock {
    }
 }
 global.BroadcastChannel = BroadcastChannelMock;
-
-// Enable Fetch Mocking
-enableFetchMocks();

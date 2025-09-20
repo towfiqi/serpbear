@@ -39,7 +39,11 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse)
             const cryptr = new Cryptr(process.env.SECRET as string);
             const adwords_client_id = settings.adwords_client_id ? cryptr.decrypt(settings.adwords_client_id) : '';
             const adwords_client_secret = settings.adwords_client_secret ? cryptr.decrypt(settings.adwords_client_secret) : '';
-            const oAuth2Client = new OAuth2Client(adwords_client_id, adwords_client_secret, redirectURL);
+            const oAuth2Client = new OAuth2Client({
+               clientId: adwords_client_id,
+               clientSecret: adwords_client_secret,
+               redirectUri: redirectURL,
+            });
             const r = await oAuth2Client.getToken(code);
             if (r?.tokens?.refresh_token) {
                const adwords_refresh_token = cryptr.encrypt(r.tokens.refresh_token);
