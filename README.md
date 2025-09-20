@@ -30,6 +30,10 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 - **Node.js 18.18 or newer:** The upgraded Google authentication SDK now depends on `gaxios@7` and `node-fetch@3`, eliminating the Node.js 22 `fetch()` deprecation warning while remaining compatible with active LTS releases (18.x, 20.x, and 22.x).
 - **SQLite tooling:** Sequelize now talks to SQLite through a bundled `better-sqlite3` compatibility layer. Most environments can install the prebuilt binaries automatically with `npm install`, but if the download falls back to building from source you will need Python 3, `make`, and a C++ compiler (`build-essential` on Debian/Ubuntu or the Xcode command line tools on macOS).
 
+#### Screenshot capture configuration
+
+- **`SCREENSHOT_API` is now mandatory:** Set this environment variable to the API key provided by your screenshot vendor (for example [ScreenshotOne](https://screenshotone.com/)). The server refuses to load settings or queue screenshot jobs when the key is missing, returning 500-series API responses that explain the misconfiguration. Add the key to `.env.local`, your Docker secrets, or your deployment platform before launching the app.
+
 #### How it Works
 
 The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SearchApi, SerpApi, HasData or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword.

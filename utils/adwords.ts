@@ -388,14 +388,13 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{ erro
 export const updateKeywordsVolumeData = async (volumesData: false | Record<number, number>) => {
    if (volumesData === false) { return false; }
 
-   const updateEntries = Object.entries(volumesData);
-
-   await Promise.all(updateEntries.map(async ([keywordID, volume]) => {
+   for (const [keywordID, volume] of Object.entries(volumesData)) {
       const keyID = Number(keywordID);
-      if (Number.isNaN(keyID)) { return; }
-      const volumeData = typeof volume === 'number' ? volume : 0;
-      await Keyword.update({ volume: volumeData }, { where: { ID: keyID } });
-   }));
+      if (!Number.isNaN(keyID)) {
+         const volumeData = typeof volume === 'number' ? volume : 0;
+         await Keyword.update({ volume: volumeData }, { where: { ID: keyID } });
+      }
+   }
 
    return true;
 };

@@ -1,6 +1,5 @@
 const normalizeParams = (params) => {
   if (!params.length) {
-
     return undefined;
   }
   if (params.length === 1) {
@@ -11,7 +10,6 @@ const normalizeParams = (params) => {
 
 const createStatement = (driver, sql) => ({
   run(...params) {
-
     return driver.execute(sql, normalizeParams(params));
   },
   all(...params) {
@@ -55,14 +53,12 @@ class MockBetterSqlite3 {
 
   execute(sql, params) {
     const trimmed = sql.trim();
-
     const createMatch = /^CREATE\s+TABLE\s+(\w+)/i.exec(trimmed);
     if (createMatch) {
       const tableName = createMatch[1];
       this.ensureTable(tableName);
       return { changes: 0 };
     }
-
     const insertMatch = /^INSERT\s+INTO\s+(\w+)/i.exec(trimmed);
     if (insertMatch) {
       const tableName = insertMatch[1];
