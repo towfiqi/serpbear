@@ -64,6 +64,17 @@ Cron expressions are automatically normalized at runtime, so surrounding quotes 
 
 The bundled `docker-compose.yml` runs the published `vontainment/v-serpbear` image with sensible defaults, persistent storage, and the environment variables listed above. Override the values in that file (or via `.env`) to match your credentials, and adjust the published port if `3030` clashes with another service on your host.
 
+#### Container runtime behaviour
+
+The Docker image now bakes the production build output produced by `npm run build` directly into `/app` and relies on the standalone Next.js server bundle. At runtime the container:
+
+- sets `NODE_ENV=production` and runs as the unprivileged `nextjs` user,
+- runs pending database migrations before launching the API,
+- starts the cron worker in the background from the entrypoint, and
+- exposes port `3000` by default while still persisting `/app/data` for SQLite storage.
+
+If you need to seed or snapshot the SQLite database before running the container, populate the `data/` directory locally—those files are now copied into the runtime image without being deleted during the build.
+
 #### SerpBear Integrates with popular SERP scraping services
 
 If you don't want to use proxies, you can use third party Scraping services to scrape Google Search results.

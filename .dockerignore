@@ -1,25 +1,50 @@
-
-Dockerfile
-.dockerignore
-node_modules
-npm-debug.log
-README.md
-.next
+# Git metadata
 .git
+.gitignore
+
+# Docker and compose files
+Dockerfile
+Dockerfile.*
+docker-compose*.yml
+
+# Node dependencies and caches
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.eslintcache
+.next
+.next/cache
+
+# Tests and mocks
+**/__tests__/
+**/__mocks__/
+
+# Logs and coverage
+*.log
+logs
+coverage
+.nyc_output
+coverage.lcov
+
+# Environment files
+.env
+.env.*
+.env*
+
+# Documentation
+*.md
+
+# Tooling and configs
 .github
 .vscode
-.env
-coverage
-logs
 fly.toml
 TODO
+jest.config.js
+jest.setup.js
+
+# App data that should not be baked into the image
 data/database.sqlite
 data/settings.json
 data/failed_queue.json
-__tests__
-__mocks__
-jest.config.js
-jest.setup.js
-*.log
-.nyc_output
-coverage.lcov

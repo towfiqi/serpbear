@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file. See [standa
 * Reordered AdWords API test imports to comply with lint-enforced grouping rules.
 * Normalised cron schedule environment variables so surrounding quotes and whitespace no longer break Croner parsing.
 * Refreshed the Docker Compose example to run the published image with updated defaults and cron configuration guidance.
+* Rebuilt the multi-stage Dockerfile to preserve `/app/data`, reuse build caches, and move cron start-up logic into the entrypoint.
+* Enabled GitHub Actions build cache exports for Docker image publishing.
 
 
 
