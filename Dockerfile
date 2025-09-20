@@ -50,8 +50,7 @@ RUN mkdir -p /app/data && \
     chmod 755 /app/data
 
 # Security: Remove package managers and unnecessary files
-RUN apk del npm && \
-    rm -rf /root/.npm /tmp/* /var/cache/apk/*
+RUN rm -rf /root/.npm /tmp/* /var/cache/apk/*
 
 USER nextjs
 EXPOSE 3000
