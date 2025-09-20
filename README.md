@@ -92,6 +92,7 @@ The Docker image now bakes the production build output produced by `npm run buil
 - runs pending database migrations before launching the API,
 - starts the cron worker in the background from the entrypoint,
 - ships a pruned `node_modules/` directory with only production dependencies so cron jobs and migrations can `require()` their helpers,
+- omits build-time manifests such as `package.json` and `package-lock.json` to reduce attack surface and shrink the final layer,
 - exposes port `3000` by default while still persisting `/app/data` for SQLite storage.
 
 If you need to seed or snapshot the SQLite database before running the container, populate the `data/` directory locally—those files are now copied into the runtime image without being deleted during the build.
@@ -120,3 +121,9 @@ If you don't want to use proxies, you can use third party Scraping services to s
 ### Development Practices
 
 - Group external dependencies before relative paths and keep imports alphabetized in test files to satisfy lint requirements.
+
+### Linting & Formatting
+
+- Run `npm run lint` before committing. The command now uses ESLint 9's flat configuration (`eslint.config.mjs`) and fails if any custom rules are violated.
+- Use `npm run lint -- --fix` to auto-fix issues where possible; re-run the command to confirm the codebase is clean.
+- Continue running `npm run lint:css` for Stylelint checks when you update global CSS.
