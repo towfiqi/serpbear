@@ -1,6 +1,7 @@
-import { writeFile } from 'fs/promises';
+import { writeFile, readFile } from 'fs/promises';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import handler from '../../pages/api/settings';
+import * as settingsApi from '../../pages/api/settings';
 import verifyUser from '../../utils/verifyUser';
 
 jest.mock('../../utils/verifyUser', () => ({
@@ -19,6 +20,10 @@ jest.mock('fs/promises', () => ({
 }));
 
 const encryptMock = jest.fn((value: string) => value);
+const readFileMock = readFile as unknown as jest.Mock;
+const verifyUserMock = verifyUser as unknown as jest.Mock;
+const writeFileMock = writeFile as unknown as jest.Mock;
+const originalEnv = process.env;
 
 jest.mock('cryptr', () => ({
   __esModule: true,
@@ -28,15 +33,13 @@ jest.mock('cryptr', () => ({
 }));
 
 describe('PUT /api/settings validation and errors', () => {
-  const verifyUserMock = verifyUser as unknown as jest.Mock;
-  const writeFileMock = writeFile as unknown as jest.Mock;
-  const originalEnv = process.env;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env = { ...originalEnv, SECRET: 'secret' };
+    process.env = { ...originalEnv, SECRET: 'secret', SCREENSHOT_API: 'test-key' };
     verifyUserMock.mockReturnValue('authorized');
     encryptMock.mockClear();
+    readFileMock.mockReset();
+    writeFileMock.mockReset();
   });
 
   afterEach(() => {
@@ -59,7 +62,7 @@ describe('PUT /api/settings validation and errors', () => {
 
     expect(verifyUserMock).toHaveBeenCalledWith(req, res);
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Settings Data not Provided!' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Settings payload is required.' });
     expect(writeFileMock).not.toHaveBeenCalled();
   });
 
@@ -81,6 +84,61 @@ describe('PUT /api/settings validation and errors', () => {
 
     expect(writeFileMock).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Error Updating Settings!', details: 'disk full' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Failed to update settings.', details: 'disk full' });
+  });
+});
+
+describe('GET /api/settings and configuration requirements', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env = { ...originalEnv, SECRET: 'secret', SCREENSHOT_API: 'test-key' };
+    verifyUserMock.mockReturnValue('authorized');
+    encryptMock.mockClear();
+    readFileMock.mockReset();
+    writeFileMock.mockReset();
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  it('returns 500 when loading settings fails', async () => {
+    process.env = { ...originalEnv, SECRET: 'secret' };
+
+    const req = {
+      method: 'GET',
+      headers: {},
+      query: {},
+    } as unknown as NextApiRequest;
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    } as unknown as NextApiResponse;
+
+    await handler(req, res);
+
+    expect(verifyUserMock).toHaveBeenCalledWith(req, res);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Failed to load settings.',
+      details: 'SCREENSHOT_API environment variable is required to capture keyword screenshots.',
+    });
+  });
+
+  it('throws when SCREENSHOT_API is not configured', async () => {
+    process.env = { ...originalEnv, SECRET: 'secret' };
+
+    await expect(settingsApi.getAppSettings()).rejects.toThrow('SCREENSHOT_API environment variable is required');
+  });
+
+  it('returns defaults with screenshot key when files are missing', async () => {
+    readFileMock.mockRejectedValueOnce(new Error('missing settings')).mockRejectedValueOnce(new Error('missing failed queue'));
+    writeFileMock.mockResolvedValue(undefined);
+
+    const settings = await settingsApi.getAppSettings();
+
+    expect(settings.screenshot_key).toBe('test-key');
+    expect(writeFileMock).toHaveBeenCalled();
   });
 });

@@ -46,13 +46,16 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
    if (!req.query.domain || typeof req.query.domain !== 'string') {
       return res.status(400).json({ error: 'Domain is Required!' });
    }
-   const settings = await getAppSettings();
    const domain = (req.query.domain as string);
-   const integratedSC = process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL;
-   const { search_console_client_email, search_console_private_key } = settings;
-   const domainSCData = integratedSC || (search_console_client_email && search_console_private_key) ? await readLocalSCData(domain) : false;
 
    try {
+      const settings = await getAppSettings();
+      const integratedSC = process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL;
+      const { search_console_client_email, search_console_private_key } = settings;
+      const domainSCData = integratedSC || (search_console_client_email && search_console_private_key)
+         ? await readLocalSCData(domain)
+         : false;
+
       const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain } });
       const keywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
       const processedKeywords = keywords.map((keyword) => {
@@ -71,7 +74,8 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
       return res.status(200).json({ keywords: processedKeywords });
    } catch (error) {
       console.log('[ERROR] Getting Domain Keywords for ', domain, error);
-      return res.status(400).json({ error: 'Error Loading Keywords for this Domain.' });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ error: 'Failed to load keywords for this domain.', details: message });
    }
 };
 
@@ -124,11 +128,11 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
          return res.status(201).json({ keywords: keywordsParsed });
       } catch (error) {
          console.log('[ERROR] Adding New Keywords ', error);
-         return res.status(400).json({ error: 'Could Not Add New Keyword!' });
+         const message = error instanceof Error ? error.message : 'Unknown error';
+         return res.status(500).json({ error: 'Failed to add keywords.', details: message });
       }
-   } else {
-      return res.status(400).json({ error: 'Necessary Keyword Data Missing' });
    }
+   return res.status(400).json({ error: 'Keyword payload is required.' });
 };
 
 const deleteKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsDeleteRes>) => {
@@ -144,7 +148,8 @@ const deleteKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
       return res.status(200).json({ keywordsRemoved: removedKeywordCount });
    } catch (error) {
       console.log('[ERROR] Removing Keyword. ', error);
-      return res.status(400).json({ error: 'Could Not Remove Keyword!' });
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      return res.status(500).json({ error: 'Failed to remove keywords.', details: message });
    }
 };
 
@@ -153,7 +158,7 @@ const updateKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
       return res.status(400).json({ error: 'keyword ID is Required!' });
    }
    if (req.body.sticky === undefined && req.body.tags === undefined) {
-      return res.status(400).json({ error: 'keyword Payload Missing!' });
+      return res.status(400).json({ error: 'Keyword update payload is required.' });
    }
    const keywordIDs = (req.query.id as string).split(',').map((item) => parseInt(item, 10));
    const { sticky, tags } = req.body;
@@ -186,6 +191,6 @@ const updateKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
    } catch (error) {
       console.log('[ERROR] Updating Keyword. ', error);
       const message = error instanceof Error ? error.message : 'Unknown error';
-      return res.status(500).json({ error: 'Error Updating keywords!', details: message });
+      return res.status(500).json({ error: 'Failed to update keywords.', details: message });
    }
 };
