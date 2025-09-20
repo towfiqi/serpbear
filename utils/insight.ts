@@ -37,16 +37,16 @@ export const getCountryInsight = (SCData:SCDomainDataType, sortBy:string = 'clic
       console.warn('[INSIGHT] Invalid SCData provided to getCountryInsight');
       return [];
    }
-   
+
    const keywordsCounts: { [key:string]: string[] } = {};
    const countryItems: { [key:string]: SCInsightItem } = {};
    const dateKey = queryDate as keyof SCDomainDataType;
    const scData = SCData[dateKey] && Array.isArray(SCData[dateKey]) ? SCData[dateKey] as SearchAnalyticsItem[] : [];
-   
+
    if (scData.length === 0) {
       return [];
    }
-   
+
    const allCountries: string[] = [...new Set(scData.map((item) => item?.country).filter(Boolean))];
 
    allCountries.forEach((countryKey:string) => {
@@ -95,17 +95,17 @@ export const getKeywordsInsight = (SCData:SCDomainDataType, sortBy:string = 'cli
       console.warn('[INSIGHT] Invalid SCData provided to getKeywordsInsight');
       return [];
    }
-   
+
    const keywordItems: { [key:string]: SCInsightItem } = {};
    const keywordCounts: { [key:string]: number } = {};
    const countriesCount: { [key:string]: string[] } = {};
    const dateKey = queryDate as keyof SCDomainDataType;
    const scData = SCData[dateKey] && Array.isArray(SCData[dateKey]) ? SCData[dateKey] as SearchAnalyticsItem[] : [];
-   
+
    if (scData.length === 0) {
       return [];
    }
-   
+
    const allKeywords: string[] = [...new Set(scData.map((item) => item?.keyword).filter(Boolean))];
 
    allKeywords.forEach((keyword:string) => {
@@ -156,17 +156,17 @@ export const getPagesInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks
       console.warn('[INSIGHT] Invalid SCData provided to getPagesInsight');
       return [];
    }
-   
+
    const pagesItems: { [key:string]: SCInsightItem } = {};
    const keywordCounts: { [key:string]: number } = {};
    const countriesCount: { [key:string]: string[] } = {};
    const dateKey = queryDate as keyof SCDomainDataType;
    const scData = SCData[dateKey] && Array.isArray(SCData[dateKey]) ? SCData[dateKey] as SearchAnalyticsItem[] : [];
-   
+
    if (scData.length === 0) {
       return [];
    }
-   
+
    const allPages: string[] = [...new Set(scData.map((item) => item?.page).filter(Boolean))];
 
    allPages.forEach((page:string) => {
