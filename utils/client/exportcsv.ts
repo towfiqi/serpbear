@@ -13,7 +13,6 @@ const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scD
    let csvBody = '';
    let fileName = `${domain}-keywords_serp.csv`;
 
-
    if (isSCKeywords) {
       csvHeader = 'ID,Keyword,Position,Impressions,Clicks,CTR,Country,Device\r\n';
       fileName = `${domain}-search-console-${scDataDuration}.csv`;
