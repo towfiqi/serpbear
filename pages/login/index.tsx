@@ -57,7 +57,6 @@ const Login: NextPage = () => {
    };
 
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700';
-   // eslint-disable-next-line max-len
    const inputStyle = 'w-full p-2 border border-gray-200 rounded mb-3 focus:outline-none focus:border-blue-200';
    const errorBorderStyle = 'border-red-400 focus:border-red-400';
    return (
