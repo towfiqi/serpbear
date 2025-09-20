@@ -9,9 +9,15 @@ export const sanitizeHtml = (input: string): string => {
       return '';
    }
    
-   return input
-      .replace(/<[^>]*>/g, '') // Remove all HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocol  
+   let sanitized = input;
+   let previous;
+   // Remove all HTML tags (apply until stable)
+   do {
+      previous = sanitized;
+      sanitized = sanitized.replace(/<[^>]*>/g, '');
+   } while (sanitized !== previous);
+   return sanitized
+      .replace(/javascript:/gi, '') // Remove javascript: protocol
       .replace(/\son\w+\s*=\s*[^>\s]*/gi, '') // Remove event handlers like onclick=...
       .trim()
       .substring(0, 1000); // Limit length
