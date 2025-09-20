@@ -60,6 +60,15 @@ Cron expressions are automatically normalized at runtime, so surrounding quotes 
 
 > **Tip:** Cron expressions and timezone values loaded from `.env` files or Docker configuration are normalised automatically, so wrapping the schedules in quotes or leaving stray whitespace will not break the background jobs.
 
+### Database migrations
+
+Local and self-hosted installs can apply schema changes with the bundled npm scripts:
+
+- `npm run db:migrate` — applies the latest migrations to the production SQLite database.
+- `npm run db:revert` — rolls back the most recent migration.
+
+The project now ships `sequelize-cli` as a production dependency, so the migration scripts work out of the box without manually installing the CLI or adding it globally.
+
 #### Docker Compose deployment
 
 The bundled `docker-compose.yml` runs the published `vontainment/v-serpbear` image with sensible defaults, persistent storage, and the environment variables listed above. Override the values in that file (or via `.env`) to match your credentials, and adjust the published port if `3030` clashes with another service on your host.
