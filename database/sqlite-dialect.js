@@ -1,6 +1,6 @@
 const path = require('path');
 const { EventEmitter } = require('events');
-const BetterSqlite3 = require('better-sqlite3');
+const BetterSqlite3 = require('better-sqlite3'); // eslint-disable-line import/no-unresolved
 
 const OPEN_READONLY = 0x01;
 const OPEN_READWRITE = 0x02;

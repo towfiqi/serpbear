@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Google Search Console email summaries reuse cached data for the active cron day to avoid redundant refreshes.
 * Hardened `/api/notify` to require authentication before sending notification emails.
 * Search Console email generation now tolerates missing or invalid cached data, preventing Docker builds from failing during type checks.
+* Scraping Robot requests now pass the `gl` country code along with `hl` when constructing Google query URLs for localized SERP data.
 * Reordered AdWords API test imports to comply with lint-enforced grouping rules.
 * Normalised cron schedule environment variables so surrounding quotes and whitespace no longer break Croner parsing.
 * Refreshed the Docker Compose example to run the published image with updated defaults and cron configuration guidance.
