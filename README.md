@@ -24,6 +24,7 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 - **API Hardening:** Notification email endpoint now enforces authentication for both UI and API key access.
 - **Safer Integrations:** Google Ads refresh-token retrieval handles incomplete error payloads and Search Console storage differentiates hyphenated and dotted domains.
 - **Stable Search Console Emails:** Email summaries gracefully skip Search Console stats when cached data is unavailable, keeping Docker builds and cron runs healthy.
+- **Automated Security Scans:** GitHub CodeQL now reviews every push, pull request, and weekly schedule for vulnerabilities across the JavaScript/TypeScript codebase.
 
 ### Requirements
 

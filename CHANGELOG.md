@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Changed
 
+* Added a least-privilege GitHub Actions CodeQL workflow that scans pushes, pull requests, and a weekly schedule for JavaScript/TypeScript vulnerabilities.
 * Aligned keyword and settings API response typings with their JSON payloads by adding the optional `details` error field so TypeScript stays consistent with runtime responses.
 * Taught ESLint and Git attributes to ignore generated `.next` chunks so build artifacts no longer trigger enormous lint failures after running the production build.
 * Preserved explicit SQLite `null` bindings so prepared statements receive them during execution instead of stripping them alongside optional callbacks.
