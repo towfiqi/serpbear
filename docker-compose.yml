@@ -1,14 +1,30 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  serpbear:
-    build: .
+  app:
+    #image: towfiqi/serpbear:latest
+    image: vontainment/v-serpbear:latest
+    restart: unless-stopped
+    container_name: serpbear
+    shm_size: "1024MB"
+    network_mode: bridge
     ports:
-      - '3000:3000'
-    env_file:
-      - .env
+      - "3030:3000"
     environment:
-      CRON_TIMEZONE: ${CRON_TIMEZONE:-America/New_York}
-      CRON_MAIN_SCHEDULE: "${CRON_MAIN_SCHEDULE:-0 0 0 * * *}"
-      CRON_FAILED_SCHEDULE: "${CRON_FAILED_SCHEDULE:-0 0 */1 * * *}"
-      CRON_EMAIL_SCHEDULE: "${CRON_EMAIL_SCHEDULE:-0 0 6 * * *}"
+      - USER=
+      - PASSWORD=
+      - SECRET=4715aed321jhje43625dd
+      - APIKEY=5saedXklbbjbjbhp3pih4fdnakhjwq5
+      - SESSION_DURATION=24
+      - SEARCH_CONSOLE_CLIENT_EMAIL=
+      - SEARCH_CONSOLE_PRIVATE_KEY=--
+      - NEXT_PUBLIC_APP_URL=https://serp.hugev.xyz
+      - CRON_TIMEZONE=${CRON_TIMEZONE:-America/New_York}
+      - CRON_MAIN_SCHEDULE=${CRON_MAIN_SCHEDULE:-0 0 0 * * *}
+      - CRON_FAILED_SCHEDULE=${CRON_FAILED_SCHEDULE:-0 0 */1 * * *}
+      - CRON_EMAIL_SCHEDULE=${CRON_EMAIL_SCHEDULE:-0 0 6 * * *}
+    volumes:
+      - data:/app/data
+
+volumes:
+  data:

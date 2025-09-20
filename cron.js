@@ -5,25 +5,31 @@ const { readFile } = require('fs');
 const { Cron } = require('croner');
 require('dotenv').config({ path: './.env.local' });
 
-const normalizeCronExpression = (value, fallback) => {
-   const sanitize = (input) => {
-      if (input === undefined || input === null || input === false) {
-         return '';
-      }
+const stripOptionalQuotes = (value) => {
+   if (typeof value !== 'string') {
+      return value;
+   }
 
-      const trimmed = String(input).trim();
-      const withoutWrappingQuotes = trimmed.replace(/^['"]+/u, '').replace(/['"]+$/u, '');
-
-      return withoutWrappingQuotes.trim();
-   };
-
-   const sanitizedFallback = sanitize(fallback);
-   const sanitizedValue = sanitize(value);
-
-   return sanitizedValue || sanitizedFallback;
+   return value.replace(/^['"]+/, '').replace(/['"]+$/, '');
 };
 
-const CRON_TIMEZONE = process.env.CRON_TIMEZONE || 'America/New_York';
+const normalizeValue = (value, fallback) => {
+   if (value === undefined || value === null) {
+      return fallback;
+   }
+
+   const trimmed = value.toString().trim();
+   if (!trimmed) {
+      return fallback;
+   }
+
+   const sanitized = stripOptionalQuotes(trimmed).trim();
+   return sanitized || fallback;
+};
+
+const normalizeCronExpression = (value, fallback) => normalizeValue(value, fallback);
+
+const CRON_TIMEZONE = normalizeValue(process.env.CRON_TIMEZONE, 'America/New_York');
 const CRON_MAIN_SCHEDULE = normalizeCronExpression(process.env.CRON_MAIN_SCHEDULE, '0 0 0 * * *');
 const CRON_EMAIL_SCHEDULE = normalizeCronExpression(process.env.CRON_EMAIL_SCHEDULE, '0 0 6 * * *');
 const CRON_FAILED_SCHEDULE = normalizeCronExpression(process.env.CRON_FAILED_SCHEDULE, '0 0 */1 * * *');
@@ -95,7 +101,7 @@ const runAppCronJobs = () => {
       // RUN SERP Scraping CRON using configured schedule
       const scrape_interval = settings.scrape_interval || 'daily';
       if (scrape_interval !== 'never') {
-         const scrapeCronTime = normalizeCronExpression(generateCronTime(scrape_interval), CRON_MAIN_SCHEDULE);
+         const scrapeCronTime = normalizeCronExpression(generateCronTime(scrape_interval) || CRON_MAIN_SCHEDULE, CRON_MAIN_SCHEDULE);
          new Cron(scrapeCronTime, () => {
             // console.log('### Running Keyword Position Cron Job!');
             const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
@@ -113,7 +119,7 @@ const runAppCronJobs = () => {
       const notif_interval = (!settings.notification_interval || settings.notification_interval === 'never') ? false : settings.notification_interval;
       if (notif_interval) {
          const cronTime = normalizeCronExpression(
-            generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval),
+            generateCronTime(notif_interval === 'daily' ? 'daily_morning' : notif_interval) || CRON_EMAIL_SCHEDULE,
             CRON_EMAIL_SCHEDULE,
          );
          if (cronTime) {

@@ -1,7 +1,6 @@
 import { readFile } from 'fs/promises';
 import { OAuth2Client } from 'google-auth-library';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
 import db from '../../database/database';
 import handler from '../../pages/api/adwords';
 import verifyUser from '../../utils/verifyUser';
