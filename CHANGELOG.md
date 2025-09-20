@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Updated keyword and settings API handlers to return HTTP error statuses with diagnostic payloads and added Jest coverage for the new behaviours.
 * Removed the unused `winston` dependency, pinned `stylelint` so CSS linting is available locally, and stubbed `window.location` in tests to keep Jest stable on modern Node.js.
 * Replaced the legacy `sqlite3` dependency with a `better-sqlite3`-powered dialect wrapper so builds no longer rely on deprecated `node-gyp` tooling and prebuilt binaries are downloaded during installation.
+* Trim trailing `undefined`/`null` arguments in the SQLite shim so optional callbacks are ignored instead of being treated as extra positional bindings.
 * Upgraded ESLint and related tooling to v9 flat config (`eslint.config.mjs`) and refreshed linting instructions.
 * Pruned Docker runtime image to copy production `node_modules` so cron jobs and migrations keep their dependencies at runtime.
 * Bundled `sequelize-cli` as a production dependency so database migration scripts work without manual CLI installs.
