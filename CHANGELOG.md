@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Hardened `/api/notify` to require authentication before sending notification emails.
 * Search Console email generation now tolerates missing or invalid cached data, preventing Docker builds from failing during type checks.
 * Reordered AdWords API test imports to comply with lint-enforced grouping rules.
+* Normalized cron schedule configuration to trim whitespace and surrounding quotes before registering jobs.
 
 
 
