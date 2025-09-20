@@ -149,6 +149,89 @@ describe('sqlite dialect wrapper', () => {
     });
   });
 
+  it('allows null parameter bindings to flow into statements', async () => {
+    await new Promise<void>((resolve, reject) => {
+      const sqliteFlags = sqlite.OPEN_READWRITE + sqlite.OPEN_CREATE;
+      const db = new sqlite.Database(':memory:', sqliteFlags, (err) => {
+        if (err) {
+          reject(err instanceof Error ? err : new Error(String(err)));
+          return;
+        }
+
+        db.serialize(async () => {
+          try {
+            await new Promise<void>((res, rej) => {
+              db.run('CREATE TABLE sample_null (id INTEGER PRIMARY KEY, value TEXT)', (createErr) => {
+                if (createErr) {
+                  rej(createErr instanceof Error ? createErr : new Error(String(createErr)));
+                  return;
+                }
+                res();
+              });
+            });
+
+            await new Promise<void>((res, rej) => {
+              db.run(
+                'INSERT INTO sample_null (value) VALUES (?)',
+                null,
+                function insertCallback(insertErr) {
+                  if (insertErr) {
+                    rej(insertErr instanceof Error ? insertErr : new Error(String(insertErr)));
+                    return;
+                  }
+                  expect(this.lastID).toBe(1);
+                  expect(this.changes).toBe(1);
+                  res();
+                },
+              );
+            });
+
+            await new Promise<void>((res, rej) => {
+              db.get<{ value: null }>(
+                'SELECT value FROM sample_null WHERE value IS ?',
+                null,
+                (queryErr, row) => {
+                  if (queryErr) {
+                    rej(queryErr instanceof Error ? queryErr : new Error(String(queryErr)));
+                    return;
+                  }
+                  expect(row).toEqual({ value: null });
+                  res();
+                },
+              );
+            });
+
+            await new Promise<void>((res, rej) => {
+              db.all<{ id: number }>(
+                'SELECT id FROM sample_null WHERE value IS ?',
+                null,
+                (queryErr, rows) => {
+                  if (queryErr) {
+                    rej(queryErr instanceof Error ? queryErr : new Error(String(queryErr)));
+                    return;
+                  }
+                  expect(rows).toEqual([{ id: 1 }]);
+                  res();
+                },
+              );
+            });
+
+            db.close((closeErr) => {
+              if (closeErr) {
+                reject(closeErr instanceof Error ? closeErr : new Error(String(closeErr)));
+                return;
+              }
+              resolve();
+            });
+          } catch (error) {
+            const wrappedError = error instanceof Error ? error : new Error(String(error));
+            reject(wrappedError);
+          }
+        });
+      });
+    });
+  });
+
   it('ignores trailing undefined callbacks when deriving sqlite bindings', async () => {
     await new Promise<void>((resolve, reject) => {
       const sqliteFlags = sqlite.OPEN_READWRITE + sqlite.OPEN_CREATE;

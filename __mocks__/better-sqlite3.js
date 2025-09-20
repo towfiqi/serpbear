@@ -1,6 +1,5 @@
 const normalizeParams = (params) => {
   if (!params.length) {
-
     return undefined;
   }
   if (params.length === 1) {
@@ -11,7 +10,6 @@ const normalizeParams = (params) => {
 
 const createStatement = (driver, sql) => ({
   run(...params) {
-
     return driver.execute(sql, normalizeParams(params));
   },
   all(...params) {
@@ -76,7 +74,7 @@ class MockBetterSqlite3 {
       } else if (params && typeof params === 'object') {
         normalizedParams = params;
       } else {
-        normalizedParams = {};
+        normalizedParams = params;
       }
 
       const row = {};
@@ -86,8 +84,12 @@ class MockBetterSqlite3 {
 
         if (Array.isArray(normalizedParams)) {
           row[cleanName] = normalizedParams[index];
-        } else {
+        } else if (normalizedParams && typeof normalizedParams === 'object') {
           row[cleanName] = normalizedParams[cleanName];
+        } else if (index === 0) {
+          row[cleanName] = normalizedParams;
+        } else {
+          row[cleanName] = undefined;
         }
       });
 

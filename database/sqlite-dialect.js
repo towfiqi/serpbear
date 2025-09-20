@@ -15,7 +15,7 @@ function normalizeCallback(fn) {
 }
 
 function normalizeParams(params) {
-  if (params === null || params === undefined) {
+  if (typeof params === 'undefined') {
     return undefined;
   }
   return params;
@@ -149,7 +149,7 @@ class Database extends EventEmitter {
     if (args.length > 0 && typeof args[args.length - 1] === 'function') {
       cb = args.pop();
     }
-    while (args.length > 0 && (args[args.length - 1] === undefined || args[args.length - 1] === null)) {
+    while (args.length > 0 && args[args.length - 1] === undefined) {
       args.pop();
     }
     let bindings;

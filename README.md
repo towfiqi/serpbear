@@ -79,7 +79,7 @@ The project now ships `sequelize-cli` as a production dependency, so the migrati
 - **Why:** The legacy `sqlite3` native module depended on deprecated `node-gyp` glue. The project now ships a lightweight wrapper around `better-sqlite3`, which bundles modern tooling and offers prebuilt binaries for current Node.js releases.
 - **What to do after pulling:** Run `npm install` (or `npm ci` in CI) so the new dependency and its lockfile updates are applied. If your environment lacks the prerequisites for native compilation, install Python 3 and a C/C++ toolchain before retrying the install.
 - **Verifying the upgrade:** Run `npm run db:migrate` locally to confirm Sequelize can still open the database, and rerun your Docker/CI builds to ensure no scripts depend on `node-gyp` anymore.
-- **API parity:** Trailing `undefined` or `null` arguments are now discarded before executing statements, so `db.run(sql, params, undefined)` behaves the same as omitting the optional callback entirely.
+- **API parity:** Trailing `undefined` arguments are still discarded before executing statements, while explicit `null` bindings are forwarded to the driver so calls such as `db.run('... = ?', null, cb)` match the native `sqlite3` behaviour.
 
 #### Docker Compose deployment
 
