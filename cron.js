@@ -168,7 +168,7 @@ const runAppCronJobs = () => {
 
    // Run Google Search Console Scraper on configured main schedule
    // Always run the CRON as the API endpoint will check for credentials per domain
-   const searchConsoleCRONTime = CRON_MAIN_SCHEDULE;
+   const searchConsoleCRONTime = normalizeCronExpression(CRON_MAIN_SCHEDULE, '0 0 0 * * *');
    new Cron(searchConsoleCRONTime, () => {
       const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
       fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/searchconsole`, fetchOpts)

@@ -56,6 +56,7 @@ code by adjusting the following environment variables:
 - `CRON_EMAIL_SCHEDULE` (default `0 0 6 * * *`) — Cron expression used for the daily notification email job.
 
 Update these variables in your `.env`/`.env.local` files or Docker environment to control when background tasks run.
+Cron expressions are automatically normalized at runtime, so surrounding quotes and stray whitespace are stripped before jobs are scheduled.
 
 > **Tip:** Cron expressions and timezone values loaded from `.env` files or Docker configuration are normalised automatically, so wrapping the schedules in quotes or leaving stray whitespace will not break the background jobs.
 
