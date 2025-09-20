@@ -12,7 +12,7 @@ describe('Insight Functions', () => {
         impressions: 100,
         ctr: 10,
         position: 5,
-        page: '/page1',
+        page: '/page1'
       },
       {
         keyword: 'test keyword 2',
@@ -23,7 +23,7 @@ describe('Insight Functions', () => {
         impressions: 200,
         ctr: 10,
         position: 3,
-        page: '/page2',
+        page: '/page2'
       },
       {
         keyword: 'test keyword 1',
@@ -34,31 +34,31 @@ describe('Insight Functions', () => {
         impressions: 50,
         ctr: 10,
         position: 7,
-        page: '/page1',
-      },
+        page: '/page1'
+      }
     ],
     sevenDays: [],
     thirtyDays: [],
     lastFetched: new Date().toISOString(),
     lastFetchError: '',
-    stats: [],
+    stats: []
   };
 
   describe('getCountryInsight', () => {
     it('should return country insights with correct data', () => {
       const result = getCountryInsight(mockSCData, 'clicks', 'threeDays');
-
+      
       expect(result).toHaveLength(2);
-
+      
       // Check US data
-      const usData = result.find((item) => item.country === 'US');
+      const usData = result.find(item => item.country === 'US');
       expect(usData).toBeDefined();
       expect(usData?.clicks).toBe(10);
       expect(usData?.impressions).toBe(100);
       expect(usData?.keywords).toBe(1);
-
+      
       // Check CA data
-      const caData = result.find((item) => item.country === 'CA');
+      const caData = result.find(item => item.country === 'CA');
       expect(caData).toBeDefined();
       expect(caData?.clicks).toBe(25); // 20 + 5
       expect(caData?.impressions).toBe(250); // 200 + 50
@@ -72,9 +72,9 @@ describe('Insight Functions', () => {
         thirtyDays: [],
         lastFetched: '',
         lastFetchError: '',
-        stats: [],
+        stats: []
       };
-
+      
       const result = getCountryInsight(emptyData, 'clicks', 'threeDays');
       expect(result).toEqual([]);
     });
@@ -88,17 +88,17 @@ describe('Insight Functions', () => {
   describe('getKeywordsInsight', () => {
     it('should return keyword insights with correct country data', () => {
       const result = getKeywordsInsight(mockSCData, 'clicks', 'threeDays');
-
+      
       expect(result).toHaveLength(2);
-
+      
       // Check 'test keyword 1' - should appear in 2 countries (US, CA)
-      const keyword1Data = result.find((item) => item.keyword === 'test keyword 1');
+      const keyword1Data = result.find(item => item.keyword === 'test keyword 1');
       expect(keyword1Data).toBeDefined();
       expect(keyword1Data?.clicks).toBe(15); // 10 + 5
       expect(keyword1Data?.countries).toBe(2); // US + CA
-
+      
       // Check 'test keyword 2' - should appear in 1 country (CA)
-      const keyword2Data = result.find((item) => item.keyword === 'test keyword 2');
+      const keyword2Data = result.find(item => item.keyword === 'test keyword 2');
       expect(keyword2Data).toBeDefined();
       expect(keyword2Data?.clicks).toBe(20);
       expect(keyword2Data?.countries).toBe(1); // CA only
@@ -111,9 +111,9 @@ describe('Insight Functions', () => {
         thirtyDays: [],
         lastFetched: '',
         lastFetchError: '',
-        stats: [],
+        stats: []
       };
-
+      
       const result = getKeywordsInsight(emptyData, 'clicks', 'threeDays');
       expect(result).toEqual([]);
     });
@@ -127,18 +127,18 @@ describe('Insight Functions', () => {
   describe('getPagesInsight', () => {
     it('should return page insights with correct data', () => {
       const result = getPagesInsight(mockSCData, 'clicks', 'threeDays');
-
+      
       expect(result).toHaveLength(2);
-
+      
       // Check /page1
-      const page1Data = result.find((item) => item.page === '/page1');
+      const page1Data = result.find(item => item.page === '/page1');
       expect(page1Data).toBeDefined();
       expect(page1Data?.clicks).toBe(15); // 10 + 5
       expect(page1Data?.keywords).toBe(2); // 2 occurrences of 'test keyword 1'
       expect(page1Data?.countries).toBe(2); // US + CA
-
+      
       // Check /page2
-      const page2Data = result.find((item) => item.page === '/page2');
+      const page2Data = result.find(item => item.page === '/page2');
       expect(page2Data).toBeDefined();
       expect(page2Data?.clicks).toBe(20);
       expect(page2Data?.keywords).toBe(1); // 1 occurrence of 'test keyword 2'
@@ -152,9 +152,9 @@ describe('Insight Functions', () => {
         thirtyDays: [],
         lastFetched: '',
         lastFetchError: '',
-        stats: [],
+        stats: []
       };
-
+      
       const result = getPagesInsight(emptyData, 'clicks', 'threeDays');
       expect(result).toEqual([]);
     });
@@ -168,12 +168,12 @@ describe('Insight Functions', () => {
   describe('Data integrity and bug fixes', () => {
     it('should correctly populate countries array in keyword insights (bug fix verification)', () => {
       const result = getKeywordsInsight(mockSCData, 'clicks', 'threeDays');
-
-      const keyword1Data = result.find((item) => item.keyword === 'test keyword 1');
+      
+      const keyword1Data = result.find(item => item.keyword === 'test keyword 1');
       // Before the fix, this would be counting keywords instead of countries
       expect(keyword1Data?.countries).toBe(2); // Should be 2 countries: US, CA
-
-      const keyword2Data = result.find((item) => item.keyword === 'test keyword 2');
+      
+      const keyword2Data = result.find(item => item.keyword === 'test keyword 2');
       expect(keyword2Data?.countries).toBe(1); // Should be 1 country: CA
     });
 
@@ -189,14 +189,14 @@ describe('Insight Functions', () => {
             impressions: undefined as any,
             ctr: 10,
             position: 5,
-            page: '/page1',
-          },
+            page: '/page1'
+          }
         ],
         sevenDays: [],
         thirtyDays: [],
         lastFetched: '',
         lastFetchError: '',
-        stats: [],
+        stats: []
       };
 
       const keywordResult = getKeywordsInsight(malformedData, 'clicks', 'threeDays');

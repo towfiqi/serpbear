@@ -9,13 +9,13 @@ import Keyword from '../database/models/keyword';
  */
 const serializeError = (error: any): string => {
    if (!error) return 'Unknown error';
-
+   
    // If it's already a string, return it
    if (typeof error === 'string') return error;
-
+   
    // If it's an Error object, get the message
    if (error instanceof Error) return error.message;
-
+   
    // For complex objects, try to extract meaningful information
    if (typeof error === 'object') {
       // Handle nested error objects by recursively extracting error info
@@ -26,18 +26,18 @@ const serializeError = (error: any): string => {
          }
          return String(obj);
       };
-
+      
       // Try to get a meaningful error message from common error patterns
       const message = extractErrorInfo(error.message || error.error || error.detail || error.error_message);
       const status = error.status ? `[${error.status}] ` : '';
       const errorInfo = extractErrorInfo(error.request_info?.error);
-
+      
       // If we have specific parts, combine them
       if (message || status || errorInfo) {
-         const parts = [status, message, errorInfo].filter((part) => part && part !== 'null' && part !== 'undefined');
+         const parts = [status, message, errorInfo].filter(part => part && part !== 'null' && part !== 'undefined');
          if (parts.length > 0) return parts.join(' ').trim();
       }
-
+      
       // Fall back to JSON serialization
       try {
          return JSON.stringify(error);
@@ -45,7 +45,7 @@ const serializeError = (error: any): string => {
          return error.toString() !== '[object Object]' ? error.toString() : 'Unserializable error object';
       }
    }
-
+   
    return String(error);
 };
 
