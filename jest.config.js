@@ -6,6 +6,8 @@ const createJestConfig = nextJest({
   dir: './',
 });
 
+const uuidPath = require.resolve('uuid');
+
 // Add any custom config to be passed to Jest
 /** @type {import('jest').Config} */
 const customJestConfig = {
@@ -18,7 +20,7 @@ const customJestConfig = {
     '/node_modules/(?!(sequelize)/)',
   ],
   moduleNameMapper: {
-    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js',
+    '^uuid$': uuidPath,
   },
   modulePathIgnorePatterns: ['<rootDir>/.next/'],
 };

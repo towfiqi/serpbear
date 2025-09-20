@@ -59,8 +59,8 @@ describe('GET /api/adwords - refresh token retrieval', () => {
       (process.env as MutableEnv) = { ...originalEnv, SECRET: 'secret' };
       (db.sync as jest.Mock).mockResolvedValue(undefined);
       (verifyUser as jest.Mock).mockReturnValue('authorized');
-      (readFile as jest.Mock).mockResolvedValue('{}');
-      decryptMock.mockReturnValue('client-value');
+      (readFile as jest.Mock).mockResolvedValue('{"adwords_client_id":"encrypted-client-id","adwords_client_secret":"encrypted-client-secret"}');
+      decryptMock.mockImplementationOnce(() => 'client-id').mockImplementationOnce(() => 'client-secret');
       encryptMock.mockImplementation((value: string) => value);
       getTokenMock.mockRejectedValue({ response: { data: {} } });
    });
@@ -89,7 +89,11 @@ describe('GET /api/adwords - refresh token retrieval', () => {
       expect(db.sync).toHaveBeenCalled();
       expect(verifyUser).toHaveBeenCalledWith(req, res);
       expect(readFile).toHaveBeenCalled();
-      expect(OAuth2Client).toHaveBeenCalled();
+      expect(OAuth2Client).toHaveBeenCalledWith({
+         clientId: 'client-id',
+         clientSecret: 'client-secret',
+         redirectUri: 'http://localhost:3000/api/adwords',
+      });
       expect(getTokenMock).toHaveBeenCalledWith('auth-code');
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ error: 'Error Saving the Google Ads Refresh Token. Please Try Again!' });
