@@ -2,6 +2,14 @@ import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
 
+import { generateGoogleConsoleStats } from '../../utils/generateEmail';
+import {
+  fetchDomainSCData,
+  getSearchConsoleApiInfo,
+  isSearchConsoleDataFreshForToday,
+  readLocalSCData,
+} from '../../utils/searchConsole';
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -23,14 +31,6 @@ jest.mock('../../utils/searchConsole', () => {
     getSearchConsoleApiInfo: jest.fn(),
   };
 });
-
-import { generateGoogleConsoleStats } from '../../utils/generateEmail';
-import {
-  fetchDomainSCData,
-  getSearchConsoleApiInfo,
-  isSearchConsoleDataFreshForToday,
-  readLocalSCData,
-} from '../../utils/searchConsole';
 
 const mockReadLocalSCData = readLocalSCData as jest.Mock;
 const mockFetchDomainSCData = fetchDomainSCData as jest.Mock;
