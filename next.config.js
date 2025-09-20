@@ -7,8 +7,6 @@ const nextConfig = {
   publicRuntimeConfig: {
    version,
  },
- // Disable telemetry
- telemetry: false,
 };
 
 module.exports = nextConfig;
