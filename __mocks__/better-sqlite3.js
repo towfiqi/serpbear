@@ -1,17 +1,19 @@
 const normalizeParams = (params) => {
   if (!params.length) {
-
     return undefined;
   }
   if (params.length === 1) {
-    return params[0];
+    const [firstParam] = params;
+    if (firstParam !== null && typeof firstParam === 'object' && !Array.isArray(firstParam)) {
+      return firstParam;
+    }
+    return params;
   }
   return params;
 };
 
 const createStatement = (driver, sql) => ({
   run(...params) {
-
     return driver.execute(sql, normalizeParams(params));
   },
   all(...params) {
