@@ -5,14 +5,14 @@ import { fetchDomainSCData, getSearchConsoleApiInfo, readLocalSCData } from '../
 import verifyUser from '../../utils/verifyUser';
 
 type searchConsoleRes = {
-   data: SCDomainDataType|null
-   error?: string|null,
-}
+   data: SCDomainDataType | null;
+   error?: string | null;
+};
 
 type searchConsoleCRONRes = {
-   status: string,
-   error?: string|null,
-}
+   status: string;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -38,7 +38,7 @@ const getDomainSearchConsoleData = async (req: NextApiRequest, res: NextApiRespo
    }
    try {
       const query = { domain: domainname };
-      const foundDomain:Domain| null = await Domain.findOne({ where: query });
+      const foundDomain: Domain | null = await Domain.findOne({ where: query });
       const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
       const scDomainAPI = await getSearchConsoleApiInfo(domainObj);
       if (!(scDomainAPI.client_email && scDomainAPI.private_key)) {

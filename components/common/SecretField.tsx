@@ -8,7 +8,7 @@ type SecretFieldProps = {
    placeholder?: string;
    classNames?: string;
    hasError?: boolean;
-}
+};
 
 const SecretField = ({ label = '', value = '', placeholder = '', onChange, hasError = false }: SecretFieldProps) => {
    const [showValue, setShowValue] = useState(false);
@@ -16,9 +16,7 @@ const SecretField = ({ label = '', value = '', placeholder = '', onChange, hasEr
    return (
       <div className="settings__section__secret w-full relative flex justify-between items-center">
          <label className={labelStyle}>{label}</label>
-         <span
-         className="absolute top-1 right-0 px-2 py-1 cursor-pointer text-gray-400 select-none"
-         onClick={() => setShowValue(!showValue)}>
+         <span className="absolute top-1 right-0 px-2 py-1 cursor-pointer text-gray-400 select-none" onClick={() => setShowValue(!showValue)}>
             <Icon type={showValue ? 'eye-closed' : 'eye'} size={18} />
          </span>
          <input

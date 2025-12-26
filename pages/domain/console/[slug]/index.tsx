@@ -27,7 +27,7 @@ const DiscoverPage: NextPage = () => {
    const { data: appSettings } = useFetchSettings();
    const { data: domainsData } = useFetchDomains(router);
    const scConnected = !!(appSettings && appSettings?.settings?.search_console_integrated);
-   const { data: keywordsData, isLoading: keywordsLoading, isFetching } = useFetchSCKeywords(router, !!(domainsData?.domains?.length) && scConnected);
+   const { data: keywordsData, isLoading: keywordsLoading, isFetching } = useFetchSCKeywords(router, !!domainsData?.domains?.length && scConnected);
 
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
    const theKeywords: SearchAnalyticsItem[] = useMemo(() => {
@@ -35,49 +35,59 @@ const DiscoverPage: NextPage = () => {
    }, [keywordsData, scDateFilter]);
 
    const theKeywordsCount = useMemo(() => {
-      return theKeywords.reduce<Map<string, number>>((r, o) => {
-         const key = `${o.device}-${o.country}-${o.keyword}`;
-         const item = r.get(key) || 0;
-         return r.set(key, item + 1);
-      }, new Map()) || [];
+      return (
+         theKeywords.reduce<Map<string, number>>((r, o) => {
+            const key = `${o.device}-${o.country}-${o.keyword}`;
+            const item = r.get(key) || 0;
+            return r.set(key, item + 1);
+         }, new Map()) || []
+      );
    }, [theKeywords]);
 
-   const theKeywordsReduced : SearchAnalyticsItem[] = useMemo(() => {
-      return [...theKeywords.reduce<Map<string, SearchAnalyticsItem>>((r, o) => {
-         const key = `${o.device}-${o.country}-${o.keyword}`;
-         const item = r.get(key) || { ...o,
-            ...{
-            clicks: 0,
-            impressions: 0,
-            ctr: 0,
-            position: 0,
-            },
-         };
-         item.clicks += o.clicks;
-         item.impressions += o.impressions;
-         item.ctr = o.ctr + item.ctr;
-         item.position = o.position + item.position;
-         return r.set(key, item);
-      }, new Map()).values()];
+   const theKeywordsReduced: SearchAnalyticsItem[] = useMemo(() => {
+      return [
+         ...theKeywords
+            .reduce<Map<string, SearchAnalyticsItem>>((r, o) => {
+               const key = `${o.device}-${o.country}-${o.keyword}`;
+               const item = r.get(key) || {
+                  ...o,
+                  ...{
+                     clicks: 0,
+                     impressions: 0,
+                     ctr: 0,
+                     position: 0,
+                  },
+               };
+               item.clicks += o.clicks;
+               item.impressions += o.impressions;
+               item.ctr = o.ctr + item.ctr;
+               item.position = o.position + item.position;
+               return r.set(key, item);
+            }, new Map())
+            .values(),
+      ];
    }, [theKeywords]);
 
-   const theKeywordsGrouped : SearchAnalyticsItem[] = useMemo(() => {
-      return [...theKeywordsReduced.map<SearchAnalyticsItem>((o: SearchAnalyticsItem) => {
-         const key = `${o.device}-${o.country}-${o.keyword}`;
-         const count = theKeywordsCount?.get(key) || 0;
-         return { ...o,
-            ...{
-            ctr: Math.round((o.ctr / count) * 100) / 100,
-            position: Math.round(o.position / count),
-            },
-         };
-      })];
+   const theKeywordsGrouped: SearchAnalyticsItem[] = useMemo(() => {
+      return [
+         ...theKeywordsReduced.map<SearchAnalyticsItem>((o: SearchAnalyticsItem) => {
+            const key = `${o.device}-${o.country}-${o.keyword}`;
+            const count = theKeywordsCount?.get(key) || 0;
+            return {
+               ...o,
+               ...{
+                  ctr: Math.round((o.ctr / count) * 100) / 100,
+                  position: Math.round(o.position / count),
+               },
+            };
+         }),
+      ];
    }, [theKeywordsReduced, theKeywordsCount]);
 
-   const activDomain: DomainType|null = useMemo(() => {
-      let active:DomainType|null = null;
+   const activDomain: DomainType | null = useMemo(() => {
+      let active: DomainType | null = null;
       if (domainsData?.domains && router.query?.slug) {
-         active = domainsData.domains.find((x:DomainType) => x.slug === router.query.slug) || null;
+         active = domainsData.domains.find((x: DomainType) => x.slug === router.query.slug) || null;
       }
       return active;
    }, [router.query.slug, domainsData]);
@@ -89,32 +99,33 @@ const DiscoverPage: NextPage = () => {
 
    return (
       <div className="Domain ">
-         {activDomain && activDomain.domain
-         && <Head>
-               <title>{`${activDomain.domain} - SerpBear` } </title>
+         {activDomain && activDomain.domain && (
+            <Head>
+               <title>{`${activDomain.domain} - SerpBear`} </title>
             </Head>
-         }
+         )}
          <TopBar showSettings={() => setShowSettings(true)} showAddModal={() => setShowAddDomain(true)} />
          <div className="flex w-full max-w-7xl mx-auto">
             <Sidebar domains={theDomains} showAddModal={() => setShowAddDomain(true)} />
             <div className="domain_kewywords px-5 pt-10 lg:px-0 lg:pt-8 w-full">
-               {activDomain && activDomain.domain
-               ? <DomainHeader
-                  domain={activDomain}
-                  domains={theDomains}
-                  showAddModal={() => console.log('XXXXX')}
-                  showSettingsModal={setShowDomainSettings}
-                  exportCsv={() => exportCSV(theKeywordsGrouped, activDomain.domain, scDateFilter)}
-                  scFilter={scDateFilter}
-                  setScFilter={(item:string) => setSCDateFilter(item)}
+               {activDomain && activDomain.domain ? (
+                  <DomainHeader
+                     domain={activDomain}
+                     domains={theDomains}
+                     showAddModal={() => console.log('XXXXX')}
+                     showSettingsModal={setShowDomainSettings}
+                     exportCsv={() => exportCSV(theKeywordsGrouped, activDomain.domain, scDateFilter)}
+                     scFilter={scDateFilter}
+                     setScFilter={(item: string) => setSCDateFilter(item)}
                   />
-                  : <div className='w-full lg:h-[100px]'></div>
-               }
+               ) : (
+                  <div className="w-full lg:h-[100px]"></div>
+               )}
                <SCKeywordsTable
-               isLoading={keywordsLoading || isFetching}
-               domain={activDomain}
-               keywords={theKeywordsGrouped}
-               isConsoleIntegrated={scConnected || domainHasScAPI}
+                  isLoading={keywordsLoading || isFetching}
+                  domain={activDomain}
+                  keywords={theKeywordsGrouped}
+                  isConsoleIntegrated={scConnected || domainHasScAPI}
                />
             </div>
          </div>
@@ -125,12 +136,12 @@ const DiscoverPage: NextPage = () => {
 
          <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
             <DomainSettings
-            domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
-            closeModal={setShowDomainSettings}
+               domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
+               closeModal={setShowDomainSettings}
             />
          </CSSTransition>
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
-             <Settings closeSettings={() => setShowSettings(false)} />
+            <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
          <Footer currentVersion={appSettings?.settings?.version ? appSettings.settings.version : ''} />
       </div>

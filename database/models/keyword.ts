@@ -1,10 +1,9 @@
 import { Table, Model, Column, DataType, PrimaryKey } from 'sequelize-typescript';
 
 @Table({
-  timestamps: false,
-  tableName: 'keyword',
+   timestamps: false,
+   tableName: 'keyword',
 })
-
 class Keyword extends Model {
    @PrimaryKey
    @Column({ type: DataType.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true })

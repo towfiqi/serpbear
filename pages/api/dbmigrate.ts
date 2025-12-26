@@ -5,13 +5,13 @@ import db from '../../database/database';
 import verifyUser from '../../utils/verifyUser';
 
 type MigrationGetResponse = {
-   hasMigrations: boolean,
-}
+   hasMigrations: boolean;
+};
 
 type MigrationPostResponse = {
-   migrated: boolean,
-   erroor?: string
-}
+   migrated: boolean;
+   erroor?: string;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    const authorized = verifyUser(req, res);

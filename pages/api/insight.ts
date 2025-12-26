@@ -6,9 +6,9 @@ import verifyUser from '../../utils/verifyUser';
 import Domain from '../../database/models/domain';
 
 type SCInsightRes = {
-   data: InsightDataType | null,
-   error?: string|null,
-}
+   data: InsightDataType | null;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -48,7 +48,7 @@ const getDomainSearchConsoleInsight = async (req: NextApiRequest, res: NextApiRe
    // If the Local SC Domain Data file does not exist, fetch from Googel Search Console.
    try {
       const query = { domain: domainname };
-      const foundDomain:Domain| null = await Domain.findOne({ where: query });
+      const foundDomain: Domain | null = await Domain.findOne({ where: query });
       const domainObj: DomainType = foundDomain && foundDomain.get({ plain: true });
       const scDomainAPI = await getSearchConsoleApiInfo(domainObj);
       if (!(scDomainAPI.client_email && scDomainAPI.private_key)) {

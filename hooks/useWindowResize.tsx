@@ -5,7 +5,7 @@ const useWindowResize = (onResize: () => void) => {
       onResize();
       window.addEventListener('resize', onResize);
       return () => {
-          window.removeEventListener('resize', onResize);
+         window.removeEventListener('resize', onResize);
       };
    }, [onResize]);
 };

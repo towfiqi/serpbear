@@ -5,7 +5,7 @@ type InputFieldProps = {
    placeholder?: string;
    classNames?: string;
    hasError?: boolean;
-}
+};
 
 const InputField = ({ label = '', value = '', placeholder = '', onChange, hasError = false }: InputFieldProps) => {
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700 capitalize';

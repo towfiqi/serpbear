@@ -9,15 +9,4 @@ import valueSerp from './services/valueserp';
 import serper from './services/serper';
 import hasdata from './services/hasdata';
 
-export default [
-   scrapingRobot,
-   scrapingAnt,
-   serpapi,
-   serply,
-   spaceserp,
-   proxy,
-   searchapi,
-   valueSerp,
-   serper,
-   hasdata,
-];
+export default [scrapingRobot, scrapingAnt, serpapi, serply, spaceserp, proxy, searchapi, valueSerp, serper, hasdata];

@@ -8,9 +8,16 @@ module.exports = {
             const keywordTableDefinition = await queryInterface.describeTable('keyword');
             if (keywordTableDefinition) {
                if (!keywordTableDefinition.volume) {
-                  await queryInterface.addColumn('keyword', 'volume', {
-                      type: Sequelize.DataTypes.STRING, allowNull: false, defaultValue: 0,
-                  }, { transaction: t });
+                  await queryInterface.addColumn(
+                     'keyword',
+                     'volume',
+                     {
+                        type: Sequelize.DataTypes.STRING,
+                        allowNull: false,
+                        defaultValue: 0,
+                     },
+                     { transaction: t },
+                  );
                }
             }
          } catch (error) {

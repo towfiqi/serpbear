@@ -9,19 +9,19 @@ import parseKeywords from '../../utils/parseKeywords';
 import { scrapeKeywordFromGoogle } from '../../utils/scraper';
 
 type KeywordsRefreshRes = {
-   keywords?: KeywordType[]
-   error?: string|null,
-}
+   keywords?: KeywordType[];
+   error?: string | null;
+};
 
 type KeywordSearchResultRes = {
    searchResult?: {
-      results: { title: string, url: string, position: number }[],
-      keyword: string,
-      position: number,
-      country: string,
-   },
-   error?: string|null,
-}
+      results: { title: string; url: string; position: number }[];
+      keyword: string;
+      position: number;
+      country: string;
+   };
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -86,7 +86,7 @@ const getKeywordSearchResults = async (req: NextApiRequest, res: NextApiResponse
       if (!settings || (settings && settings.scraper_type === 'never')) {
          return res.status(400).json({ error: 'Scraper has not been set up yet.' });
       }
-      const dummyKeyword:KeywordType = {
+      const dummyKeyword: KeywordType = {
          ID: 99999999999999,
          keyword: req.query.keyword as string,
          device: 'desktop',

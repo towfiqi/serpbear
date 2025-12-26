@@ -6,31 +6,34 @@ import { formattedNum } from '../../utils/client/helpers';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 type InsightStatsProps = {
-   stats: SearchAnalyticsStat[],
-   totalKeywords: number,
-   totalCountries: number,
-   totalPages: number,
-}
+   stats: SearchAnalyticsStat[];
+   totalKeywords: number;
+   totalCountries: number;
+   totalPages: number;
+};
 
-const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }:InsightStatsProps) => {
-    const totalStat = useMemo(() => {
-      const totals = stats.reduce((acc, item) => {
-          return {
-            impressions: item.impressions + acc.impressions,
-            clicks: item.clicks + acc.clicks,
-            position: item.position + acc.position,
-          };
-      }, { impressions: 0, clicks: 0, position: 0 });
+const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }: InsightStatsProps) => {
+   const totalStat = useMemo(() => {
+      const totals = stats.reduce(
+         (acc, item) => {
+            return {
+               impressions: item.impressions + acc.impressions,
+               clicks: item.clicks + acc.clicks,
+               position: item.position + acc.position,
+            };
+         },
+         { impressions: 0, clicks: 0, position: 0 },
+      );
 
       return {
-          ...totals,
-          ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
+         ...totals,
+         ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
       };
-    }, [stats]);
+   }, [stats]);
 
    const chartData = useMemo(() => {
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const chartSeries: {[key:string]: number[]} = { clicks: [], impressions: [], position: [], ctr: [] };
+      const chartSeries: { [key: string]: number[] } = { clicks: [], impressions: [], position: [], ctr: [] };
       stats.forEach((item) => {
          chartSeries.clicks.push(item.clicks);
          chartSeries.impressions.push(item.impressions);
@@ -39,7 +42,8 @@ const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }:InsightS
       });
       return {
          labels: stats && stats.length > 0 ? stats.map((item) => `${new Date(item.date).getDate()}-${months[new Date(item.date).getMonth()]}`) : [],
-         series: chartSeries };
+         series: chartSeries,
+      };
    }, [stats]);
 
    const renderChart = () => {
@@ -51,26 +55,26 @@ const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }:InsightS
          interaction: {
             mode: 'index' as const,
             intersect: false,
-          },
+         },
          scales: {
             x: {
                grid: {
                   drawOnChartArea: false,
-                },
+               },
             },
             y1: {
                display: true,
                position: 'right' as const,
                grid: {
-                 drawOnChartArea: false,
+                  drawOnChartArea: false,
                },
-             },
+            },
          },
          plugins: {
             legend: {
-                display: false,
+               display: false,
             },
-        },
+         },
       };
       const { clicks, impressions } = chartData.series || {};
       const dataSet = [
@@ -81,40 +85,40 @@ const InsightStats = ({ stats = [], totalKeywords = 0, totalPages = 0 }:InsightS
    };
 
    return (
-      <div className='p-6 lg:border-t lg:border-gray-200'>
-         <div className=' flex font-bold flex-wrap lg:flex-nowrap'>
+      <div className="p-6 lg:border-t lg:border-gray-200">
+         <div className=" flex font-bold flex-wrap lg:flex-nowrap">
             <div
-            className='flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-violet-700 mr-5'
-            title={`${formattedNum(totalStat.clicks || 0)} Visits`}>
-               <span className=' block text-sm font-normal text-gray-500'>Visits</span>
+               className="flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-violet-700 mr-5"
+               title={`${formattedNum(totalStat.clicks || 0)} Visits`}
+            >
+               <span className=" block text-sm font-normal text-gray-500">Visits</span>
                {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(totalStat.clicks || 0).replace('T', 'K')}
             </div>
             <div
-            className='flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-[#1fcdb0] lg:mr-5'
-            title={`${formattedNum(totalStat.impressions || 0)} Impressions`}>
-               <span className=' block text-sm font-normal text-gray-500'>Impressions</span>
+               className="flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-[#1fcdb0] lg:mr-5"
+               title={`${formattedNum(totalStat.impressions || 0)} Impressions`}
+            >
+               <span className=" block text-sm font-normal text-gray-500">Impressions</span>
                {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(totalStat.impressions || 0).replace('T', 'K')}
             </div>
-            <div className='flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold mr-5'>
-               <span className=' block text-sm font-normal text-gray-500'>Avg Position</span>
-               {(totalStat.position ? Math.round(totalStat.position / stats.length) : 0)}
+            <div className="flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold mr-5">
+               <span className=" block text-sm font-normal text-gray-500">Avg Position</span>
+               {totalStat.position ? Math.round(totalStat.position / stats.length) : 0}
             </div>
-            <div className='flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold lg:mr-5'>
-               <span className=' block text-sm font-normal text-gray-500'>Avg CTR</span>
+            <div className="flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold lg:mr-5">
+               <span className=" block text-sm font-normal text-gray-500">Avg CTR</span>
                {new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalStat.ctr || 0)}%
             </div>
-            <div className='flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold mr-5'>
-               <span className=' block text-sm font-normal text-gray-500'>Keywords</span>
+            <div className="flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold mr-5">
+               <span className=" block text-sm font-normal text-gray-500">Keywords</span>
                {formattedNum(totalKeywords)}
             </div>
-            <div className='flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold'>
-               <span className=' block text-sm font-normal text-gray-500'>Pages</span>
+            <div className="flex-1 border border-gray-200 px-6 py-5 rounded mb-4 text-2xl text-gray-500 font-semibold">
+               <span className=" block text-sm font-normal text-gray-500">Pages</span>
                {formattedNum(totalPages)}
             </div>
          </div>
-         <div className='h-80'>
-            {renderChart()}
-         </div>
+         <div className="h-80">{renderChart()}</div>
       </div>
    );
 };

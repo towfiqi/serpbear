@@ -3,9 +3,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import verifyUser from '../../utils/verifyUser';
 
 type SettingsGetResponse = {
-   cleared?: boolean,
-   error?: string,
-}
+   cleared?: boolean;
+   error?: string;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    const authorized = verifyUser(req, res);

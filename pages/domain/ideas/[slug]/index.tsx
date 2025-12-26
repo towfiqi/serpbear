@@ -28,53 +28,55 @@ const DiscoverPage: NextPage = () => {
 
    const { data: appSettings } = useFetchSettings();
    const { data: domainsData } = useFetchDomains(router);
-   const adwordsConnected = !!(appSettings && appSettings?.settings?.adwords_refresh_token
-      && appSettings?.settings?.adwords_developer_token, appSettings?.settings?.adwords_account_id);
+   const adwordsConnected = !!(appSettings && appSettings?.settings?.adwords_refresh_token && appSettings?.settings?.adwords_developer_token,
+   appSettings?.settings?.adwords_account_id);
    const searchConsoleConnected = !!(appSettings && appSettings?.settings?.search_console_integrated);
    const { data: keywordIdeasData, isLoading: isLoadingIdeas, isError: errorLoadingIdeas } = useFetchKeywordIdeas(router, adwordsConnected);
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
-   const keywordIdeas:IdeaKeyword[] = keywordIdeasData?.data?.keywords || [];
-   const favorites:IdeaKeyword[] = keywordIdeasData?.data?.favorites || [];
+   const keywordIdeas: IdeaKeyword[] = keywordIdeasData?.data?.keywords || [];
+   const favorites: IdeaKeyword[] = keywordIdeasData?.data?.favorites || [];
    const keywordIdeasSettings = keywordIdeasData?.data?.settings || undefined;
 
-   const activDomain: DomainType|null = useMemo(() => {
-      let active:DomainType|null = null;
+   const activDomain: DomainType | null = useMemo(() => {
+      let active: DomainType | null = null;
       if (domainsData?.domains && router.query?.slug) {
-         active = domainsData.domains.find((x:DomainType) => x.slug === router.query.slug) || null;
+         active = domainsData.domains.find((x: DomainType) => x.slug === router.query.slug) || null;
       }
       return active;
    }, [router.query.slug, domainsData]);
 
    return (
       <div className="Domain ">
-         {activDomain && activDomain.domain
-         && <Head>
-               <title>{`${activDomain.domain} - Keyword Ideas` } </title>
+         {activDomain && activDomain.domain && (
+            <Head>
+               <title>{`${activDomain.domain} - Keyword Ideas`} </title>
             </Head>
-         }
+         )}
          <TopBar showSettings={() => setShowSettings(true)} showAddModal={() => setShowAddDomain(true)} />
          <div className="flex w-full max-w-7xl mx-auto">
             <Sidebar domains={theDomains} showAddModal={() => setShowAddDomain(true)} />
             <div className="domain_kewywords px-5 pt-10 lg:px-0 lg:pt-8 w-full">
                {activDomain && activDomain.domain ? (
                   <DomainHeader
-                  domain={activDomain}
-                  domains={theDomains}
-                  showAddModal={() => console.log('XXXXX')}
-                  showSettingsModal={setShowDomainSettings}
-                  exportCsv={() => exportKeywordIdeas(showFavorites ? favorites : keywordIdeas, activDomain.domain)}
-                  showIdeaUpdateModal={() => setShowUpdateModal(true)}
+                     domain={activDomain}
+                     domains={theDomains}
+                     showAddModal={() => console.log('XXXXX')}
+                     showSettingsModal={setShowDomainSettings}
+                     exportCsv={() => exportKeywordIdeas(showFavorites ? favorites : keywordIdeas, activDomain.domain)}
+                     showIdeaUpdateModal={() => setShowUpdateModal(true)}
                   />
-               ) : <div className='w-full lg:h-[100px]'></div>}
+               ) : (
+                  <div className="w-full lg:h-[100px]"></div>
+               )}
                <KeywordIdeasTable
-               isLoading={isLoadingIdeas}
-               noIdeasDatabase={errorLoadingIdeas}
-               domain={activDomain}
-               keywords={keywordIdeas}
-               favorites={favorites}
-               isAdwordsIntegrated={adwordsConnected}
-               showFavorites={showFavorites}
-               setShowFavorites={setShowFavorites}
+                  isLoading={isLoadingIdeas}
+                  noIdeasDatabase={errorLoadingIdeas}
+                  domain={activDomain}
+                  keywords={keywordIdeas}
+                  favorites={favorites}
+                  isAdwordsIntegrated={adwordsConnected}
+                  showFavorites={showFavorites}
+                  setShowFavorites={setShowFavorites}
                />
             </div>
          </div>
@@ -85,23 +87,23 @@ const DiscoverPage: NextPage = () => {
 
          <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
             <DomainSettings
-            domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
-            closeModal={setShowDomainSettings}
+               domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
+               closeModal={setShowDomainSettings}
             />
          </CSSTransition>
 
          <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
-             <Settings closeSettings={() => setShowSettings(false)} />
+            <Settings closeSettings={() => setShowSettings(false)} />
          </CSSTransition>
 
          {showUpdateModal && activDomain?.domain && (
-            <Modal closeModal={() => setShowUpdateModal(false) } title={'Load Keyword Ideas from Google Ads'} verticalCenter={true}>
+            <Modal closeModal={() => setShowUpdateModal(false)} title={'Load Keyword Ideas from Google Ads'} verticalCenter={true}>
                <KeywordIdeasUpdater
-               domain={activDomain}
-               onUpdate={() => setShowUpdateModal(false)}
-               settings={keywordIdeasSettings}
-               searchConsoleConnected={searchConsoleConnected}
-               adwordsConnected={adwordsConnected}
+                  domain={activDomain}
+                  onUpdate={() => setShowUpdateModal(false)}
+                  settings={keywordIdeasSettings}
+                  searchConsoleConnected={searchConsoleConnected}
+                  adwordsConnected={adwordsConnected}
                />
             </Modal>
          )}

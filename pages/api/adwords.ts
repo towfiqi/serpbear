@@ -7,9 +7,9 @@ import verifyUser from '../../utils/verifyUser';
 import { getAdwordsCredentials, getAdwordsKeywordIdeas } from '../../utils/adwords';
 
 type adwordsValidateResp = {
-   valid: boolean
-   error?: string|null,
-}
+   valid: boolean;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<string>) => {
    try {
-      const code = (req.query.code as string);
+      const code = req.query.code as string;
       const https = req.headers.host?.includes('localhost:') ? 'http://' : 'https://';
       const redirectURL = `${https}${req.headers.host}/api/adwords`;
 
@@ -47,7 +47,7 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<
                return res.status(200).send('Google Ads Intergrated Successfully! You can close this window.');
             }
             return res.status(400).send('Error Getting the Google Ads Refresh Token. Please Try Again!');
-         } catch (error:any) {
+         } catch (error: any) {
             let errorMsg = error?.response?.data?.error;
             if (errorMsg.includes('redirect_uri_mismatch')) {
                errorMsg += ` Redirected URL: ${redirectURL}`;
@@ -87,7 +87,7 @@ const validateAdwordsIntegration = async (req: NextApiRequest, res: NextApiRespo
          const keywords = await getAdwordsKeywordIdeas(
             adwordsCreds,
             { country: 'US', language: '1000', keywords: ['compress'], seedType: 'custom' },
-             true,
+            true,
          );
          if (keywords && Array.isArray(keywords) && keywords.length > 0) {
             return res.status(200).json({ valid: true });

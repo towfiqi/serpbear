@@ -2,18 +2,22 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../database/database';
 import verifyUser from '../../utils/verifyUser';
 import {
-   KeywordIdeasDatabase, getAdwordsCredentials, getAdwordsKeywordIdeas, getLocalKeywordIdeas, updateLocalKeywordIdeas,
+   KeywordIdeasDatabase,
+   getAdwordsCredentials,
+   getAdwordsKeywordIdeas,
+   getLocalKeywordIdeas,
+   updateLocalKeywordIdeas,
 } from '../../utils/adwords';
 
 type keywordsIdeasUpdateResp = {
-   keywords: IdeaKeyword[],
-   error?: string|null,
-}
+   keywords: IdeaKeyword[];
+   error?: string | null;
+};
 
 type keywordsIdeasGetResp = {
-   data: KeywordIdeasDatabase|null,
-   error?: string|null,
-}
+   data: KeywordIdeasDatabase | null;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -57,7 +61,7 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
    if (!country || !language) {
       return res.status(400).json({ keywords: [], error: 'Error Fetching Keywords. Please Provide a Country and Language' });
    }
-   if (seedType === 'custom' && (keywords.length === 0 && !seedSCKeywords && !seedCurrentKeywords)) {
+   if (seedType === 'custom' && keywords.length === 0 && !seedSCKeywords && !seedCurrentKeywords) {
       return res.status(400).json({ keywords: [], error: 'Error Fetching Keywords. Please Provide one of these: keywords, url or domain' });
    }
    try {

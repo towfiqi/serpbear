@@ -8,9 +8,9 @@ import parseKeywords from '../../utils/parseKeywords';
 import { getAppSettings } from './settings';
 
 type NotifyResponse = {
-   success?: boolean
-   error?: string|null,
-}
+   success?: boolean;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 const notify = async (req: NextApiRequest, res: NextApiResponse<NotifyResponse>) => {
-   const reqDomain = req?.query?.domain as string || '';
+   const reqDomain = (req?.query?.domain as string) || '';
    try {
       const settings = await getAppSettings();
       const { smtp_server = '', smtp_port = '', notification_email = '' } = settings;
@@ -63,10 +63,10 @@ const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => 
       notification_email = '',
       notification_email_from = '',
       notification_email_from_name = 'SerpBear',
-     } = settings;
+   } = settings;
 
    const fromEmail = `${notification_email_from_name} <${notification_email_from || 'no-reply@serpbear.com'}>`;
-   const mailerSettings:any = { host: smtp_server, port: parseInt(smtp_port, 10) };
+   const mailerSettings: any = { host: smtp_server, port: parseInt(smtp_port, 10) };
    if (smtp_username || smtp_password) {
       mailerSettings.auth = {};
       if (smtp_username) mailerSettings.auth.user = smtp_username;
@@ -75,14 +75,16 @@ const sendNotificationEmail = async (domain: Domain, settings: SettingsType) => 
    const transporter = nodeMailer.createTransport(mailerSettings);
    const domainName = domain.domain;
    const query = { where: { domain: domainName } };
-   const domainKeywords:Keyword[] = await Keyword.findAll(query);
+   const domainKeywords: Keyword[] = await Keyword.findAll(query);
    const keywordsArray = domainKeywords.map((el) => el.get({ plain: true }));
    const keywords: KeywordType[] = parseKeywords(keywordsArray);
    const emailHTML = await generateEmail(domainName, keywords, settings);
-   await transporter.sendMail({
-      from: fromEmail,
-      to: domain.notification_emails || notification_email,
-      subject: `[${domainName}] Keyword Positions Update`,
-      html: emailHTML,
-   }).catch((err:any) => console.log('[ERROR] Sending Notification Email for', domainName, err?.response || err));
+   await transporter
+      .sendMail({
+         from: fromEmail,
+         to: domain.notification_emails || notification_email,
+         subject: `[${domainName}] Keyword Positions Update`,
+         html: emailHTML,
+      })
+      .catch((err: any) => console.log('[ERROR] Sending Notification Email for', domainName, err?.response || err));
 };
