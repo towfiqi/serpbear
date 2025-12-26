@@ -1,0 +1,53 @@
+# Pre-commit hooks configuration
+# Install: npm install && npx husky init
+# Run manually: npx lint-staged
+
+repos:
+   # Standard pre-commit hooks
+   - repo: https://github.com/pre-commit/pre-commit-hooks
+     rev: v4.5.0
+     hooks:
+        - id: trailing-whitespace
+          args: [--markdown-linebreak-ext=md]
+        - id: end-of-file-fixer
+          exclude: ^(\.next/|node_modules/|coverage/)
+        - id: check-yaml
+        - id: check-json
+          exclude: ^(package-lock\.json|tsconfig\.json)
+        - id: check-added-large-files
+          args: ['--maxkb=1000']
+        - id: check-merge-conflict
+        - id: detect-private-key
+
+   # Local hooks using npm scripts
+   - repo: local
+     hooks:
+        - id: eslint
+          name: ESLint
+          entry: npm run lint
+          language: system
+          types: [javascript, jsx, ts, tsx]
+          pass_filenames: false
+
+        - id: stylelint
+          name: Stylelint
+          entry: npm run lint:css
+          language: system
+          types: [css, scss]
+          pass_filenames: false
+
+        - id: prettier
+          name: Prettier Check
+          entry: npx prettier --check .
+          language: system
+          types_or: [javascript, jsx, ts, tsx, css, scss, json]
+          pass_filenames: false
+
+        - id: typecheck
+          name: TypeScript Check
+          entry: npx tsc --noEmit
+          language: system
+          types: [ts, tsx]
+          pass_filenames: false
+          # Non-blocking initially - set to true if strict checking causes issues
+          verbose: true

@@ -3,20 +3,15 @@
    "rules": {
       "indentation": 3,
       "declaration-block-single-line-max-declarations": 2,
-      "selector-class-pattern":null,
+      "selector-class-pattern": null,
       "at-rule-no-unknown": [
-        true,
-        {
-          "ignoreAtRules": [
-            "tailwind",
-            "apply",
-            "variants",
-            "responsive",
-            "screen"
-          ]
-        }
+         true,
+         {
+            "ignoreAtRules": ["tailwind", "apply", "variants", "responsive", "screen"]
+         }
       ],
       "declaration-block-trailing-semicolon": null,
-      "no-descending-specificity": null
-    }
- }
+      "no-descending-specificity": null,
+      "string-quotes": "single"
+   }
+}

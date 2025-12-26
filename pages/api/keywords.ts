@@ -10,15 +10,15 @@ import refreshAndUpdateKeywords from '../../utils/refresh';
 import { getKeywordsVolume, updateKeywordsVolumeData } from '../../utils/adwords';
 
 type KeywordsGetResponse = {
-   keywords?: KeywordType[],
-   error?: string|null,
-}
+   keywords?: KeywordType[];
+   error?: string | null;
+};
 
 type KeywordsDeleteRes = {
-   domainRemoved?: number,
-   keywordsRemoved?: number,
-   error?: string|null,
-}
+   domainRemoved?: number;
+   keywordsRemoved?: number;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -47,23 +47,25 @@ const getKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
       return res.status(400).json({ error: 'Domain is Required!' });
    }
    const settings = await getAppSettings();
-   const domain = (req.query.domain as string);
+   const domain = req.query.domain as string;
    const integratedSC = process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL;
    const { search_console_client_email, search_console_private_key } = settings;
    const domainSCData = integratedSC || (search_console_client_email && search_console_private_key) ? await readLocalSCData(domain) : false;
 
    try {
-      const allKeywords:Keyword[] = await Keyword.findAll({ where: { domain } });
+      const allKeywords: Keyword[] = await Keyword.findAll({ where: { domain } });
       const keywords: KeywordType[] = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
       const processedKeywords = keywords.map((keyword) => {
-         const historyArray = Object.keys(keyword.history).map((dateKey:string) => ({
+         const historyArray = Object.keys(keyword.history).map((dateKey: string) => ({
             date: new Date(dateKey).getTime(),
             dateRaw: dateKey,
             position: keyword.history[dateKey],
          }));
          const historySorted = historyArray.sort((a, b) => a.date - b.date);
-         const lastWeekHistory :KeywordHistory = {};
-         historySorted.slice(-7).forEach((x:any) => { lastWeekHistory[x.dateRaw] = x.position; });
+         const lastWeekHistory: KeywordHistory = {};
+         historySorted.slice(-7).forEach((x: any) => {
+            lastWeekHistory[x.dateRaw] = x.position;
+         });
          const keywordWithSlimHistory = { ...keyword, lastResult: [], history: lastWeekHistory };
          const finalKeyword = domainSCData ? integrateKeywordSCData(keywordWithSlimHistory, domainSCData) : keywordWithSlimHistory;
          return finalKeyword;
@@ -83,7 +85,7 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
 
       keywords.forEach((kwrd: KeywordAddPayload) => {
          const { keyword, device, country, domain, tags, city } = kwrd;
-         const tagsArray = tags ? tags.split(',').map((item:string) => item.trim()) : [];
+         const tagsArray = tags ? tags.split(',').map((item: string) => item.trim()) : [];
          const newKeyword = {
             keyword,
             device,
@@ -103,7 +105,7 @@ const addKeywords = async (req: NextApiRequest, res: NextApiResponse<KeywordsGet
       });
 
       try {
-         const newKeywords:Keyword[] = await Keyword.bulkCreate(keywordsToAdd);
+         const newKeywords: Keyword[] = await Keyword.bulkCreate(keywordsToAdd);
          const formattedkeywords = newKeywords.map((el) => el.get({ plain: true }));
          const keywordsParsed: KeywordType[] = parseKeywords(formattedkeywords);
 
@@ -162,9 +164,9 @@ const updateKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
       if (sticky !== undefined) {
          await Keyword.update({ sticky }, { where: { ID: { [Op.in]: keywordIDs } } });
          const updateQuery = { where: { ID: { [Op.in]: keywordIDs } } };
-         const updatedKeywords:Keyword[] = await Keyword.findAll(updateQuery);
+         const updatedKeywords: Keyword[] = await Keyword.findAll(updateQuery);
          const formattedKeywords = updatedKeywords.map((el) => el.get({ plain: true }));
-          keywords = parseKeywords(formattedKeywords);
+         keywords = parseKeywords(formattedKeywords);
          return res.status(200).json({ keywords });
       }
       if (tags) {

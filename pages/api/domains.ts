@@ -8,26 +8,26 @@ import verifyUser from '../../utils/verifyUser';
 import { checkSerchConsoleIntegration, removeLocalSCData } from '../../utils/searchConsole';
 
 type DomainsGetRes = {
-   domains: DomainType[]
-   error?: string|null,
-}
+   domains: DomainType[];
+   error?: string | null;
+};
 
 type DomainsAddResponse = {
-   domains: DomainType[]|null,
-   error?: string|null,
-}
+   domains: DomainType[] | null;
+   error?: string | null;
+};
 
 type DomainsDeleteRes = {
-   domainRemoved: number,
-   keywordsRemoved: number,
-   SCDataRemoved: boolean,
-   error?: string|null,
-}
+   domainRemoved: number;
+   keywordsRemoved: number;
+   SCDataRemoved: boolean;
+   error?: string | null;
+};
 
 type DomainsUpdateRes = {
-   domain: Domain|null,
-   error?: string|null,
-}
+   domain: Domain | null;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -55,7 +55,7 @@ export const getDomains = async (req: NextApiRequest, res: NextApiResponse<Domai
    try {
       const allDomains: Domain[] = await Domain.findAll();
       const formattedDomains: DomainType[] = allDomains.map((el) => {
-         const domainItem:DomainType = el.get({ plain: true });
+         const domainItem: DomainType = el.get({ plain: true });
          const scData = domainItem?.search_console ? JSON.parse(domainItem.search_console) : {};
          const { client_email, private_key } = scData;
          const searchConsoleData = scData ? { ...scData, client_email: client_email ? 'true' : '', private_key: private_key ? 'true' : '' } : {};
@@ -82,7 +82,7 @@ const addDomain = async (req: NextApiRequest, res: NextApiResponse<DomainsAddRes
          });
       });
       try {
-         const newDomains:Domain[] = await Domain.bulkCreate(domainsToAdd);
+         const newDomains: Domain[] = await Domain.bulkCreate(domainsToAdd);
          const formattedDomains = newDomains.map((el) => el.get({ plain: true }));
          return res.status(201).json({ domains: formattedDomains });
       } catch (error) {
@@ -118,7 +118,7 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
    const { notification_interval, notification_emails, search_console } = req.body as DomainSettings;
 
    try {
-      const domainToUpdate: Domain|null = await Domain.findOne({ where: { domain } });
+      const domainToUpdate: Domain | null = await Domain.findOne({ where: { domain } });
       // Validate Search Console API Data
       if (domainToUpdate && search_console?.client_email && search_console?.private_key) {
          const theDomainObj = domainToUpdate.get({ plain: true });

@@ -9,6 +9,23 @@ import { enableFetchMocks } from 'jest-fetch-mock';
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
 
+// TextEncoder/TextDecoder polyfills for MSW v2 compatibility
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
+// BroadcastChannel polyfill for MSW v2
+class BroadcastChannelPolyfill {
+   constructor() {
+      this.onmessage = null;
+   }
+   postMessage() {}
+   close() {}
+   addEventListener() {}
+   removeEventListener() {}
+}
+global.BroadcastChannel = BroadcastChannelPolyfill;
+
 window.matchMedia = (query) => ({
    matches: false,
    media: query,

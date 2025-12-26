@@ -6,9 +6,9 @@ import verifyUser from '../../utils/verifyUser';
 import refreshAndUpdateKeywords from '../../utils/refresh';
 
 type CRONRefreshRes = {
-   started: boolean
-   error?: string|null,
-}
+   started: boolean;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();

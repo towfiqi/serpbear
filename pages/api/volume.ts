@@ -7,9 +7,9 @@ import parseKeywords from '../../utils/parseKeywords';
 import { getKeywordsVolume, updateKeywordsVolumeData } from '../../utils/adwords';
 
 type KeywordsRefreshRes = {
-   keywords?: KeywordType[]
-   error?: string|null,
-}
+   keywords?: KeywordType[];
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
@@ -32,12 +32,12 @@ const updatekeywordVolume = async (req: NextApiRequest, res: NextApiResponse<Key
    try {
       let keywordsToSend: KeywordType[] = [];
       if (keywords.length > 0) {
-         const allKeywords:Keyword[] = await Keyword.findAll({ where: { ID: { [Op.in]: keywords } } });
+         const allKeywords: Keyword[] = await Keyword.findAll({ where: { ID: { [Op.in]: keywords } } });
          keywordsToSend = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
       }
       if (domain) {
          const allDomain = domain === 'all';
-         const allKeywords:Keyword[] = allDomain ? await Keyword.findAll() : await Keyword.findAll(allDomain ? {} : { where: { domain } });
+         const allKeywords: Keyword[] = allDomain ? await Keyword.findAll() : await Keyword.findAll(allDomain ? {} : { where: { domain } });
          keywordsToSend = parseKeywords(allKeywords.map((e) => e.get({ plain: true })));
       }
 

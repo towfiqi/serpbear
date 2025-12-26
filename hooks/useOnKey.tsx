@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-const useOnKey = (key:string, onPress: Function) => {
+const useOnKey = (key: string, onPress: Function) => {
    useEffect(() => {
-      const closeModalonEsc = (event:KeyboardEvent) => {
+      const closeModalonEsc = (event: KeyboardEvent) => {
          if (event.key === key) {
             onPress();
          }

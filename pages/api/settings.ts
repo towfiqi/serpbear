@@ -6,9 +6,9 @@ import verifyUser from '../../utils/verifyUser';
 import allScrapers from '../../scrapers/index';
 
 type SettingsGetResponse = {
-   settings?: object | null,
-   error?: string,
-}
+   settings?: object | null;
+   error?: string;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    const authorized = verifyUser(req, res);
@@ -71,7 +71,7 @@ const updateSettings = async (req: NextApiRequest, res: NextApiResponse<Settings
    }
 };
 
-export const getAppSettings = async () : Promise<SettingsType> => {
+export const getAppSettings = async (): Promise<SettingsType> => {
    const screenshotAPIKey = process.env.SCREENSHOT_API || '69408-serpbear';
    try {
       const settingsRaw = await readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
@@ -97,8 +97,9 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             smtp_password,
             search_console_client_email,
             search_console_private_key,
-            search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL)
-            || !!(search_console_client_email && search_console_private_key),
+            search_console_integrated:
+               !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL) ||
+               !!(search_console_client_email && search_console_private_key),
             available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id, allowsCity: !!scraper.allowsCity })),
             failed_queue: failedQueue,
             screenshot_key: screenshotAPIKey,

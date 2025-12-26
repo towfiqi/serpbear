@@ -2,12 +2,12 @@
 const { version } = require('./package.json');
 
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: false,
-  output: 'standalone',
-  publicRuntimeConfig: {
-   version,
- },
+   reactStrictMode: true,
+   swcMinify: false,
+   output: 'standalone',
+   publicRuntimeConfig: {
+      version,
+   },
 };
 
 module.exports = nextConfig;

@@ -1,7 +1,7 @@
 type ChartData = {
-   labels: string[],
-   sreies: number[]
-}
+   labels: string[];
+   sreies: number[];
+};
 
 export const generateChartData = (history: KeywordHistory): ChartData => {
    const currentDate = new Date();
@@ -20,14 +20,17 @@ export const generateChartData = (history: KeywordHistory): ChartData => {
       const serpOftheDate = history[pastDateKey];
       const lastLargestSerp = lastFoundSerp > 0 ? lastFoundSerp : 0;
       seriesDates[pastDateKey] = history[pastDateKey] ? history[pastDateKey] : lastLargestSerp;
-      if (lastFoundSerp < serpOftheDate) { lastFoundSerp = serpOftheDate; }
+      if (lastFoundSerp < serpOftheDate) {
+         lastFoundSerp = serpOftheDate;
+      }
    }
 
    return { labels: priorDates, sreies: Object.values(seriesDates) };
 };
 
-export const generateTheChartData = (history: KeywordHistory, time:string = '30'): ChartData => {
-   const currentDate = new Date(); let lastFoundSerp = 0;
+export const generateTheChartData = (history: KeywordHistory, time: string = '30'): ChartData => {
+   const currentDate = new Date();
+   let lastFoundSerp = 0;
    const chartData: ChartData = { labels: [], sreies: [] };
 
    if (time === 'all') {
@@ -45,7 +48,9 @@ export const generateTheChartData = (history: KeywordHistory, time:string = '30'
          const pastDateKey = `${pastDate.getFullYear()}-${pastDate.getMonth() + 1}-${pastDate.getDate()}`;
          const prevSerp = history[pastDateKey];
          const serpVal = prevSerp || (lastFoundSerp > 0 ? lastFoundSerp : 111);
-         if (serpVal !== 0) { lastFoundSerp = prevSerp; }
+         if (serpVal !== 0) {
+            lastFoundSerp = prevSerp;
+         }
          chartData.labels.push(pastDateKey);
          chartData.sreies.push(serpVal);
       }

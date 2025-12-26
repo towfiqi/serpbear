@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Claude Code local settings
+.claude/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Database
+data/
+
+# Generated files
+*.min.js
+*.min.css
+coverage/
+.nyc_output/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Config files that shouldn't be formatted
+*.md
+CHANGELOG.md

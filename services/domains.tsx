@@ -3,11 +3,11 @@ import toast from 'react-hot-toast';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 type UpdatePayload = {
-   domainSettings: DomainSettings,
-   domain: DomainType
-}
+   domainSettings: DomainSettings;
+   domain: DomainType;
+};
 
-export async function fetchDomains(router: NextRouter, withStats:boolean): Promise<{domains: DomainType[]}> {
+export async function fetchDomains(router: NextRouter, withStats: boolean): Promise<{ domains: DomainType[] }> {
    const res = await fetch(`${window.location.origin}/api/domains${withStats ? '?withstats=true' : ''}`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
@@ -19,8 +19,10 @@ export async function fetchDomains(router: NextRouter, withStats:boolean): Promi
    return res.json();
 }
 
-export async function fetchDomain(router: NextRouter, domainName: string): Promise<{domain: DomainType}> {
-   if (!domainName) { throw new Error('No Domain Name Provided!'); }
+export async function fetchDomain(router: NextRouter, domainName: string): Promise<{ domain: DomainType }> {
+   if (!domainName) {
+      throw new Error('No Domain Name Provided!');
+   }
    const res = await fetch(`${window.location.origin}/api/domain?domain=${domainName}`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
@@ -32,7 +34,7 @@ export async function fetchDomain(router: NextRouter, domainName: string): Promi
    return res.json();
 }
 
-export async function fetchDomainScreenshot(domain: string, screenshot_key:string, forceFetch = false): Promise<string | false> {
+export async function fetchDomainScreenshot(domain: string, screenshot_key: string, forceFetch = false): Promise<string | false> {
    const domainThumbsRaw = localStorage.getItem('domainThumbs');
    const domThumbs = domainThumbsRaw ? JSON.parse(domainThumbsRaw) : {};
    if (!domThumbs[domain] || forceFetch) {
@@ -56,96 +58,106 @@ export async function fetchDomainScreenshot(domain: string, screenshot_key:strin
          return false;
       }
    } else if (domThumbs[domain]) {
-         return domThumbs[domain];
+      return domThumbs[domain];
    }
 
    return false;
 }
 
-export function useFetchDomains(router: NextRouter, withStats:boolean = false) {
+export function useFetchDomains(router: NextRouter, withStats: boolean = false) {
    return useQuery('domains', () => fetchDomains(router, withStats));
 }
 
-export function useFetchDomain(router: NextRouter, domainName:string, onSuccess: Function) {
+export function useFetchDomain(router: NextRouter, domainName: string, onSuccess: Function) {
    return useQuery('domain', () => fetchDomain(router, domainName), {
       onSuccess: async (data) => {
          console.log('Domain Loaded!!!', data.domain);
          onSuccess(data.domain);
-      } });
+      },
+   });
 }
 
-export function useAddDomain(onSuccess:Function) {
+export function useAddDomain(onSuccess: Function) {
    const router = useRouter();
    const queryClient = useQueryClient();
-   return useMutation(async (domains:string[]) => {
-      const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
-      const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ domains }) };
-      const res = await fetch(`${window.location.origin}/api/domains`, fetchOpts);
-      if (res.status >= 400 && res.status < 600) {
-         throw new Error('Bad response from server');
-      }
-      return res.json();
-   }, {
-      onSuccess: async (data) => {
-         console.log('Domain Added!!!', data);
-         const newDomain:DomainType[] = data.domains;
-         const singleDomain = newDomain.length === 1;
-         toast(`${singleDomain ? newDomain[0].domain : `${newDomain.length} domains`} Added Successfully!`, { icon: '✔️' });
-         onSuccess(false);
-         if (singleDomain) {
-            router.push(`/domain/${newDomain[0].slug}`);
+   return useMutation(
+      async (domains: string[]) => {
+         const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
+         const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ domains }) };
+         const res = await fetch(`${window.location.origin}/api/domains`, fetchOpts);
+         if (res.status >= 400 && res.status < 600) {
+            throw new Error('Bad response from server');
          }
-         queryClient.invalidateQueries(['domains']);
+         return res.json();
       },
-      onError: () => {
-         console.log('Error Adding New Domain!!!');
-         toast('Error Adding New Domain');
+      {
+         onSuccess: async (data) => {
+            console.log('Domain Added!!!', data);
+            const newDomain: DomainType[] = data.domains;
+            const singleDomain = newDomain.length === 1;
+            toast(`${singleDomain ? newDomain[0].domain : `${newDomain.length} domains`} Added Successfully!`, { icon: '✔️' });
+            onSuccess(false);
+            if (singleDomain) {
+               router.push(`/domain/${newDomain[0].slug}`);
+            }
+            queryClient.invalidateQueries(['domains']);
+         },
+         onError: () => {
+            console.log('Error Adding New Domain!!!');
+            toast('Error Adding New Domain');
+         },
       },
-   });
+   );
 }
 
-export function useUpdateDomain(onSuccess:Function) {
+export function useUpdateDomain(onSuccess: Function) {
    const queryClient = useQueryClient();
-   return useMutation(async ({ domainSettings, domain }: UpdatePayload) => {
-      const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
-      const fetchOpts = { method: 'PUT', headers, body: JSON.stringify(domainSettings) };
-      const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, fetchOpts);
-      const responseObj = await res.json();
-      if (res.status >= 400 && res.status < 600) {
-         throw new Error(responseObj?.error || 'Bad response from server');
-      }
-      return responseObj;
-   }, {
-      onSuccess: async () => {
-         console.log('Settings Updated!!!');
-         toast('Settings Updated!', { icon: '✔️' });
-         onSuccess();
-         queryClient.invalidateQueries(['domains']);
+   return useMutation(
+      async ({ domainSettings, domain }: UpdatePayload) => {
+         const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
+         const fetchOpts = { method: 'PUT', headers, body: JSON.stringify(domainSettings) };
+         const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, fetchOpts);
+         const responseObj = await res.json();
+         if (res.status >= 400 && res.status < 600) {
+            throw new Error(responseObj?.error || 'Bad response from server');
+         }
+         return responseObj;
       },
-      onError: (error) => {
-         console.log('Error Updating Domain Settings!!!', error);
-         toast('Error Updating Domain Settings', { icon: '⚠️' });
+      {
+         onSuccess: async () => {
+            console.log('Settings Updated!!!');
+            toast('Settings Updated!', { icon: '✔️' });
+            onSuccess();
+            queryClient.invalidateQueries(['domains']);
+         },
+         onError: (error) => {
+            console.log('Error Updating Domain Settings!!!', error);
+            toast('Error Updating Domain Settings', { icon: '⚠️' });
+         },
       },
-   });
+   );
 }
 
-export function useDeleteDomain(onSuccess:Function) {
+export function useDeleteDomain(onSuccess: Function) {
    const queryClient = useQueryClient();
-   return useMutation(async (domain:DomainType) => {
-      const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, { method: 'DELETE' });
-      if (res.status >= 400 && res.status < 600) {
-         throw new Error('Bad response from server');
-      }
-      return res.json();
-   }, {
-      onSuccess: async () => {
-         toast('Domain Removed Successfully!', { icon: '✔️' });
-         onSuccess();
-         queryClient.invalidateQueries(['domains']);
+   return useMutation(
+      async (domain: DomainType) => {
+         const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, { method: 'DELETE' });
+         if (res.status >= 400 && res.status < 600) {
+            throw new Error('Bad response from server');
+         }
+         return res.json();
       },
-      onError: () => {
-         console.log('Error Removing Domain!!!');
-         toast('Error Removing Domain', { icon: '⚠️' });
+      {
+         onSuccess: async () => {
+            toast('Domain Removed Successfully!', { icon: '✔️' });
+            onSuccess();
+            queryClient.invalidateQueries(['domains']);
+         },
+         onError: () => {
+            console.log('Error Removing Domain!!!');
+            toast('Error Removing Domain', { icon: '⚠️' });
+         },
       },
-   });
+   );
 }

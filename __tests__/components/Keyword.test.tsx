@@ -9,6 +9,7 @@ const keywordProps = {
    showSCData: false,
    scDataType: '',
    style: {},
+   maxTitleColumnWidth: 235,
    refreshkeyword: jest.fn(),
    favoriteKeyword: jest.fn(),
    removeKeyword: jest.fn(),
@@ -18,11 +19,11 @@ const keywordProps = {
 };
 jest.mock('react-chartjs-2', () => ({
    Line: () => null,
- }));
+}));
 describe('Keyword Component', () => {
    it('renders without crashing', async () => {
-       render(<Keyword {...keywordProps} />);
-       expect(await screen.findByText('compress image')).toBeInTheDocument();
+      render(<Keyword {...keywordProps} />);
+      expect(await screen.findByText('compress image')).toBeInTheDocument();
    });
    it('Should Render Position Correctly', async () => {
       render(<Keyword {...keywordProps} />);

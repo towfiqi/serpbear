@@ -5,14 +5,14 @@ import Keyword from '../database/models/keyword';
  * @param {Keyword[]} allKeywords - Keywords to scrape
  * @returns {KeywordType[]}
  */
-const parseKeywords = (allKeywords: Keyword[]) : KeywordType[] => {
-   const parsedItems = allKeywords.map((keywrd:Keyword) => ({
-         ...keywrd,
-         history: JSON.parse(keywrd.history),
-         tags: JSON.parse(keywrd.tags),
-         lastResult: JSON.parse(keywrd.lastResult),
-         lastUpdateError: keywrd.lastUpdateError !== 'false' && keywrd.lastUpdateError.includes('{') ? JSON.parse(keywrd.lastUpdateError) : false,
-      }));
+const parseKeywords = (allKeywords: Keyword[]): KeywordType[] => {
+   const parsedItems = allKeywords.map((keywrd: Keyword) => ({
+      ...keywrd,
+      history: JSON.parse(keywrd.history),
+      tags: JSON.parse(keywrd.tags),
+      lastResult: JSON.parse(keywrd.lastResult),
+      lastUpdateError: keywrd.lastUpdateError !== 'false' && keywrd.lastUpdateError.includes('{') ? JSON.parse(keywrd.lastUpdateError) : false,
+   }));
    return parsedItems;
 };
 

@@ -10,55 +10,61 @@ export function useFetchSettings() {
    return useQuery('settings', () => fetchSettings());
 }
 
-export const useUpdateSettings = (onSuccess:Function|undefined) => {
+export const useUpdateSettings = (onSuccess: Function | undefined) => {
    const queryClient = useQueryClient();
 
-   return useMutation(async (settings: SettingsType) => {
-      // console.log('settings: ', JSON.stringify(settings));
+   return useMutation(
+      async (settings: SettingsType) => {
+         // console.log('settings: ', JSON.stringify(settings));
 
-      const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
-      const fetchOpts = { method: 'PUT', headers, body: JSON.stringify({ settings }) };
-      const res = await fetch(`${window.location.origin}/api/settings`, fetchOpts);
-      if (res.status >= 400 && res.status < 600) {
-         throw new Error('Bad response from server');
-      }
-      return res.json();
-   }, {
-      onSuccess: async () => {
-         if (onSuccess) {
-            onSuccess();
+         const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
+         const fetchOpts = { method: 'PUT', headers, body: JSON.stringify({ settings }) };
+         const res = await fetch(`${window.location.origin}/api/settings`, fetchOpts);
+         if (res.status >= 400 && res.status < 600) {
+            throw new Error('Bad response from server');
          }
-         toast('Settings Updated!', { icon: '✔️' });
-         queryClient.invalidateQueries(['settings']);
+         return res.json();
       },
-      onError: () => {
-         console.log('Error Updating App Settings!!!');
-         toast('Error Updating App Settings.', { icon: '⚠️' });
+      {
+         onSuccess: async () => {
+            if (onSuccess) {
+               onSuccess();
+            }
+            toast('Settings Updated!', { icon: '✔️' });
+            queryClient.invalidateQueries(['settings']);
+         },
+         onError: () => {
+            console.log('Error Updating App Settings!!!');
+            toast('Error Updating App Settings.', { icon: '⚠️' });
+         },
       },
-   });
+   );
 };
 
-export function useClearFailedQueue(onSuccess:Function) {
+export function useClearFailedQueue(onSuccess: Function) {
    const queryClient = useQueryClient();
-   return useMutation(async () => {
-      const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
-      const fetchOpts = { method: 'PUT', headers };
-      const res = await fetch(`${window.location.origin}/api/clearfailed`, fetchOpts);
-      if (res.status >= 400 && res.status < 600) {
-         throw new Error('Bad response from server');
-      }
-      return res.json();
-   }, {
-      onSuccess: async () => {
-         onSuccess();
-         toast('Failed Queue Cleared', { icon: '✔️' });
-         queryClient.invalidateQueries(['settings']);
+   return useMutation(
+      async () => {
+         const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
+         const fetchOpts = { method: 'PUT', headers };
+         const res = await fetch(`${window.location.origin}/api/clearfailed`, fetchOpts);
+         if (res.status >= 400 && res.status < 600) {
+            throw new Error('Bad response from server');
+         }
+         return res.json();
       },
-      onError: () => {
-         console.log('Error Clearing Failed Queue!!!');
-         toast('Error Clearing Failed Queue.', { icon: '⚠️' });
+      {
+         onSuccess: async () => {
+            onSuccess();
+            toast('Failed Queue Cleared', { icon: '✔️' });
+            queryClient.invalidateQueries(['settings']);
+         },
+         onError: () => {
+            console.log('Error Clearing Failed Queue!!!');
+            toast('Error Clearing Failed Queue.', { icon: '⚠️' });
+         },
       },
-   });
+   );
 }
 
 export async function fetchMigrationStatus() {
@@ -70,27 +76,30 @@ export function useCheckMigrationStatus() {
    return useQuery('dbmigrate', () => fetchMigrationStatus());
 }
 
-export const useMigrateDatabase = (onSuccess:Function|undefined) => {
+export const useMigrateDatabase = (onSuccess: Function | undefined) => {
    const queryClient = useQueryClient();
 
-   return useMutation(async () => {
-      // console.log('settings: ', JSON.stringify(settings));
-      const res = await fetch(`${window.location.origin}/api/dbmigrate`, { method: 'POST' });
-      if (res.status >= 400 && res.status < 600) {
-         throw new Error('Bad response from server');
-      }
-      return res.json();
-   }, {
-      onSuccess: async (res) => {
-         if (onSuccess) {
-            onSuccess(res);
+   return useMutation(
+      async () => {
+         // console.log('settings: ', JSON.stringify(settings));
+         const res = await fetch(`${window.location.origin}/api/dbmigrate`, { method: 'POST' });
+         if (res.status >= 400 && res.status < 600) {
+            throw new Error('Bad response from server');
          }
-         toast('Database Updated!', { icon: '✔️' });
-         queryClient.invalidateQueries(['settings']);
+         return res.json();
       },
-      onError: () => {
-         console.log('Error Updating Database!!!');
-         toast('Error Updating Database.', { icon: '⚠️' });
+      {
+         onSuccess: async (res) => {
+            if (onSuccess) {
+               onSuccess(res);
+            }
+            toast('Database Updated!', { icon: '✔️' });
+            queryClient.invalidateQueries(['settings']);
+         },
+         onError: () => {
+            console.log('Error Updating Database!!!');
+            toast('Error Updating Database.', { icon: '⚠️' });
+         },
       },
-   });
+   );
 };

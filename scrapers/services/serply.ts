@@ -1,11 +1,11 @@
 interface SerplyResult {
-   title: string,
-   link: string,
-   realPosition: number,
+   title: string;
+   link: string;
+   realPosition: number;
 }
 const scraperCountries = ['US', 'CA', 'IE', 'GB', 'FR', 'DE', 'SE', 'IN', 'JP', 'KR', 'SG', 'AU', 'BR'];
 
-const serply:ScraperSettings = {
+const serply: ScraperSettings = {
    id: 'serply',
    name: 'Serply',
    website: 'serply.io',
@@ -25,7 +25,7 @@ const serply:ScraperSettings = {
    resultObjectKey: 'result',
    serpExtractor: (content) => {
       const extractedResult = [];
-      const results: SerplyResult[] = (typeof content === 'string') ? JSON.parse(content) : content as SerplyResult[];
+      const results: SerplyResult[] = typeof content === 'string' ? JSON.parse(content) : (content as SerplyResult[]);
       for (const result of results) {
          if (result.title && result.link) {
             extractedResult.push({

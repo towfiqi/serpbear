@@ -1,4 +1,4 @@
-const scrapingRobot:ScraperSettings = {
+const scrapingRobot: ScraperSettings = {
    id: 'scrapingrobot',
    name: 'Scraping Robot',
    website: 'scrapingrobot.com',

@@ -3,9 +3,9 @@ import Cookies from 'cookies';
 import verifyUser from '../../utils/verifyUser';
 
 type logoutResponse = {
-   success?: boolean
-   error?: string|null,
-}
+   success?: boolean;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    const authorized = verifyUser(req, res);

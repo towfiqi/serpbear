@@ -1,10 +1,9 @@
 import { Table, Model, Column, DataType, PrimaryKey, Unique } from 'sequelize-typescript';
 
 @Table({
-  timestamps: false,
-  tableName: 'domain',
+   timestamps: false,
+   tableName: 'domain',
 })
-
 class Domain extends Model {
    @PrimaryKey
    @Column({ type: DataType.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true })

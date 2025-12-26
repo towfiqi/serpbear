@@ -4,7 +4,7 @@
  * @param {string} [sortBy=clicks] - The `sortBy` parameter determines the property by which the `items` array should be sorted.
  * @returns {SCInsightItem[]}
  */
-export const sortInsightItems = (items:SCInsightItem[], sortBy: string = 'clicks'): SCInsightItem[] => {
+export const sortInsightItems = (items: SCInsightItem[], sortBy: string = 'clicks'): SCInsightItem[] => {
    const sortKey = sortBy as keyof SCInsightItem;
    let sortedItems = [];
    switch (sortKey) {
@@ -31,14 +31,14 @@ export const sortInsightItems = (items:SCInsightItem[], sortBy: string = 'clicks
  * @param {string} [queryDate=thirtyDays] - The `queryDate` parameter is a string that represents the date range for which the search analytics data is retrieved.
  * @returns {SCInsightItem[]}
  */
-export const getCountryInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks', queryDate:string = 'thirtyDays') : SCInsightItem[] => {
-   const keywordsCounts: { [key:string]: string[] } = {};
-   const countryItems: { [key:string]: SCInsightItem } = {};
+export const getCountryInsight = (SCData: SCDomainDataType, sortBy: string = 'clicks', queryDate: string = 'thirtyDays'): SCInsightItem[] => {
+   const keywordsCounts: { [key: string]: string[] } = {};
+   const countryItems: { [key: string]: SCInsightItem } = {};
    const dateKey = queryDate as keyof SCDomainDataType;
-   const scData = SCData[dateKey] ? SCData[dateKey] as SearchAnalyticsItem[] : [];
+   const scData = SCData[dateKey] ? (SCData[dateKey] as SearchAnalyticsItem[]) : [];
    const allCountries: string[] = [...new Set(scData.map((item) => item.country))];
 
-   allCountries.forEach((countryKey:string) => {
+   allCountries.forEach((countryKey: string) => {
       const itemData = { clicks: 0, impressions: 0, ctr: 0, position: 0 };
       scData.forEach((itm) => {
          if (itm.country === countryKey) {
@@ -57,7 +57,7 @@ export const getCountryInsight = (SCData:SCDomainDataType, sortBy:string = 'clic
       countryItems[countryKey] = itemData;
    });
 
-   const countryInsight: SCInsightItem[] = Object.keys(countryItems).map((countryCode:string) => {
+   const countryInsight: SCInsightItem[] = Object.keys(countryItems).map((countryCode: string) => {
       return {
          ...countryItems[countryCode],
          position: Math.round(countryItems[countryCode].position / keywordsCounts[countryCode].length),
@@ -77,15 +77,15 @@ export const getCountryInsight = (SCData:SCDomainDataType, sortBy:string = 'clic
  * @param {string} [queryDate=thirtyDays] - The `queryDate` parameter is a string that represents the date range for which the search analytics data is retrieved.
  * @returns {SCInsightItem[]}
  */
-export const getKeywordsInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks', queryDate:string = 'thirtyDays') : SCInsightItem[] => {
-   const keywordItems: { [key:string]: SCInsightItem } = {};
-   const keywordCounts: { [key:string]: number } = {};
-   const countriesCount: { [key:string]: string[] } = {};
+export const getKeywordsInsight = (SCData: SCDomainDataType, sortBy: string = 'clicks', queryDate: string = 'thirtyDays'): SCInsightItem[] => {
+   const keywordItems: { [key: string]: SCInsightItem } = {};
+   const keywordCounts: { [key: string]: number } = {};
+   const countriesCount: { [key: string]: string[] } = {};
    const dateKey = queryDate as keyof SCDomainDataType;
-   const scData = SCData[dateKey] ? SCData[dateKey] as SearchAnalyticsItem[] : [];
+   const scData = SCData[dateKey] ? (SCData[dateKey] as SearchAnalyticsItem[]) : [];
    const allKeywords: string[] = [...new Set(scData.map((item) => item.keyword))];
 
-   allKeywords.forEach((keyword:string) => {
+   allKeywords.forEach((keyword: string) => {
       const itemData = { clicks: 0, impressions: 0, ctr: 0, position: 0 };
       const keywordKey = keyword.replaceAll(' ', '_');
       scData.forEach((itm) => {
@@ -106,7 +106,7 @@ export const getKeywordsInsight = (SCData:SCDomainDataType, sortBy:string = 'cli
       keywordItems[keywordKey] = itemData;
    });
 
-   const keywordInsight: SCInsightItem[] = Object.keys(keywordItems).map((keyword:string) => {
+   const keywordInsight: SCInsightItem[] = Object.keys(keywordItems).map((keyword: string) => {
       return {
          ...keywordItems[keyword],
          position: Math.round(keywordItems[keyword].position / keywordCounts[keyword]),
@@ -126,15 +126,15 @@ export const getKeywordsInsight = (SCData:SCDomainDataType, sortBy:string = 'cli
  * @param {string} [queryDate=thirtyDays] - The `queryDate` parameter is a string that represents the date range for which you want to retrieve the data.
  * @returns {SCInsightItem[]}
  */
-export const getPagesInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks', queryDate:string = 'thirtyDays') : SCInsightItem[] => {
-   const pagesItems: { [key:string]: SCInsightItem } = {};
-   const keywordCounts: { [key:string]: number } = {};
-   const countriesCount: { [key:string]: string[] } = {};
+export const getPagesInsight = (SCData: SCDomainDataType, sortBy: string = 'clicks', queryDate: string = 'thirtyDays'): SCInsightItem[] => {
+   const pagesItems: { [key: string]: SCInsightItem } = {};
+   const keywordCounts: { [key: string]: number } = {};
+   const countriesCount: { [key: string]: string[] } = {};
    const dateKey = queryDate as keyof SCDomainDataType;
-   const scData = SCData[dateKey] ? SCData[dateKey] as SearchAnalyticsItem[] : [];
+   const scData = SCData[dateKey] ? (SCData[dateKey] as SearchAnalyticsItem[]) : [];
    const allPages: string[] = [...new Set(scData.map((item) => item.page))];
 
-   allPages.forEach((page:string) => {
+   allPages.forEach((page: string) => {
       const itemData = { clicks: 0, impressions: 0, ctr: 0, position: 0 };
       scData.forEach((itm) => {
          if (itm.page === page) {
@@ -154,7 +154,7 @@ export const getPagesInsight = (SCData:SCDomainDataType, sortBy:string = 'clicks
       pagesItems[page] = itemData;
    });
 
-   const pagesInsight: SCInsightItem[] = Object.keys(pagesItems).map((page:string) => {
+   const pagesInsight: SCInsightItem[] = Object.keys(pagesItems).map((page: string) => {
       return {
          ...pagesItems[page],
          position: Math.round(pagesItems[page].position / keywordCounts[page]),

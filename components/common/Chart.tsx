@@ -4,14 +4,14 @@ import { Line } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-type ChartProps ={
-   labels: string[],
-   sreies: number[],
-   reverse? : boolean,
-   noMaxLimit?: boolean
-}
+type ChartProps = {
+   labels: string[];
+   sreies: number[];
+   reverse?: boolean;
+   noMaxLimit?: boolean;
+};
 
-const Chart = ({ labels, sreies, reverse = true, noMaxLimit = false }:ChartProps) => {
+const Chart = ({ labels, sreies, reverse = true, noMaxLimit = false }: ChartProps) => {
    const options = {
       responsive: true,
       maintainAspectRatio: false,
@@ -25,15 +25,16 @@ const Chart = ({ labels, sreies, reverse = true, noMaxLimit = false }:ChartProps
       },
       plugins: {
          legend: {
-             display: false,
+            display: false,
          },
-     },
+      },
    };
 
-   return <Line
-            datasetIdKey='XXX'
-            options={options}
-            data={{
+   return (
+      <Line
+         datasetIdKey="XXX"
+         options={options}
+         data={{
             labels,
             datasets: [
                {
@@ -43,8 +44,9 @@ const Chart = ({ labels, sreies, reverse = true, noMaxLimit = false }:ChartProps
                   backgroundColor: 'rgba(31, 205, 176, 0.5)',
                },
             ],
-            }}
-         />;
+         }}
+      />
+   );
 };
 
 export default Chart;

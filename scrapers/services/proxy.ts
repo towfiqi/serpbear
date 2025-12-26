@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 
-const proxy:ScraperSettings = {
+const proxy: ScraperSettings = {
    id: 'proxy',
    name: 'Proxy',
    website: '',

@@ -1,5 +1,5 @@
-@import url("./fflag.css");
-@import url("./changelog.css");
+@import url('./fflag.css');
+@import url('./changelog.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -77,7 +77,7 @@ body {
    border-radius: 4px;
    border-color: #a7aed3;
    box-shadow: 0 0 10px rgb(0 0 0 / 12%);
-   font-family: "Trebuchet MS", Roboto, Ubuntu, sans-serif;
+   font-family: 'Trebuchet MS', Roboto, Ubuntu, sans-serif;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
 }
@@ -91,7 +91,7 @@ body {
 .domKeywords_head--imp_asc .domKeywords_head_imp::after,
 .domKeywords_head--visits_asc .domKeywords_head_visits::after,
 .domKeywords_head--ctr_desc .domKeywords_head_ctr::after {
-   content: "↓";
+   content: '↓';
    display: inline-block;
    margin-left: 4px;
    font-size: 14px;
@@ -105,7 +105,7 @@ body {
 .domKeywords_head--imp_desc .domKeywords_head_imp::after,
 .domKeywords_head--visits_desc .domKeywords_head_visits::after,
 .domKeywords_head--ctr_asc .domKeywords_head_ctr::after {
-   content: "↑";
+   content: '↑';
    display: inline-block;
    margin-left: 4px;
    font-size: 14px;
@@ -189,7 +189,7 @@ body {
 }
 
 .domItem:hover h3 {
-   color: #364aff
+   color: #364aff;
 }
 
 .noDomains {
@@ -224,7 +224,7 @@ body {
 
 .dom_sc_stats > div::after,
 .dom_stats > div::after {
-   content: "";
+   content: '';
    width: 1px;
    height: 35px;
    background: #eee;
@@ -263,7 +263,7 @@ body {
    }
 
    .domheader_action_button i::after {
-      content: "";
+      content: '';
       width: 0;
       height: 0;
       border-style: solid;
@@ -277,7 +277,7 @@ body {
    }
 
    .domkeywordsTable--keywords.domkeywordsTable--hasSC .domKeywords_keywords::before {
-      content: "";
+      content: '';
       position: absolute;
       width: 1px;
       height: 100%;
@@ -287,32 +287,32 @@ body {
    }
 }
 
-.idea_competiton{
+.idea_competiton {
    color: #0000008c;
 }
 
-.idea_competiton--LOW span:last-child{
+.idea_competiton--LOW span:last-child {
    background-color: #ccf5ee;
    color: #39a895;
 }
-.idea_competiton--MEDIUM span:last-child{
+.idea_competiton--MEDIUM span:last-child {
    color: #6e5d1f;
-   background-color: #F6F0D8;
+   background-color: #f6f0d8;
 }
 
-.idea_competiton--HIGH span:last-child{
+.idea_competiton--HIGH span:last-child {
    color: #ae513c;
    background-color: #f9ded7;
 }
 
-@media screen and (max-width: 760px){
-   .keyword_best:before{
-      content: "Best: ";
+@media screen and (max-width: 760px) {
+   .keyword_best:before {
+      content: 'Best: ';
    }
 }
 
-
 /* Disable LastPass Icon for Secret Field */
-[autocomplete="off"] + div[data-lastpass-icon-root="true"], [autocomplete="off"] + div[data-lastpass-infield="true"] {
+[autocomplete='off'] + div[data-lastpass-icon-root='true'],
+[autocomplete='off'] + div[data-lastpass-infield='true'] {
    display: none;
 }

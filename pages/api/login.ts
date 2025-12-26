@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken';
 import Cookies from 'cookies';
 
 type loginResponse = {
-   success?: boolean
-   error?: string|null,
-}
+   success?: boolean;
+   error?: string | null;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    if (req.method === 'POST') {
@@ -20,8 +20,7 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<loginResponse
    }
    const userName = process.env.USER_NAME ? process.env.USER_NAME : process.env.USER;
 
-   if (req.body.username === userName
-      && req.body.password === process.env.PASSWORD && process.env.SECRET) {
+   if (req.body.username === userName && req.body.password === process.env.PASSWORD && process.env.SECRET) {
       const token = jwt.sign({ user: userName }, process.env.SECRET);
       const cookies = new Cookies(req, res);
       const expireDate = new Date();

@@ -1,13 +1,15 @@
 import countries from '../countries';
 
-  /**
-   * Generates CSV File form the given domain & keywords, and automatically downloads it.
-   * @param {KeywordType[]}  keywords - The keywords of the domain
-   * @param {string} domain - The domain name.
-   * @returns {void}
-   */
-const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scDataDuration = 'lastThreeDays') => {
-   if (!keywords || (keywords && Array.isArray(keywords) && keywords.length === 0)) { return; }
+/**
+ * Generates CSV File form the given domain & keywords, and automatically downloads it.
+ * @param {KeywordType[]}  keywords - The keywords of the domain
+ * @param {string} domain - The domain name.
+ * @returns {void}
+ */
+const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain: string, scDataDuration = 'lastThreeDays') => {
+   if (!keywords || (keywords && Array.isArray(keywords) && keywords.length === 0)) {
+      return;
+   }
    const isSCKeywords = !!(keywords && keywords[0] && keywords[0].uid);
    let csvHeader = 'ID,Keyword,Position,URL,Country,City,Device,Updated,Added,Tags\r\n';
    let csvBody = '';
@@ -22,13 +24,17 @@ const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scD
       keywords.forEach((keywordData, index) => {
          const { keyword, position, country, device, clicks, impressions, ctr } = keywordData as SCKeywordType;
          // eslint-disable-next-line max-len
-         csvBody += `${index}, ${keyword}, ${position === 0 ? '-' : position}, ${impressions}, ${clicks}, ${ctr}, ${countries[country][0]}, ${device}\r\n`;
+         csvBody += `${index}, ${keyword}, ${position === 0 ? '-' : position}, ${impressions}, ${clicks}, ${ctr}, ${
+            countries[country][0]
+         }, ${device}\r\n`;
       });
    } else {
       keywords.forEach((keywordData) => {
          const { ID, keyword, position, url, country, city, device, lastUpdated, added, tags } = keywordData as KeywordType;
          // eslint-disable-next-line max-len
-         csvBody += `${ID}, ${keyword}, ${position === 0 ? '-' : position}, ${url || '-'}, ${countries[country][0]}, ${city || '-'}, ${device}, ${lastUpdated}, ${added}, ${tags.join(',')}\r\n`;
+         csvBody += `${ID}, ${keyword}, ${position === 0 ? '-' : position}, ${url || '-'}, ${countries[country][0]}, ${
+            city || '-'
+         }, ${device}, ${lastUpdated}, ${added}, ${tags.join(',')}\r\n`;
       });
    }
 
@@ -36,13 +42,15 @@ const exportCSV = (keywords: KeywordType[] | SCKeywordType[], domain:string, scD
 };
 
 /**
-* Generates CSV File form the given keyword Ideas, and automatically downloads it.
-* @param {IdeaKeyword[]}  keywords - The keyword Ideas to export
-* @param {string} domainName - The domain name.
-* @returns {void}
-*/
-export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName:string) => {
-   if (!keywords || (keywords && Array.isArray(keywords) && keywords.length === 0)) { return; }
+ * Generates CSV File form the given keyword Ideas, and automatically downloads it.
+ * @param {IdeaKeyword[]}  keywords - The keyword Ideas to export
+ * @param {string} domainName - The domain name.
+ * @returns {void}
+ */
+export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName: string) => {
+   if (!keywords || (keywords && Array.isArray(keywords) && keywords.length === 0)) {
+      return;
+   }
    const csvHeader = 'Keyword,Volume,Competition,CompetitionScore,Country,Added\r\n';
    let csvBody = '';
    const fileName = `${domainName}-keyword_ideas.csv`;
@@ -61,7 +69,7 @@ export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName:string) =
  * @param {string} csvBody - The content of the csv file.
  * @param {string} fileName - The file Name for the downlaoded csv file.
  */
-const downloadCSV = (csvHeader:string, csvBody:string, fileName:string) => {
+const downloadCSV = (csvHeader: string, csvBody: string, fileName: string) => {
    const blob = new Blob([csvHeader + csvBody], { type: 'text/csv;charset=utf-8;' });
    const url = URL.createObjectURL(blob);
    const link = document.createElement('a');

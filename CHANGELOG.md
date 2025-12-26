@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/towfiqi/serpbear/compare/v2.0.7...v2.1.0) (2025-12-25)
+
+
+### Features
+
+* Add GitHub Actions CI pipeline with lint, typecheck, test, build, and Docker jobs
+* Add pre-commit hooks with Husky and lint-staged for automated code quality checks
+* Add Prettier configuration for consistent code formatting
+* Add TypeScript type checking to development workflow
+* Add new npm scripts: `typecheck`, `format`, `format:check`, `lint:fix`, `lint:css:fix`
+
+
+### Bug Fixes
+
+* Fix stray `</h3>` closing tag in email template
+* Fix missing `maxTitleColumnWidth` prop in Keyword component tests
+* Exclude MCP server from main TypeScript config to resolve module resolution errors
+* Fix MSW v2 compatibility by adding TextEncoder/TextDecoder polyfills
+* Fix missing `useUpdateSettings` mock in domain page tests
+* Fix country filter test by using different countries in test data
+
+
+### Code Quality
+
+* Configure ESLint to disable `operator-linebreak` rule (conflicts with Prettier)
+* Configure Stylelint to use single quotes (consistent with Prettier)
+* Apply Prettier formatting across entire codebase
+* Apply Stylelint auto-fixes to CSS files
+
 ### [2.0.7](https://github.com/towfiqi/serpbear/compare/v2.0.6...v2.0.7) (2025-02-23)
 
 
