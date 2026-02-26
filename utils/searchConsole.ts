@@ -62,7 +62,8 @@ const fetchSearchConsoleData = async (domain:DomainType, days:number, type?:stri
       };
    }
 
-      const siteUrl = domainSettings.property_type === 'url' && domainSettings.url ? domainSettings.url : `sc-domain:${domainName}`;
+      const cleanDomain = domainName.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/+$/, '');
+      const siteUrl = domainSettings.property_type === 'url' && domainSettings.url ? domainSettings.url : `sc-domain:${cleanDomain}`;
       const res = client.searchanalytics.query({ siteUrl, requestBody });
       const resData:any = (await res).data;
       let finalRows = resData.rows ? resData.rows.map((item:SearchAnalyticsRawItem) => parseSearchConsoleItem(item, domainName)) : [];
@@ -223,7 +224,7 @@ export const getSearchConsoleApiInfo = async (domain: DomainType): Promise<SCAPI
  */
 export const checkSerchConsoleIntegration = async (domain: DomainType): Promise<{ isValid: boolean, error: string }> => {
    const res = { isValid: false, error: '' };
-   const { client_email = '', private_key = '' } = domain?.search_console ? JSON.parse(domain.search_console) : {};
+   const { client_email, private_key } = await getSearchConsoleApiInfo(domain);
    const response = await fetchSearchConsoleData(domain, 3, undefined, { client_email, private_key });
    if (Array.isArray(response)) { res.isValid = true; }
    if ((response as SCDomainFetchError)?.errorMsg) { res.error = (response as SCDomainFetchError).errorMsg; }

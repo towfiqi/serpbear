@@ -57,7 +57,10 @@ const cronRefreshSearchConsoleData = async (req: NextApiRequest, res: NextApiRes
       const allDomainsRaw = await Domain.findAll();
       const Domains: DomainType[] = allDomainsRaw.map((el) => el.get({ plain: true }));
       for (const domain of Domains) {
-         await fetchDomainSCData(domain);
+         const scDomainAPI = await getSearchConsoleApiInfo(domain);
+         if (scDomainAPI.client_email && scDomainAPI.private_key) {
+            await fetchDomainSCData(domain, scDomainAPI);
+         }
       }
       return res.status(200).json({ status: 'completed' });
    } catch (error) {
