@@ -221,14 +221,14 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
 export const getSerp = (domainURL:string, result:SearchResult[]) : SERPObject => {
    if (result.length === 0 || !domainURL) { return { position: 0, url: '' }; }
    const URLToFind = new URL(domainURL.includes('https://') ? domainURL : `https://${domainURL}`);
-   const theURL = URLToFind.hostname + URLToFind.pathname;
    const isURL = URLToFind.pathname !== '/';
+   const stripWww = (hostname: string) => hostname.replace(/^www\./, '');
    const foundItem = result.find((item) => {
       const itemURL = new URL(item.url.includes('https://') ? item.url : `https://${item.url}`);
-      if (isURL && `${theURL}/` === itemURL.hostname + itemURL.pathname) {
+      if (isURL && `${stripWww(URLToFind.hostname)}${URLToFind.pathname}/` === stripWww(itemURL.hostname) + itemURL.pathname) {
          return true;
       }
-      return URLToFind.hostname === itemURL.hostname;
+      return stripWww(URLToFind.hostname) === stripWww(itemURL.hostname);
    });
    return { position: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
 };
