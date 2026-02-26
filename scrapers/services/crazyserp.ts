@@ -1,7 +1,13 @@
 import countries from '../../utils/countries';
 
 const googleDomains: Record<string, string> = {
-    GB: 'www.google.co.uk',CA: 'www.google.ca',DE: 'www.google.de',FR: 'www.google.fr', ES: 'www.google.es', IT: 'www.google.it', NL: 'www.google.nl'
+   GB: 'www.google.co.uk',
+   CA: 'www.google.ca',
+   DE: 'www.google.de',
+   FR: 'www.google.fr',
+   ES: 'www.google.es',
+   IT: 'www.google.it',
+   NL: 'www.google.nl',
 };
 
 interface CrazySerpResult {
