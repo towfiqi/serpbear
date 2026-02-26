@@ -6,6 +6,7 @@ import Keyword from '../../database/models/keyword';
 import getdomainStats from '../../utils/domains';
 import verifyUser from '../../utils/verifyUser';
 import { checkSerchConsoleIntegration, removeLocalSCData } from '../../utils/searchConsole';
+import { removeFromRetryQueue } from '../../utils/scraper';
 
 type DomainsGetRes = {
    domains: DomainType[]
@@ -100,9 +101,11 @@ export const deleteDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
    }
    try {
       const { domain } = req.query || {};
+      await Promise.all((await Keyword.findAll({ where: { domain } })).map((keyword) => removeFromRetryQueue(keyword.ID)));
       const removedDomCount: number = await Domain.destroy({ where: { domain } });
       const removedKeywordCount: number = await Keyword.destroy({ where: { domain } });
       const SCDataRemoved = await removeLocalSCData(domain as string);
+
       return res.status(200).json({ domainRemoved: removedDomCount, keywordsRemoved: removedKeywordCount, SCDataRemoved });
    } catch (error) {
       console.log('[ERROR] Deleting Domain: ', req.query.domain, error);

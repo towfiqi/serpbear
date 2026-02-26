@@ -8,6 +8,7 @@ import parseKeywords from '../../utils/parseKeywords';
 import { integrateKeywordSCData, readLocalSCData } from '../../utils/searchConsole';
 import refreshAndUpdateKeywords from '../../utils/refresh';
 import { getKeywordsVolume, updateKeywordsVolumeData } from '../../utils/adwords';
+import { removeFromRetryQueue } from '../../utils/scraper';
 
 type KeywordsGetResponse = {
    keywords?: KeywordType[],
@@ -140,6 +141,10 @@ const deleteKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywords
       const keywordsToRemove = (req.query.id as string).split(',').map((item) => parseInt(item, 10));
       const removeQuery = { where: { ID: { [Op.in]: keywordsToRemove } } };
       const removedKeywordCount: number = await Keyword.destroy(removeQuery);
+
+      // remove keyword from retry queue if exists
+      await Promise.all(keywordsToRemove.map((keywordID) => removeFromRetryQueue(keywordID)));
+
       return res.status(200).json({ keywordsRemoved: removedKeywordCount });
    } catch (error) {
       console.log('[ERROR] Removing Keyword. ', error);
