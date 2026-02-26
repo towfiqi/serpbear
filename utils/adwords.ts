@@ -98,7 +98,6 @@ export const getAdwordsAccessToken = async (credentials:AdwordsCredentials) => {
          body: new URLSearchParams({ grant_type: 'refresh_token', client_id, client_secret, refresh_token }),
       });
        const tokens = await resp.json();
-      //  console.log('token :', tokens);
        return tokens?.access_token || '';
    } catch (error) {
       console.log('[Error] Getting Google Account Access Token:', error);

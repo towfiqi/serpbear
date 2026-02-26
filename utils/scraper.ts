@@ -48,7 +48,7 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scr
    if (scraper) {
       // Set Scraper Header
       const scrapeHeaders = scraper.headers ? scraper.headers(keyword, settings) : null;
-      const scraperAPIURL = scraper.scrapeURL ? scraper.scrapeURL(keyword, settings, countries) : null;
+      const scraperApiUrl = scraper.scrapeURL ? scraper.scrapeURL(keyword, settings, countries) : null;
       if (scrapeHeaders && Object.keys(scrapeHeaders).length > 0) {
          Object.keys(scrapeHeaders).forEach((headerItemKey:string) => {
             headers[headerItemKey] = scrapeHeaders[headerItemKey as keyof object];
@@ -56,8 +56,8 @@ export const getScraperClient = (keyword:KeywordType, settings:SettingsType, scr
       }
       // Set Scraper API URL
       // If not URL is generated, stop right here.
-      if (scraperAPIURL) {
-         apiURL = scraperAPIURL;
+      if (scraperApiUrl) {
+         apiURL = scraperApiUrl;
       } else {
          return false;
       }
@@ -110,7 +110,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 
    let scraperError:any = null;
    try {
-      const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((reslt:any) => reslt.json());
+      const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((result:any) => result.json());
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
       const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
       if (res && scrapeResult) {
@@ -159,8 +159,8 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
       throw new Error(msg);
    }
 
-   const hasNumberofResult = $('body').find('#search  > div > div');
-   const searchResultItems = hasNumberofResult.find('h3');
+   const hasNumberOfResult = $('body').find('#search  > div > div');
+   const searchResultItems = hasNumberOfResult.find('h3');
    let lastPosition = 0;
    console.log('Scraped search results contain ', searchResultItems.length, ' desktop results.');
 
