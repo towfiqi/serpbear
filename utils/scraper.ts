@@ -115,7 +115,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
       if (res && scrapeResult) {
          const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
-         // await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
+         await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
          const serp = getSerp(keyword.domain, extracted);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.position, url: serp.url, result: extracted, error: false };
          console.log('[SERP]: ', keyword.keyword, serp.position, serp.url);
@@ -133,7 +133,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
 
       console.log('[ERROR] Scraping Keyword : ', keyword.keyword);
       if (!(error && error.response && error.response.statusText)) {
-         console.log('[ERROR_MESSAGE]: ', error);
+         console.log('[ERROR_MESSAGE]: ', JSON.stringify(error));
       } else {
          console.log('[ERROR_MESSAGE]: ', error && error.response && error.response.statusText);
       }
@@ -159,16 +159,31 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
       throw new Error(msg);
    }
 
+   // Desktop: try #search > div > div + h3 (classic layout)
    const hasNumberOfResult = $('body').find('#search  > div > div');
    const searchResultItems = hasNumberOfResult.find('h3');
    let lastPosition = 0;
-   console.log('Scraped search results contain ', searchResultItems.length, ' desktop results.');
+   console.log('Scraped search results contain ', searchResultItems.length, ' desktop results (h3).');
 
    for (let i = 0; i < searchResultItems.length; i += 1) {
       if (searchResultItems[i]) {
          const title = $(searchResultItems[i]).html();
          const url = $(searchResultItems[i]).closest('a').attr('href');
          if (title && url) {
+            lastPosition += 1;
+            extractedResult.push({ title, url, position: lastPosition });
+         }
+      }
+   }
+
+   // Desktop fallback: #rso with [role="heading"] (newer Google layout — no h3, no #search)
+   if (extractedResult.length === 0) {
+      const rsoHeadings = $('body').find('#rso [role="heading"]');
+      for (let i = 0; i < rsoHeadings.length; i += 1) {
+         const heading = $(rsoHeadings[i]);
+         const title = heading.text();
+         const url = heading.closest('a').attr('href');
+         if (title && url && url.startsWith('http')) {
             lastPosition += 1;
             extractedResult.push({ title, url, position: lastPosition });
          }
