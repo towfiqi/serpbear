@@ -25,7 +25,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
    const router = useRouter();
    const [seedType, setSeedType] = useState(() => settings?.seedType || 'auto');
    const [language, setLanguage] = useState(() => settings?.language.toString() || '1000');
-   const [countries, setCoutries] = useState<string[]>(() => settings?.countries || ['US']);
+   const [countries, setCountries] = useState<string[]>(() => settings?.countries || ['US']);
    const [keywords, setKeywords] = useState(() => (settings?.keywords && Array.isArray(settings?.keywords) ? settings?.keywords.join(',') : ''));
    const { mutate: updateKeywordIdeas, isLoading: isUpdatingIdeas } = useMutateKeywordIdeas(router, () => onUpdate && onUpdate());
 
@@ -102,7 +102,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
                      selected={countries}
                      options={countryOptions}
                      defaultLabel='All Countries'
-                     updateField={(updated:string[]) => setCoutries(updated)}
+                     updateField={(updated:string[]) => setCountries(updated)}
                      flags={true}
                      multiple={false}
                      fullWidth={true}

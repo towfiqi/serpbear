@@ -114,8 +114,8 @@ const Research: NextPage = () => {
                   </button>
                </div>
             </div>
-            <div className="domain_kewywords px-5 lg:px-0 lg:pt-8 w-full">
-               <div className='domain_kewywords_head w-full '>
+            <div className="domain_keywords px-5 lg:px-0 lg:pt-8 w-full">
+               <div className='domain_keywords_head w-full '>
                   <div className=' flex mt-12 mb-0 justify-between'>
                      <h1 className=" font-bold mb-0 mt-0 pt-2 lg:text-xl lg:mb-6" data-testid="domain-header">Research Keywords</h1>
                      <button

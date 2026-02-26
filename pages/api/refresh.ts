@@ -72,7 +72,7 @@ const refresTheKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywo
 
       return res.status(200).json({ keywords });
    } catch (error) {
-      console.log('ERROR refresThehKeywords: ', error);
+      console.log('ERROR refreshTheKeywords: ', error);
       return res.status(400).json({ error: 'Error refreshing keywords!' });
    }
 };
@@ -116,7 +116,7 @@ const getKeywordSearchResults = async (req: NextApiRequest, res: NextApiResponse
       }
       return res.status(400).json({ error: 'Error Scraping Search Results for the given keyword!' });
    } catch (error) {
-      console.log('ERROR refresThehKeywords: ', error);
+      console.log('ERROR refreshTheKeywords: ', error);
       return res.status(400).json({ error: 'Error refreshing keywords!' });
    }
 };

@@ -65,8 +65,8 @@ const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType)
  * @returns {Promise<KeywordType>}
  */
 export const updateKeywordPosition = async (keywordRaw:Keyword, udpatedkeyword: RefreshResult, settings: SettingsType): Promise<KeywordType> => {
-   const keywordPrased = parseKeywords([keywordRaw.get({ plain: true })]);
-      const keyword = keywordPrased[0];
+   const keywordParsed = parseKeywords([keywordRaw.get({ plain: true })]);
+      const keyword = keywordParsed[0];
       // const udpatedkeyword = refreshed;
       let updated = keyword;
 

@@ -33,7 +33,7 @@ const DomainHeader = (
    const tabStyle = 'rounded rounded-b-none cursor-pointer border-[#e9ebff] border-b-0';
    const scDataFilterStlye = 'px-3 py-2 block w-full';
    return (
-      <div className='domain_kewywords_head w-full '>
+      <div className='domain_keywords_head w-full '>
          <div>
             <h1 className="hidden lg:block text-xl font-bold my-3" data-testid="domain-header">
                {domain && domain.domain && <><i className=' capitalize font-bold not-italic'>{domain.domain.charAt(0)}</i>{domain.domain.slice(1)}</>}

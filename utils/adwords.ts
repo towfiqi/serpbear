@@ -256,9 +256,9 @@ const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], opt
 /**
  * Retrieves keyword search volumes from Google Ads API based on provided keywords and their countries.
  * @param {KeywordType[]} keywords - The keywords that you want to get the search volume data for.
- * @returns returns a Promise that resolves to an object with a `volumes` and error `proprties`.
- *  The `volumes` propery which outputs `false` if the request fails and outputs the volume data in `{[keywordID]: volume}` object if succeeds.
- *  The `error` porperty that outputs the error message if any.
+ * @returns returns a Promise that resolves to an object with a `volumes` and error `properties`.
+ *  The `volumes` property which outputs `false` if the request fails and outputs the volume data in `{[keywordID]: volume}` object if succeeds.
+ *  The `error` property that outputs the error message if any.
  */
 export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error?: string, volumes: false | Record<number, number>}> => {
    const credentials = await getAdwordsCredentials();

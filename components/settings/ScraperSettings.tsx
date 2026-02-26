@@ -36,7 +36,7 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
       { label: '15 Minutes', value: '900000' },
       { label: '30 Minutes', value: '1800000' },
    ];
-   const allScrapers: SelectionOption[] = settings.available_scapers ? settings.available_scapers : [];
+   const allScrapers: SelectionOption[] = settings.available_scrapers ? settings.available_scrapers : [];
    const scraperOptions: SelectionOption[] = [{ label: 'None', value: 'none' }, ...allScrapers];
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700 capitalize';
 

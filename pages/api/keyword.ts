@@ -26,8 +26,8 @@ const getKeyword = async (req: NextApiRequest, res: NextApiResponse<KeywordGetRe
    try {
       const query = { ID: parseInt((req.query.id as string), 10) };
       const foundKeyword:Keyword| null = await Keyword.findOne({ where: query });
-      const pareseKeyword = foundKeyword && parseKeywords([foundKeyword.get({ plain: true })]);
-      const keywords = pareseKeyword && pareseKeyword[0] ? pareseKeyword[0] : null;
+      const parsedKeyword = foundKeyword && parseKeywords([foundKeyword.get({ plain: true })]);
+      const keywords = parsedKeyword && parsedKeyword[0] ? parsedKeyword[0] : null;
       return res.status(200).json({ keyword: keywords });
    } catch (error) {
       console.log('[ERROR] Getting Keyword: ', error);

@@ -86,7 +86,7 @@ const KeywordDetails = ({ keyword, closeDetails }:KeywordDetailsProps) => {
                         </div>
                      </div>
                      <div className='keywordDetails__section__chart h-64'>
-                           <Chart labels={chartData.labels} sreies={chartData.sreies} />
+                           <Chart labels={chartData.labels} series={chartData.series} />
                      </div>
                   </div>
                   <div className='keywordDetails__section mt-10'>

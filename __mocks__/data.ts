@@ -77,6 +77,6 @@ export const dummySettings = {
    scrape_retry: false,
    search_console_integrated: false,
    screenshot_key: '',
-   available_scapers: [],
+   available_scrapers: [],
    failed_queue: [],
 };

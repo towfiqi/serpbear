@@ -57,9 +57,9 @@ export const exportKeywordIdeas = (keywords: IdeaKeyword[], domainName:string) =
 
 /**
  * generates a CSV file with a specified header and body content and automatically downloads it.
- * @param {string} csvHeader - The `csvHeader` file header. A comma speperated csv header.
+ * @param {string} csvHeader - The `csvHeader` file header. A comma separated csv header.
  * @param {string} csvBody - The content of the csv file.
- * @param {string} fileName - The file Name for the downlaoded csv file.
+ * @param {string} fileName - The file Name for the downloaded csv file.
  */
 const downloadCSV = (csvHeader:string, csvBody:string, fileName:string) => {
    const blob = new Blob([csvHeader + csvBody], { type: 'text/csv;charset=utf-8;' });

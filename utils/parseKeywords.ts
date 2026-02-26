@@ -1,7 +1,7 @@
 import Keyword from '../database/models/keyword';
 
 /**
- * Parses the SQL Keyword Model object to frontend cosumable object.
+ * Parses the SQL Keyword Model object to frontend consumable object.
  * @param {Keyword[]} allKeywords - Keywords to scrape
  * @returns {KeywordType[]}
  */

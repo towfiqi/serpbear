@@ -23,7 +23,7 @@ const clearFailedQueue = async (req: NextApiRequest, res: NextApiResponse<Settin
       await writeFile(`${process.cwd()}/data/failed_queue.json`, JSON.stringify([]), { encoding: 'utf-8' });
       return res.status(200).json({ cleared: true });
    } catch (error) {
-      console.log('[ERROR] Cleraring Failed Queue File.', error);
-      return res.status(200).json({ error: 'Error Cleraring Failed Queue!' });
+      console.log('[ERROR] Clearing Failed Queue File.', error);
+      return res.status(200).json({ error: 'Error Clearing Failed Queue!' });
    }
 };

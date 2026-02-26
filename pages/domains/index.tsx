@@ -17,7 +17,6 @@ type thumbImages = { [domain:string] : string }
 
 const Domains: NextPage = () => {
    const router = useRouter();
-   // const [noScrapprtError, setNoScrapprtError] = useState(false);
    const [showSettings, setShowSettings] = useState(false);
    const [showAddDomain, setShowAddDomain] = useState(false);
    const [domainThumbs, setDomainThumbs] = useState<thumbImages>({});
@@ -42,8 +41,8 @@ const Domains: NextPage = () => {
       const domainsSCAPI:{ [ID:string] : boolean } = {};
       if (domainsData?.domains) {
          domainsData.domains.forEach(async (domain:DomainType) => {
-            const doaminSc = domain?.search_console ? JSON.parse(domain.search_console) : {};
-            domainsSCAPI[domain.ID] = doaminSc.client_email && doaminSc.private_key;
+            const domainSc = domain?.search_console ? JSON.parse(domain.search_console) : {};
+            domainsSCAPI[domain.ID] = domainSc.client_email && domainSc.private_key;
          });
       }
       return domainsSCAPI;

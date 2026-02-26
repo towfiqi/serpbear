@@ -99,7 +99,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             search_console_private_key,
             search_console_integrated: !!(process.env.SEARCH_CONSOLE_PRIVATE_KEY && process.env.SEARCH_CONSOLE_CLIENT_EMAIL)
             || !!(search_console_client_email && search_console_private_key),
-            available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id, allowsCity: !!scraper.allowsCity })),
+            available_scrapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id, allowsCity: !!scraper.allowsCity })),
             failed_queue: failedQueue,
             screenshot_key: screenshotAPIKey,
             adwords_client_id,
@@ -132,7 +132,7 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          keywordsColumns: ['Best', 'History', 'Volume', 'Search Console'],
       };
       const otherSettings = {
-         available_scapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
+         available_scrapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),
          failed_queue: [],
       };
       await writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(settings), { encoding: 'utf-8' });

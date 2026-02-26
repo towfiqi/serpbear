@@ -27,8 +27,8 @@ const SingleDomain: NextPage = () => {
    const { data: appSettingsData, isLoading: isAppSettingsLoading } = useFetchSettings();
    const { data: domainsData } = useFetchDomains(router);
    const appSettings: SettingsType = appSettingsData?.settings || {};
-   const { scraper_type = '', available_scapers = [] } = appSettings;
-   const activeScraper = useMemo(() => available_scapers.find((scraper) => scraper.value === scraper_type), [scraper_type, available_scapers]);
+   const { scraper_type = '', available_scrapers = [] } = appSettings;
+   const activeScraper = useMemo(() => available_scrapers.find((scraper) => scraper.value === scraper_type), [scraper_type, available_scrapers]);
 
    const activDomain: DomainType|null = useMemo(() => {
       let active:DomainType|null = null;
@@ -39,8 +39,8 @@ const SingleDomain: NextPage = () => {
    }, [router.query.slug, domainsData]);
 
    const domainHasScAPI = useMemo(() => {
-      const doaminSc = activDomain?.search_console ? JSON.parse(activDomain.search_console) : {};
-      return !!(doaminSc?.client_email && doaminSc?.private_key);
+      const domainSc = activDomain?.search_console ? JSON.parse(activDomain.search_console) : {};
+      return !!(domainSc?.client_email && domainSc?.private_key);
    }, [activDomain]);
 
    const { keywordsData, keywordsLoading } = useFetchKeywords(router, activDomain?.domain || '', setKeywordSPollInterval, keywordSPollInterval);
@@ -62,7 +62,7 @@ const SingleDomain: NextPage = () => {
          <TopBar showSettings={() => setShowSettings(true)} showAddModal={() => setShowAddDomain(true)} />
          <div className="flex w-full max-w-7xl mx-auto">
             <Sidebar domains={theDomains} showAddModal={() => setShowAddDomain(true)} />
-            <div className="domain_kewywords px-5 pt-10 lg:px-0 lg:pt-8 w-full">
+            <div className="domain_keywords px-5 pt-10 lg:px-0 lg:pt-8 w-full">
                {activDomain && activDomain.domain
                ? <DomainHeader
                   domain={activDomain}

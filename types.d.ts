@@ -90,7 +90,7 @@ type SettingsType = {
    smtp_port: string,
    smtp_username?: string,
    smtp_password?: string,
-   available_scapers?: { label: string, value: string, allowsCity?: boolean }[],
+   available_scrapers?: { label: string, value: string, allowsCity?: boolean }[],
    scrape_interval?: string,
    scrape_delay?: string,
    scrape_retry?: boolean,

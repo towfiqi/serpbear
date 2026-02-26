@@ -50,7 +50,7 @@ const Login: NextPage = () => {
                router.push('/');
             }
          } catch (fetchError) {
-            setError({ type: 'unknown', msg: 'Could not login, Ther Server is not responsive.' });
+            setError({ type: 'unknown', msg: 'Could not login, The Server is not responsive.' });
             setTimeout(() => { setError(null); }, 3000);
          }
       }

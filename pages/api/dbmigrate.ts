@@ -10,7 +10,7 @@ type MigrationGetResponse = {
 
 type MigrationPostResponse = {
    migrated: boolean,
-   erroor?: string
+   error?: string
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -35,7 +35,6 @@ const getMigrationStatus = async (req: NextApiRequest, res: NextApiResponse<Migr
    });
    const migrations = await umzug.pending();
    // console.log('migrations :', migrations);
-   // const migrationsExceuted = await umzug.executed();
    return res.status(200).json({ hasMigrations: migrations.length > 0 });
 };
 
