@@ -1,3 +1,5 @@
+import countries from '../../utils/countries';
+
 interface SerperResult {
    title: string,
    link: string,
@@ -11,9 +13,11 @@ const serper:ScraperSettings = {
    allowsCity: true,
    scrapeURL: (keyword, settings, countryData) => {
       const country = keyword.country || 'US';
+      const countryName = countries[country][0];
+      const location = keyword.city ? `&location=${encodeURIComponent(`${keyword.city},${countryName}`)}` : '';
       const lang = countryData[country][2];
-      console.log('Serper URL :', `https://google.serper.dev/search?q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}&num=100&apiKey=${settings.scaping_api}`);
-      return `https://google.serper.dev/search?q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}&num=100&apiKey=${settings.scaping_api}`;
+      // console.log('Serper URL :', `https://google.serper.dev/search?q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}${location}&num=100&apiKey=${settings.scaping_api}`);
+      return `https://google.serper.dev/search?q=${encodeURIComponent(keyword.keyword)}&gl=${country}&hl=${lang}${location}&num=100&apiKey=${settings.scaping_api}`;
    },
    resultObjectKey: 'organic',
    serpExtractor: (content) => {
