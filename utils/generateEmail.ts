@@ -100,7 +100,8 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
 
       const positionChange = getPositionChange(keyword.history, keyword.position);
       const deviceIconImg = keyword.device === 'desktop' ? desktopIcon : mobileIcon;
-      const countryFlag = `<img class="flag" src="https://flagcdn.com/w20/${keyword.country.toLowerCase()}.png" alt="${keyword.country}" title="${keyword.country}" />`;
+      const getFlagEmoji = (code: string): string => code.toUpperCase().replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+      const countryFlag = `<span title="${keyword.country}">${getFlagEmoji(keyword.country)}</span>`;
       const deviceIcon = `<img class="device" src="${deviceIconImg}" alt="${keyword.device}" title="${keyword.device}" width="18" height="18" />`;
 
       if (positionChange > 0) { positionChangeIcon = '<span style="color:#5ed7c3;">▲</span>'; improved += 1; }
