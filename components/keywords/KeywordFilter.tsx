@@ -70,7 +70,9 @@ const KeywordFilters = (props: KeywordFilterProps) => {
          .map((keyword) => keyword.country)
          .reduce<string[]>((acc, country) => [...acc, country], [])
          .filter((t) => t && t.trim() !== '');
-         [...new Set(allCountries)].forEach((c) => optionObject.push({ label: countries[c][0], value: c }));
+         [...new Set(allCountries)].forEach((c) => {
+            if (countries[c]) { optionObject.push({ label: countries[c][0], value: c }); }
+         });
       } else {
          Object.keys(countries).forEach((countryISO:string) => {
             if ((SCcountries.includes(countryISO))) {

@@ -111,7 +111,7 @@ const Keyword = (props: KeywordProps) => {
             onClick={() => showKeywordDetails()}
             title={keyword}
             >
-               <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country][0]} />
+               <span className={`fflag fflag-${country} w-[18px] h-[12px] mr-2`} title={countries[country] && countries[country][0]} />
                <span className='inline-block text-ellipsis overflow-hidden whitespace-nowrap w-[calc(100%-50px)]'>
                   {keyword}{city ? ` (${city})` : ''}
                </span>
