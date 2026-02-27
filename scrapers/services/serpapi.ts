@@ -11,6 +11,7 @@ const serpapi:ScraperSettings = {
    name: 'SerpApi.com',
    website: 'serpapi.com',
    allowsCity: true,
+   nativePagination: true,
    headers: (keyword, settings) => {
       return {
          'Content-Type': 'application/json',

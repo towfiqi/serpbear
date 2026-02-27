@@ -106,6 +106,9 @@ export const getAppSettings = async () : Promise<SettingsType> => {
             adwords_client_secret,
             adwords_developer_token,
             adwords_account_id,
+            scrape_strategy: settings.scrape_strategy || 'basic',
+            scrape_pagination_limit: settings.scrape_pagination_limit || 5,
+            scrape_smart_full_fallback: settings.scrape_smart_full_fallback || false,
          };
       } catch (error) {
          console.log('Error Decrypting Settings API Keys!');
@@ -130,6 +133,9 @@ export const getAppSettings = async () : Promise<SettingsType> => {
          search_console_client_email: '',
          search_console_private_key: '',
          keywordsColumns: ['Best', 'History', 'Volume', 'Search Console'],
+         scrape_strategy: 'basic',
+         scrape_pagination_limit: 5,
+         scrape_smart_full_fallback: false,
       };
       const otherSettings = {
          available_scrapers: allScrapers.map((scraper) => ({ label: scraper.name, value: scraper.id })),

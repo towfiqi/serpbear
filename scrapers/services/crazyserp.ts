@@ -23,6 +23,7 @@ const crazyserp:ScraperSettings = {
    name: 'CrazySERP',
    website: 'crazyserp.com',
    allowsCity: true,
+   nativePagination: true,
    headers: (keyword, settings) => {
       return {
          'Content-Type': 'application/json',

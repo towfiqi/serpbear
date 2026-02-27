@@ -41,6 +41,15 @@ class Domain extends Model {
 
    @Column({ type: DataType.STRING, allowNull: true })
    search_console!: string;
+
+   @Column({ type: DataType.STRING, allowNull: true, defaultValue: '' })
+   scrape_strategy!: string;
+
+   @Column({ type: DataType.INTEGER, allowNull: true, defaultValue: 0 })
+   scrape_pagination_limit!: number;
+
+   @Column({ type: DataType.BOOLEAN, allowNull: true, defaultValue: false })
+   scrape_smart_full_fallback!: boolean;
 }
 
 export default Domain;

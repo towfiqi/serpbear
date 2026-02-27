@@ -18,9 +18,10 @@ const serply:ScraperSettings = {
          'X-Proxy-Location': country,
       };
    },
-   scrapeURL: (keyword) => {
+   scrapeURL: (keyword, _settings, _countries, pagination) => {
       const country = scraperCountries.includes(keyword.country.toUpperCase()) ? keyword.country : 'US';
-      return `https://api.serply.io/v1/search/q=${encodeURIComponent(keyword.keyword)}&num=100&hl=${country}`;
+      const p = pagination || { start: 0, num: 10 };
+      return `https://api.serply.io/v1/search/q=${encodeURIComponent(keyword.keyword)}&num=${p.num}&start=${p.start}&hl=${country}`;
    },
    resultObjectKey: 'result',
    serpExtractor: (content) => {

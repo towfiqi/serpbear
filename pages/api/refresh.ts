@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Op } from 'sequelize';
 import db from '../../database/database';
 import Keyword from '../../database/models/keyword';
+import Domain from '../../database/models/domain';
 import refreshAndUpdateKeywords from '../../utils/refresh';
 import { getAppSettings } from './settings';
 import verifyUser from '../../utils/verifyUser';
@@ -57,16 +58,18 @@ const refresTheKeywords = async (req: NextApiRequest, res: NextApiResponse<Keywo
       const query = req.query.id === 'all' && domain ? { domain } : { ID: { [Op.in]: keywordIDs } };
       await Keyword.update({ updating: true }, { where: query });
       const keywordQueries: Keyword[] = await Keyword.findAll({ where: query });
+      const allDomains: Domain[] = await Domain.findAll();
+      const domainList: DomainType[] = allDomains.map((d) => d.get({ plain: true }));
 
       let keywords = [];
 
       // If Single Keyword wait for the scraping process,
       // else, Process the task in background. Do not wait.
       if (keywordIDs && keywordIDs.length === 0) {
-         const refreshed: KeywordType[] = await refreshAndUpdateKeywords(keywordQueries, settings);
+         const refreshed: KeywordType[] = await refreshAndUpdateKeywords(keywordQueries, settings, domainList);
          keywords = refreshed;
       } else {
-         refreshAndUpdateKeywords(keywordQueries, settings);
+         refreshAndUpdateKeywords(keywordQueries, settings, domainList);
          keywords = parseKeywords(keywordQueries.map((el) => el.get({ plain: true })));
       }
 
@@ -107,7 +110,7 @@ const getKeywordSearchResults = async (req: NextApiRequest, res: NextApiResponse
       const scrapeResult = await scrapeKeywordFromGoogle(dummyKeyword, settings);
       if (scrapeResult && !scrapeResult.error) {
          const searchResult = {
-            results: scrapeResult.result,
+            results: scrapeResult.result.filter((r) => !r.skipped),
             keyword: scrapeResult.keyword,
             position: scrapeResult.position !== 111 ? scrapeResult.position : 0,
             country: req.query.country as string,

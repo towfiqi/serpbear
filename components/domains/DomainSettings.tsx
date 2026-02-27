@@ -4,7 +4,8 @@ import Icon from '../common/Icon';
 import Modal from '../common/Modal';
 import { useDeleteDomain, useFetchDomain, useUpdateDomain } from '../../services/domains';
 import InputField from '../common/InputField';
-import SelectField from '../common/SelectField';
+import SelectField, { SelectionOption } from '../common/SelectField';
+import ToggleField from '../common/ToggleField';
 
 type DomainSettingsProps = {
    domain:DomainType|false,
@@ -18,7 +19,7 @@ type DomainSettingsError = {
 
 const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
    const router = useRouter();
-   const [currentTab, setCurrentTab] = useState<'notification'|'searchconsole'>('notification');
+   const [currentTab, setCurrentTab] = useState<'notification'|'searchconsole'|'scraping'>('notification');
    const [showRemoveDomain, setShowRemoveDomain] = useState<boolean>(false);
    const [settingsError, setSettingsError] = useState<DomainSettingsError>({ type: '', msg: '' });
    const [domainSettings, setDomainSettings] = useState<DomainSettings>(() => ({
@@ -27,6 +28,9 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
       search_console: domain && domain.search_console ? JSON.parse(domain.search_console) : {
          property_type: 'domain', url: '', client_email: '', private_key: '',
       },
+      scrape_strategy: (domain && domain.scrape_strategy as ScrapeStrategy | '' | undefined) || '',
+      scrape_pagination_limit: (domain && domain.scrape_pagination_limit) || 0,
+      scrape_smart_full_fallback: (domain && domain.scrape_smart_full_fallback) || false,
    }));
 
    const { mutate: updateMutate, error: domainUpdateError, isLoading: isUpdating } = useUpdateDomain(() => closeModal(false));
@@ -61,6 +65,15 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
 
    const tabStyle = `inline-block px-4 py-2 rounded-md mr-3 cursor-pointer text-sm select-none z-10
                      text-gray-600 border border-b-0 relative top-[1px] rounded-b-none`;
+   const strategyOptions: SelectionOption[] = [
+      { label: 'Use Global Setting', value: '' },
+      { label: 'Basic (First page only — 10 results)', value: 'basic' },
+      { label: 'Custom (Set number of pages)', value: 'custom' },
+      { label: 'Smart (Based on last known position)', value: 'smart' },
+   ];
+   const paginationLimitOptions: SelectionOption[] = Array.from({ length: 10 }, (_, i) => (
+      { label: `${i + 1} Page${i > 0 ? 's' : ''}`, value: String(i + 1) }
+   ));
    return (
       <div>
          <Modal closeModal={() => closeModal(false)} title={'Domain Settings'} width="[500px]" verticalCenter={currentTab === 'searchconsole'} >
@@ -77,6 +90,11 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
                      className={`${tabStyle} ${currentTab === 'searchconsole' ? ' bg-white text-blue-600 border-slate-200' : 'border-transparent'}`}
                      onClick={() => setCurrentTab('searchconsole')}>
                         <Icon type='google' /> Search Console
+                     </li>
+                     <li
+                     className={`${tabStyle} ${currentTab === 'scraping' ? ' bg-white text-blue-600 border-slate-200' : 'border-transparent'}`}
+                     onClick={() => setCurrentTab('scraping')}>
+                        <Icon type='refresh' /> Scraping
                      </li>
                   </ul>
                </div>
@@ -146,6 +164,55 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
                            />
                         </div>
                      </>
+                  )}
+                  {currentTab === 'scraping' && (
+                     <div className="mb-4">
+                        <div className="mb-5">
+                           <SelectField
+                              label='Scrape Strategy Override'
+                              options={strategyOptions}
+                              selected={[domainSettings.scrape_strategy || '']}
+                              defaultLabel="Use Global Setting"
+                              updateField={(updated:string[]) => {
+                                 setDomainSettings({ ...domainSettings, scrape_strategy: (updated[0] || '') as ScrapeStrategy | '' });
+                              }}
+                              multiple={false}
+                              rounded={'rounded'}
+                              minWidth={220}
+                           />
+                        </div>
+                        {domainSettings.scrape_strategy === 'custom' && (
+                           <div className="mb-5">
+                              <SelectField
+                                 label='Number of Pages to Scrape'
+                                 options={paginationLimitOptions}
+                                 selected={[String(domainSettings.scrape_pagination_limit || 5)]}
+                                 defaultLabel="Select Page Count"
+                                 updateField={(updated:string[]) => {
+                                    setDomainSettings({ ...domainSettings, scrape_pagination_limit: parseInt(updated[0] || '5', 10) });
+                                 }}
+                                 multiple={false}
+                                 rounded={'rounded'}
+                                 minWidth={220}
+                              />
+                              <small className='text-gray-500 pt-2 block'>Each page returns up to 10 results.</small>
+                           </div>
+                        )}
+                        {domainSettings.scrape_strategy === 'smart' && (
+                           <div className="mb-5">
+                              <ToggleField
+                                 label='Full Fallback: Scrape all pages if not found on nearby pages'
+                                 value={!!domainSettings.scrape_smart_full_fallback}
+                                 onChange={(val: boolean) => {
+                                    setDomainSettings({ ...domainSettings, scrape_smart_full_fallback: val });
+                                 }}
+                              />
+                              <small className='text-gray-500 pt-2 block'>
+                                 When enabled, all 10 pages are scraped if the keyword is missing from its nearby pages.
+                              </small>
+                           </div>
+                        )}
+                     </div>
                   )}
                </div>
                {!isUpdating && (domainUpdateError as Error)?.message && (

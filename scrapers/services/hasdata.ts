@@ -17,11 +17,12 @@ const hasdata:ScraperSettings = {
          'x-api-key': settings.scaping_api,
       };
    },
-   scrapeURL: (keyword, settings) => {
+   scrapeURL: (keyword, settings, _countryData, pagination) => {
       const country = keyword.country || 'US';
       const countryName = countries[country][0];
       const location = keyword.city && countryName ? `&location=${encodeURIComponent(`${keyword.city},${countryName}`)}` : '';
-      return `https://api.scrape-it.cloud/scrape/google/serp?q=${encodeURIComponent(keyword.keyword)}${location}&num=100&gl=${country.toLowerCase()}&deviceType=${keyword.device}`;
+      const p = pagination || { start: 0, num: 10 };
+      return `https://api.scrape-it.cloud/scrape/google/serp?q=${encodeURIComponent(keyword.keyword)}${location}&num=${p.num}&start=${p.start}&gl=${country.toLowerCase()}&deviceType=${keyword.device}`;
    },
    resultObjectKey: 'organicResults',
    serpExtractor: (content) => {

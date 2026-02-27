@@ -36,6 +36,14 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
       { label: '15 Minutes', value: '900000' },
       { label: '30 Minutes', value: '1800000' },
    ];
+   const strategyOptions: SelectionOption[] = [
+      { label: 'Basic (First page only — 10 results)', value: 'basic' },
+      { label: 'Custom (Set number of pages)', value: 'custom' },
+      { label: 'Smart (Based on last known position)', value: 'smart' },
+   ];
+   const paginationLimitOptions: SelectionOption[] = Array.from({ length: 10 }, (_, i) => (
+      { label: `${i + 1} Page${i > 0 ? 's' : ''}`, value: String(i + 1) }
+   ));
    const allScrapers: SelectionOption[] = settings.available_scrapers ? settings.available_scrapers : [];
    const scraperOptions: SelectionOption[] = [{ label: 'None', value: 'none' }, ...allScrapers];
    const labelStyle = 'mb-2 font-semibold inline-block text-sm text-gray-700 capitalize';
@@ -117,6 +125,53 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
                onChange={(val) => updateSettings('scrape_retry', val)}
                />
             </div>
+            {settings.scraper_type !== 'none' && (
+               <div className="settings__section__select mb-5">
+                  <SelectField
+                     label='Scrape Strategy'
+                     options={strategyOptions}
+                     selected={[settings?.scrape_strategy || 'basic']}
+                     defaultLabel="Select Strategy"
+                     updateField={(updated:string[]) => updated[0] && updateSettings('scrape_strategy', updated[0])}
+                     multiple={false}
+                     rounded={'rounded'}
+                     minWidth={220}
+                  />
+                  <small className='text-gray-500 pt-2 block'>
+                     {(!settings.scrape_strategy || settings.scrape_strategy === 'basic')
+                        && 'Scrape only the first page (10 results). Fastest, uses least API credits.'}
+                     {settings.scrape_strategy === 'custom' && 'Scrape a fixed number of pages per keyword on every refresh.'}
+                     {settings.scrape_strategy === 'smart' && 'Scrape the page where the keyword was last seen, plus its neighbors.'}
+                  </small>
+               </div>
+            )}
+            {settings.scraper_type !== 'none' && settings.scrape_strategy === 'custom' && (
+               <div className="settings__section__select mb-5">
+                  <SelectField
+                     label='Number of Pages to Scrape'
+                     options={paginationLimitOptions}
+                     selected={[String(settings?.scrape_pagination_limit || 5)]}
+                     defaultLabel="Select Page Count"
+                     updateField={(updated:string[]) => updated[0] && updateSettings('scrape_pagination_limit', parseInt(updated[0], 10))}
+                     multiple={false}
+                     rounded={'rounded'}
+                     minWidth={220}
+                  />
+                  <small className='text-gray-500 pt-2 block'>Each page returns up to 10 results. 5 pages = top 50 results checked.</small>
+               </div>
+            )}
+            {settings.scraper_type !== 'none' && settings.scrape_strategy === 'smart' && (
+               <div className="settings__section__input mb-5">
+                  <ToggleField
+                     label='Full Fallback: Scrape all pages if not found on nearby pages'
+                     value={!!settings?.scrape_smart_full_fallback}
+                     onChange={(val) => updateSettings('scrape_smart_full_fallback', val)}
+                  />
+                  <small className='text-gray-500 pt-2 block'>
+                     When enabled, all 10 pages will be scraped if the keyword is not found near its last known position.
+                  </small>
+               </div>
+            )}
             {settings?.scrape_retry && (settings.failed_queue?.length || 0) > 0 && (
                <div className="settings__section__input mb-5">
                   <label className={labelStyle}>Clear Failed Retry Queue</label>

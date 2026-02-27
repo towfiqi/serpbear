@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-vars */
+type ScrapeStrategy = 'basic' | 'custom' | 'smart'
+
 type DomainType = {
    ID: number,
    domain: string,
@@ -17,6 +19,9 @@ type DomainType = {
    scPosition?: number,
    search_console?: string,
    ideas_settings?: string,
+   scrape_strategy?: ScrapeStrategy | '',
+   scrape_pagination_limit?: number,
+   scrape_smart_full_fallback?: boolean,
 }
 
 type KeywordHistory = {
@@ -48,7 +53,8 @@ type KeywordType = {
 type KeywordLastResult = {
    position: number,
    url: string,
-   title: string
+   title: string,
+   skipped?: boolean
 }
 
 type KeywordFilters = {
@@ -75,7 +81,10 @@ type DomainSearchConsole = {
 type DomainSettings = {
    notification_interval: string,
    notification_emails: string,
-   search_console?: DomainSearchConsole
+   search_console?: DomainSearchConsole,
+   scrape_strategy?: ScrapeStrategy | '',
+   scrape_pagination_limit?: number,
+   scrape_smart_full_fallback?: boolean,
 }
 
 type SettingsType = {
@@ -94,6 +103,9 @@ type SettingsType = {
    scrape_interval?: string,
    scrape_delay?: string,
    scrape_retry?: boolean,
+   scrape_strategy?: ScrapeStrategy,
+   scrape_pagination_limit?: number,
+   scrape_smart_full_fallback?: boolean,
    failed_queue?: string[]
    version?: string,
    screenshot_key?: string,
@@ -230,6 +242,12 @@ type scraperExtractedItem = {
    url: string,
    position: number,
 }
+type ScraperPagination = {
+   start: number,
+   num: number,
+   page: number,
+}
+
 interface ScraperSettings {
    /** A Unique ID for the Scraper. eg: myScraper */
    id:string,
@@ -240,14 +258,16 @@ interface ScraperSettings {
    /** The result object's key that contains the results of the scraped data. For example,
     * if your scraper API the data like this `{scraped:[item1,item2..]}` the resultObjectKey should be "scraped" */
    resultObjectKey: string,
-   /** If the Scraper allows setting a perices location or allows city level scraping set this to true. */
+   /** If the Scraper allows setting a precise location or allows city level scraping set this to true. */
    allowsCity?: boolean,
+   /** Whether this scraper API handles its own pagination (e.g. num=100) and should bypass the app's pagination logic */
+   nativePagination?: boolean,
    /** Set your own custom HTTP header properties when making the scraper API request.
     * The function should return an object that contains all the header properties you want to pass to API request's header.
     * Example: `{'Cache-Control': 'max-age=0', 'Content-Type': 'application/json'}` */
    headers?(keyword:KeywordType, settings: SettingsType): Object,
    /** Construct the API URL for scraping the data through your Scraper's API */
-   scrapeURL?(keyword:KeywordType, settings:SettingsType, countries:countryData): string,
+   scrapeURL?(keyword:KeywordType, settings:SettingsType, countries:countryData, pagination?: ScraperPagination): string,
    /** Custom function to extract the serp result from the scraped data. The extracted data should be @return {scraperExtractedItem[]} */
    serpExtractor?(content:string): scraperExtractedItem[],
 }

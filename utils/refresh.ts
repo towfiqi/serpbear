@@ -1,6 +1,6 @@
 import { performance } from 'perf_hooks';
 import { setTimeout as sleep } from 'timers/promises';
-import { RefreshResult, removeFromRetryQueue, retryScrape, scrapeKeywordFromGoogle } from './scraper';
+import { RefreshResult, removeFromRetryQueue, retryScrape, scrapeKeywordWithStrategy } from './scraper';
 import parseKeywords from './parseKeywords';
 import Keyword from '../database/models/keyword';
 
@@ -9,16 +9,17 @@ import Keyword from '../database/models/keyword';
  * Determining whether the keywords should be scraped in Parallel or not
  * @param {Keyword[]} rawKeyword - Keywords to scrape
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
+ * @param {DomainType[]} domains - Optional domain list for per-domain strategy overrides
  * @returns {Promise}
  */
-const refreshAndUpdateKeywords = async (rawKeyword:Keyword[], settings:SettingsType): Promise<KeywordType[]> => {
+const refreshAndUpdateKeywords = async (rawKeyword:Keyword[], settings:SettingsType, domains?: DomainType[]): Promise<KeywordType[]> => {
    const keywords:KeywordType[] = rawKeyword.map((el) => el.get({ plain: true }));
    if (!rawKeyword || rawKeyword.length === 0) { return []; }
    const start = performance.now();
    const updatedKeywords: KeywordType[] = [];
 
    if (['scrapingant', 'serpapi', 'searchapi'].includes(settings.scraper_type)) {
-      const refreshedResults = await refreshParallel(keywords, settings);
+      const refreshedResults = await refreshParallel(keywords, settings, domains);
       if (refreshedResults.length > 0) {
          for (const keyword of rawKeyword) {
             const refreshedKeywordData = refreshedResults.find((k) => k && k.ID === keyword.ID);
@@ -31,7 +32,9 @@ const refreshAndUpdateKeywords = async (rawKeyword:Keyword[], settings:SettingsT
    } else {
       for (const keyword of rawKeyword) {
          console.log('START SCRAPE: ', keyword.keyword);
-         const updatedKeyword = await refreshAndUpdateKeyword(keyword, settings);
+         const keywordPlain = keyword.get({ plain: true }) as KeywordType;
+         const domainSettings = domains?.find((d) => d.domain === keywordPlain.domain);
+         const updatedKeyword = await refreshAndUpdateKeyword(keyword, settings, domainSettings);
          updatedKeywords.push(updatedKeyword);
          if (keywords.length > 0 && settings.scrape_delay && settings.scrape_delay !== '0') {
             await sleep(parseInt(settings.scrape_delay, 10));
@@ -48,11 +51,12 @@ const refreshAndUpdateKeywords = async (rawKeyword:Keyword[], settings:SettingsT
  * Scrape Serp for given keyword and update the position in DB.
  * @param {Keyword} keyword - Keywords to scrape
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
+ * @param {DomainType} domainSettings - Optional domain-level settings override
  * @returns {Promise<KeywordType>}
  */
-const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType): Promise<KeywordType> => {
+const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType, domainSettings?: DomainType): Promise<KeywordType> => {
    const currentKeyword = keyword.get({ plain: true });
-   const refreshedKeywordData = await scrapeKeywordFromGoogle(currentKeyword, settings);
+   const refreshedKeywordData = await scrapeKeywordWithStrategy(currentKeyword, settings, domainSettings);
    const updatedKeyword = refreshedKeywordData ? await updateKeywordPosition(keyword, refreshedKeywordData, settings) : currentKeyword;
    return updatedKeyword;
 };
@@ -117,11 +121,13 @@ export const updateKeywordPosition = async (keywordRaw:Keyword, updatedKeyword: 
  * Scrape Google Keyword Search Result in Parallel.
  * @param {KeywordType[]} keywords - Keywords to scrape
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
+ * @param {DomainType[]} domains - Optional domain list for per-domain strategy overrides
  * @returns {Promise}
  */
-const refreshParallel = async (keywords:KeywordType[], settings:SettingsType) : Promise<RefreshResult[]> => {
+const refreshParallel = async (keywords:KeywordType[], settings:SettingsType, domains?: DomainType[]) : Promise<RefreshResult[]> => {
    const promises: Promise<RefreshResult>[] = keywords.map((keyword) => {
-      return scrapeKeywordFromGoogle(keyword, settings);
+      const domainSettings = domains?.find((d) => d.domain === keyword.domain);
+      return scrapeKeywordWithStrategy(keyword, settings, domainSettings);
    });
 
    return Promise.all(promises).then((promiseData) => {

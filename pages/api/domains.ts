@@ -62,7 +62,7 @@ export const getDomains = async (req: NextApiRequest, res: NextApiResponse<Domai
          const searchConsoleData = scData ? { ...scData, client_email: client_email ? 'true' : '', private_key: private_key ? 'true' : '' } : {};
          return { ...domainItem, search_console: JSON.stringify(searchConsoleData) };
       });
-      const theDomains: DomainType[] = withStats ? await getdomainStats(formattedDomains) : allDomains;
+      const theDomains: DomainType[] = withStats ? await getdomainStats(formattedDomains) : formattedDomains;
       return res.status(200).json({ domains: theDomains });
    } catch (error) {
       return res.status(400).json({ domains: [], error: 'Error Getting Domains.' });
@@ -118,7 +118,10 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
       return res.status(400).json({ domain: null, error: 'Domain is Required!' });
    }
    const { domain } = req.query || {};
-   const { notification_interval, notification_emails, search_console } = req.body as DomainSettings;
+   const {
+      notification_interval, notification_emails, search_console,
+      scrape_strategy, scrape_pagination_limit, scrape_smart_full_fallback,
+   } = req.body as DomainSettings;
 
    try {
       const domainToUpdate: Domain|null = await Domain.findOne({ where: { domain } });
@@ -134,7 +137,14 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
          search_console.private_key = search_console.private_key ? cryptr.encrypt(search_console.private_key.trim()) : '';
       }
       if (domainToUpdate) {
-         domainToUpdate.set({ notification_interval, notification_emails, search_console: JSON.stringify(search_console) });
+         domainToUpdate.set({
+            notification_interval,
+            notification_emails,
+            search_console: JSON.stringify(search_console),
+            scrape_strategy: scrape_strategy || '',
+            scrape_pagination_limit: scrape_pagination_limit || 0,
+            scrape_smart_full_fallback: !!scrape_smart_full_fallback,
+         });
          await domainToUpdate.save();
       }
       return res.status(200).json({ domain: domainToUpdate });
