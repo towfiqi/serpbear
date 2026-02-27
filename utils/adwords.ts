@@ -162,7 +162,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       }
 
       try {
-         // API: https://developers.google.com/google-ads/api/rest/reference/rest/v22/customers/generateKeywordIdeas
+         // API: https://developers.google.com/google-ads/api/rest/reference/rest/v23/customers/generateKeywordIdeas
          const customerID = account_id.replaceAll('-', '');
          const geoTargetConstants = countries[country][3]; // '2840';
          const reqPayload: Record<string, any> = {
@@ -177,7 +177,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
             reqPayload.siteSeed = { site: domain };
          }
 
-         const resp = await fetch(`https://googleads.googleapis.com/v22/customers/${customerID}:generateKeywordIdeas`, {
+         const resp = await fetch(`https://googleads.googleapis.com/v23/customers/${customerID}:generateKeywordIdeas`, {
             method: 'POST',
             headers: {
                'Content-Type': 'application/json',
@@ -296,7 +296,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
       for (const country in keywordRequests) {
          if (Object.hasOwn(keywordRequests, country) && keywordRequests[country].length > 0) {
             try {
-               // API: https://developers.google.com/google-ads/api/rest/reference/rest/v22/customers/generateKeywordHistoricalMetrics
+               // API: https://developers.google.com/google-ads/api/rest/reference/rest/v23/customers/generateKeywordHistoricalMetrics
                const customerID = account_id.replaceAll('-', '');
                const geoTargetConstants = countries[country][3]; // '2840';
                const reqKeywords = keywordRequests[country].map((kw) => kw.keyword);
@@ -305,7 +305,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
                   geoTargetConstants: `geoTargetConstants/${geoTargetConstants}`,
                   // language: `languageConstants/${language}`,
                };
-               const resp = await fetch(`https://googleads.googleapis.com/v22/customers/${customerID}:generateKeywordHistoricalMetrics`, {
+               const resp = await fetch(`https://googleads.googleapis.com/v23/customers/${customerID}:generateKeywordHistoricalMetrics`, {
                   method: 'POST',
                   headers: {
                      'Content-Type': 'application/json',
