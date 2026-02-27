@@ -13,6 +13,12 @@ type adwordsValidateResp = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    await db.sync();
+   // Skip auth check for OAuth callback from Google (GET with code param).
+   // The code exchange is secured server-side via client_secret.
+   // This prevents 401 errors when cookies aren't sent on cross-origin redirects.
+   if (req.method === 'GET' && req.query.code) {
+      return getAdwordsRefreshToken(req, res);
+   }
    const authorized = verifyUser(req, res);
    if (authorized !== 'authorized') {
       return res.status(401).json({ error: authorized });
@@ -29,8 +35,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<string>) => {
    try {
       const code = (req.query.code as string);
-      const https = req.headers.host?.includes('localhost:') ? 'http://' : 'https://';
-      const redirectURL = `${https}${req.headers.host}/api/adwords`;
+      // Build redirect URL using NEXT_PUBLIC_APP_URL (most reliable behind reverse proxies),
+      // falling back to X-Forwarded-* headers, then req.headers.host.
+      let redirectURL = '';
+      if (process.env.NEXT_PUBLIC_APP_URL) {
+         redirectURL = `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/api/adwords`;
+      } else {
+         const fwdProto = req.headers['x-forwarded-proto'] as string | undefined;
+         const fwdHost = req.headers['x-forwarded-host'] as string | undefined;
+         const proto = fwdProto || (req.headers.host?.includes('localhost:') ? 'http' : 'https');
+         const host = fwdHost || req.headers.host;
+         redirectURL = `${proto}://${host}/api/adwords`;
+      }
 
       if (code) {
          try {
