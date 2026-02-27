@@ -9,7 +9,7 @@ const ToggleField = ({ label = '', value = false, onChange, classNames = '' }: T
    return (
       <div className={`field--toggle w-full relative ${classNames}`}>
          <label className="relative inline-flex items-center cursor-pointer w-full justify-between">
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-300 w-auto">{label}</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 w-auto">{label}</span>
             <input
             type="checkbox"
             value={value.toString()}

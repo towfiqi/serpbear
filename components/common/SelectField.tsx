@@ -72,13 +72,13 @@ const SelectField = (props: SelectFieldProps) => {
    };
 
    return (
-       <div className={`select font-semibold text-gray-500 relative ${inline ? 'inline-block' : 'flex'} justify-between items-center"`}>
-         {label && <label className='mb-2 font-semibold inline-block text-sm text-gray-700 capitalize'>{label}</label>}
+       <div className={`select font-semibold text-gray-500 relative ${inline ? 'inline-block' : 'flex'} justify-between items-center`}>
+         {label && <label className='font-semibold inline-block text-sm text-gray-700 capitalize'>{label}</label>}
          <div
          className={`selected flex border ${rounded} p-1.5 px-4 cursor-pointer select-none ${fullWidth ? 'w-full' : 'w-[210px]'} 
          min-w-[${minWidth}px] ${showOptions ? 'border-indigo-200' : ''}`}
          onClick={() => setShowOptions(!showOptions)}>
-            <span className={'w-full inline-block truncate mr-2 capitalize'}>
+            <span className={'w-full inline-block truncate mr-2 capitalize text-sm'}>
                {selected.length > 0 ? (selectedLabels.slice(0, 2).join(', ')) : defaultLabel}
             </span>
             {multiple && selected.length > 2
@@ -112,7 +112,7 @@ const SelectField = (props: SelectFieldProps) => {
                         >
                            {multiple && (
                               <span
-                                 className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border
+                                 className={`p-0 mr-2 leading-[0px] inline-block rounded-sm pt-0 px-[1px] pb-[3px] border text-sm
                                  ${itemActive ? ' bg-indigo-600 border-indigo-600 text-white' : 'text-transparent'}`} >
                                  <Icon type="check" size={10} />
                               </span>

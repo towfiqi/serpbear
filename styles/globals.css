@@ -12,6 +12,15 @@ body {
    max-width: 90rem;
 }
 
+.text-sm {
+   font-size: 0.80rem;
+}
+@media (min-width: 1024px) {
+   .lg\:text-sm {
+      font-size: 0.80rem;
+   }
+}
+
 .domKeywords {
    /* min-height: 70vh; */
    border-color: #e9ebff;
@@ -115,7 +124,7 @@ body {
 }
 
 .keywordDetails__section__results {
-   height: calc(100vh - 550px);
+   height: calc(100vh - 580px);
 }
 
 .settings__content {
