@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/towfiqi/serpbear/compare/v2.0.7...v3.0.0) (2026-03-01)
+
+
+### Features
+
+* adds dynamic scraping to tackle num=100 block. ([b976aef](https://github.com/towfiqi/serpbear/commit/b976aefb35107f45d0c069e6610fc58ddf0f0e8d)), closes [#310](https://github.com/towfiqi/serpbear/issues/310)
+
+
+### Bug Fixes
+
+* correct typo "avaialable" → "available" in AddKeywords and searchConsole ([ca1b6cb](https://github.com/towfiqi/serpbear/commit/ca1b6cbdd32c1675999ac5e6a6859db8f9212b97))
+* resolve broken Google Ads integration due to deprecated API ([893598a](https://github.com/towfiqi/serpbear/commit/893598af8b5aea29af1f4aa60cdb424fa6596ffe)), closes [#239](https://github.com/towfiqi/serpbear/issues/239) [#181](https://github.com/towfiqi/serpbear/issues/181) [#311](https://github.com/towfiqi/serpbear/issues/311)
+* resolve Google Search Console Forbidden errors and silent cron failure ([c075fc4](https://github.com/towfiqi/serpbear/commit/c075fc4fed50283b0d7190e47fbdd403dd97a8dd)), closes [#232](https://github.com/towfiqi/serpbear/issues/232) [#180](https://github.com/towfiqi/serpbear/issues/180) [#180](https://github.com/towfiqi/serpbear/issues/180) [#232](https://github.com/towfiqi/serpbear/issues/232)
+* resolves "client-side exception has occurred" error. ([dc67fcf](https://github.com/towfiqi/serpbear/commit/dc67fcf1ce85e58b06669357fd76160cea65683d)), closes [#271](https://github.com/towfiqi/serpbear/issues/271)
+* resolves broken city filter for serper.dev ([8a61064](https://github.com/towfiqi/serpbear/commit/8a61064f8eceb50eb7c11c4a578d9f2aaef8a36d)), closes [#285](https://github.com/towfiqi/serpbear/issues/285)
+* resolves failure to detect domain with www in search results ([36ed25f](https://github.com/towfiqi/serpbear/commit/36ed25fe42ecc27d8a9e225a444da8cf953dcf33)), closes [#272](https://github.com/towfiqi/serpbear/issues/272) [#281](https://github.com/towfiqi/serpbear/issues/281) [#323](https://github.com/towfiqi/serpbear/issues/323)
+* resolves google ads Not authorized error when integrating ([09b025a](https://github.com/towfiqi/serpbear/commit/09b025a6a24a364ac2ea95325cc56ae21fd42ba9)), closes [#190](https://github.com/towfiqi/serpbear/issues/190)
+* resolves Google adwords connection issue. ([be4eb47](https://github.com/towfiqi/serpbear/commit/be4eb4705ec2706fe3e027d85f3592680da23b05))
+* resolves hidden tooltips for inner tabs ([ea6df20](https://github.com/towfiqi/serpbear/commit/ea6df20bc55a56a58f9e368d303d708ad40a9fe9))
+* resolves incorrect country flag in email in some cases ([0b1fe73](https://github.com/towfiqi/serpbear/commit/0b1fe7349ac38bcac3fc91ae574c26d27091563b))
+* resolves minor UI issues. ([fa51ab6](https://github.com/towfiqi/serpbear/commit/fa51ab6aab558c4b42bc07a8328c660b2b1519a4))
+* resolves missing failed keyword scrape queue clearing mechanism. ([5cff7d5](https://github.com/towfiqi/serpbear/commit/5cff7d54e2c2c7cdf4f76c17f6931270ac23bdcf))
+* resolves missing settings.json error appears in some cases. ([7b740b3](https://github.com/towfiqi/serpbear/commit/7b740b36faf647a95f85f09841dac0b436ee676f)), closes [#211](https://github.com/towfiqi/serpbear/issues/211)
+* resolves scraping google search results data in som cases ([41cbfda](https://github.com/towfiqi/serpbear/commit/41cbfda64305cbba97e8deac3fb6af034b14b9df))
+* resolves various typos ([e5234e1](https://github.com/towfiqi/serpbear/commit/e5234e1b20e05d58316060d345a72df11f5e3c75))
+
 ### [2.0.7](https://github.com/towfiqi/serpbear/compare/v2.0.6...v2.0.7) (2025-02-23)
 
 
