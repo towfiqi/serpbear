@@ -9,7 +9,6 @@
     "cron": "node cron.js",
     "start:all": "concurrently npm:start npm:cron",
     "lint": "next lint",
-    "lint:css": "stylelint styles/*.css",
     "test": "jest --watch --verbose",
     "test:ci": "jest --ci",
     "test:cv": "jest --coverage --coverageDirectory='coverage'",
@@ -81,8 +80,6 @@
     "sass": "^1.97.3",
     "sequelize-cli": "^6.6.5",
     "standard-version": "^9.5.0",
-    "stylelint": "^14.16.1",
-    "stylelint-config-standard": "^29.0.0",
     "tailwindcss": "^3.4.14",
     "typescript": "^4.8.4"
   }
