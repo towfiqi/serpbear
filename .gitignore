@@ -42,3 +42,6 @@ TODO
 
 #database
 data/
+
+#copilot
+.github/*.md
