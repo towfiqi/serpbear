@@ -10,10 +10,10 @@ type IconProps = {
 }
 
 const Icon = ({ type, color = 'currentColor', size = 16, title = '', classes = '' }: IconProps) => {
-   const xmlnsProps = { title, xmlns: 'http://www.w3.org/2000/svg', xmlnsXlink: 'http://www.w3.org/1999/xlink', preserveAspectRatio: 'xMidYMid meet' };
+   const xmlnsProps = { xmlns: 'http://www.w3.org/2000/svg', xmlnsXlink: 'http://www.w3.org/1999/xlink', preserveAspectRatio: 'xMidYMid meet' };
 
    return (
-       <span className={`icon inline-block relative top-[2px] ${classes}`}>
+       <span className={`icon inline-block relative top-[2px] ${classes}`} title={title}>
          {type === 'logo'
             && <svg {...xmlnsProps} width={size} viewBox="0 0 1484.32 1348.5">
                <path fill={color} d="M1406.23,604.17s-44-158.18,40.43-192.67,195,97.52,195,97.52,314-65.41,534,0c0,0,122.16-105.61,214.68-80.28,99.9,27.36,32.7,181.38,32.7,181.38s228.36,384.15,239.06,737.38c0,0-346.1,346.09-746.9,406.75,0,0-527.47-106.44-737.38-449.57C1177.88,1304.68,1169.55,1008.54,1406.23,604.17Z" transform="translate(-1177.84 -405.75)"/>
