@@ -5,6 +5,9 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: false,
   output: 'standalone',
+  serverRuntimeConfig: {
+    appURL: process.env.NEXT_PUBLIC_APP_URL || '',
+  },
   publicRuntimeConfig: {
    version,
  },

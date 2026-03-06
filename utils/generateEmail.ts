@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { readFile } from 'fs/promises';
+import getConfig from 'next/config';
 import path from 'path';
 import { getKeywordsInsight, getPagesInsight } from './insight';
 import { readLocalSCData } from './searchConsole';
@@ -124,7 +125,7 @@ const generateEmail = async (domainName:string, keywords:KeywordType[], settings
          .replace('{{domainName}}', domainName)
          .replace('{{keywordsCount}}', keywordsCount.toString())
          .replace('{{keywordsTable}}', keywordsTable)
-         .replace('{{appURL}}', process.env.NEXT_PUBLIC_APP_URL || '')
+         .replace('{{appURL}}', (getConfig()?.serverRuntimeConfig?.appURL as string) || '')
          .replace('{{stat}}', stat)
          .replace('{{preheader}}', stat);
 

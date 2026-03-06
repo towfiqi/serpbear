@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { OAuth2Client } from 'google-auth-library';
 import { readFile, writeFile } from 'fs/promises';
 import Cryptr from 'cryptr';
+import getConfig from 'next/config';
 import db from '../../database/database';
 import verifyUser from '../../utils/verifyUser';
 import { getAdwordsCredentials, getAdwordsKeywordIdeas } from '../../utils/adwords';
@@ -37,9 +38,12 @@ const getAdwordsRefreshToken = async (req: NextApiRequest, res: NextApiResponse<
       const code = (req.query.code as string);
       // Build redirect URL using NEXT_PUBLIC_APP_URL (most reliable behind reverse proxies),
       // falling back to X-Forwarded-* headers, then req.headers.host.
+      // Read from serverRuntimeConfig to prevent Next.js from inlining the env var at build time.
+      const { serverRuntimeConfig } = getConfig() || {};
+      const appURL: string = serverRuntimeConfig?.appURL || '';
       let redirectURL = '';
-      if (process.env.NEXT_PUBLIC_APP_URL) {
-         redirectURL = `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/api/adwords`;
+      if (appURL) {
+         redirectURL = `${appURL.replace(/\/$/, '')}/api/adwords`;
       } else {
          const fwdProto = req.headers['x-forwarded-proto'] as string | undefined;
          const fwdHost = req.headers['x-forwarded-host'] as string | undefined;
