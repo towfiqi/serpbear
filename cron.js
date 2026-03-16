@@ -5,6 +5,16 @@ const { readFile } = require('fs');
 const { Cron } = require('croner');
 require('dotenv').config({ path: './.env.local' });
 
+// Build the internal base URL for cron→server requests.
+// NEXT_PUBLIC_APP_URL is the external/browser URL which may use a different port
+// (e.g. Docker -p 5000:3000). Inside the container the server listens on PORT (default 3000).
+const getInternalBaseURL = () => {
+   const serverPort = process.env.PORT || 3000;
+   return `http://localhost:${serverPort}`;
+};
+
+const INTERNAL_BASE_URL = getInternalBaseURL();
+
 const getAppSettings = async () => {
    const defaultSettings = {
       scraper_type: 'none',
@@ -76,7 +86,7 @@ const runAppCronJobs = () => {
          new Cron(scrapeCronTime, () => {
             // console.log('### Running Keyword Position Cron Job!');
             const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
-            fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/cron`, fetchOpts)
+            fetch(`${INTERNAL_BASE_URL}/api/cron`, fetchOpts)
             .then((res) => res.json())
             // .then((data) =>{ console.log(data)})
             .catch((err) => {
@@ -94,7 +104,7 @@ const runAppCronJobs = () => {
             new Cron(cronTime, () => {
                // console.log('### Sending Notification Email...');
                const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
-               fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notify`, fetchOpts)
+               fetch(`${INTERNAL_BASE_URL}/api/notify`, fetchOpts)
                .then((res) => res.json())
                .then((data) => console.log(data))
                .catch((err) => {
@@ -117,7 +127,7 @@ const runAppCronJobs = () => {
                const keywordsToRetry = data ? JSON.parse(data) : [];
                if (keywordsToRetry.length > 0) {
                   const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
-                  fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/refresh?id=${keywordsToRetry.join(',')}`, fetchOpts)
+                  fetch(`${INTERNAL_BASE_URL}/api/refresh?id=${keywordsToRetry.join(',')}`, fetchOpts)
                   .then((res) => res.json())
                   .then((refreshedData) => console.log(refreshedData))
                   .catch((fetchErr) => {
@@ -139,7 +149,7 @@ const runAppCronJobs = () => {
       const searchConsoleCRONTime = generateCronTime('daily');
       new Cron(searchConsoleCRONTime, () => {
          const fetchOpts = { method: 'POST', headers: { Authorization: `Bearer ${process.env.APIKEY}` } };
-         fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/searchconsole`, fetchOpts)
+         fetch(`${INTERNAL_BASE_URL}/api/searchconsole`, fetchOpts)
          .then((res) => res.json())
          .then((data) => console.log(data))
          .catch((err) => {
