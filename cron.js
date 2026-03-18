@@ -31,7 +31,17 @@ const getAppSettings = async () => {
       const exists = await promises.stat(`${process.cwd()}/data/settings.json`).then(() => true).catch(() => false);
       if (exists) {
          const settingsRaw = await promises.readFile(`${process.cwd()}/data/settings.json`, { encoding: 'utf-8' });
-         const settings = settingsRaw ? JSON.parse(settingsRaw) : {};
+         let settings;
+         try {
+            settings = settingsRaw ? JSON.parse(settingsRaw) : {};
+         } catch (parseError) {
+            // File exists but JSON is corrupt — back it up instead of overwriting
+            const backupPath = `${process.cwd()}/data/settings.json.${Date.now()}.corrupt`;
+            console.log(`[WARN] Corrupt settings.json detected. Backing up to ${backupPath}`);
+            await promises.rename(`${process.cwd()}/data/settings.json`, backupPath).catch(() => {});
+            await promises.writeFile(`${process.cwd()}/data/settings.json`, JSON.stringify(defaultSettings), { encoding: 'utf-8' }).catch(() => {});
+            return defaultSettings;
+         }
 
          try {
             const cryptr = new Cryptr(process.env.SECRET);
