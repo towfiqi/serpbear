@@ -130,13 +130,10 @@ const refreshParallel = async (keywords:KeywordType[], settings:SettingsType, do
       return scrapeKeywordWithStrategy(keyword, settings, domainSettings);
    });
 
-   return Promise.all(promises).then((promiseData) => {
-      console.log('ALL DONE!!!');
-      return promiseData;
-   }).catch((err) => {
-      console.log(err);
-      return [];
-   });
+   const results = await Promise.allSettled(promises);
+   const fulfilled = results.filter((r): r is PromiseFulfilledResult<RefreshResult> => r.status === 'fulfilled');
+
+   return fulfilled.map((r) => r.value);
 };
 
 export default refreshAndUpdateKeywords;
