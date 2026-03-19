@@ -50,6 +50,9 @@ class Domain extends Model {
 
    @Column({ type: DataType.BOOLEAN, allowNull: true, defaultValue: false })
    scrape_smart_full_fallback!: boolean;
+
+   @Column({ type: DataType.STRING, allowNull: true, defaultValue: '' })
+   subdomain_matching!: string;
 }
 
 export default Domain;

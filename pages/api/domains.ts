@@ -121,6 +121,7 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
    const {
       notification_interval, notification_emails, search_console,
       scrape_strategy, scrape_pagination_limit, scrape_smart_full_fallback,
+      subdomain_matching,
    } = req.body as DomainSettings;
 
    try {
@@ -144,6 +145,7 @@ export const updateDomain = async (req: NextApiRequest, res: NextApiResponse<Dom
             scrape_strategy: scrape_strategy || '',
             scrape_pagination_limit: scrape_pagination_limit || 0,
             scrape_smart_full_fallback: !!scrape_smart_full_fallback,
+            subdomain_matching: subdomain_matching || '',
          });
          await domainToUpdate.save();
       }

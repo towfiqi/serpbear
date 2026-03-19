@@ -196,10 +196,11 @@ export const scrapeKeywordWithStrategy = async (
 
    // Native-pagination scrapers (serpapi, searchapi) fetch 100 results in one request
    if (scraperObj?.nativePagination) {
-      return scrapeKeywordFromGoogle(keyword, settings);
+      return scrapeKeywordFromGoogle(keyword, settings, domainSettings?.subdomain_matching);
    }
 
    const { strategy, paginationLimit, smartFullFallback } = resolveStrategy(settings, domainSettings);
+   const subdomainMatching = domainSettings?.subdomain_matching || '';
    let pagesToScrape: number[];
 
    if (strategy === 'custom') {
@@ -233,7 +234,8 @@ export const scrapeKeywordWithStrategy = async (
 
    // Smart + full fallback: if domain not found on scraped pages, walk remaining pages one by one and stop early when found
    if (strategy === 'smart' && smartFullFallback) {
-      const serpCheck = allScrapedResults.length > 0 ? getSerp(keyword.domain, allScrapedResults) : { position: 0, url: '' };
+      const serpCheck = allScrapedResults.length > 0
+         ? getSerp(keyword.domain, allScrapedResults, subdomainMatching) : { position: 0, url: '' };
       if (serpCheck.position === 0) {
          const alreadyScraped = new Set(pagesToScrape);
          const remainingPages = Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1).filter((p) => !alreadyScraped.has(p));
@@ -246,7 +248,7 @@ export const scrapeKeywordWithStrategy = async (
             if (pageResult.results.length > 0) {
                allScrapedResults.push(...pageResult.results);
                // Stop early if domain is found on this page
-               const earlyCheck = getSerp(keyword.domain, allScrapedResults);
+               const earlyCheck = getSerp(keyword.domain, allScrapedResults, subdomainMatching);
                if (earlyCheck.position > 0) {
                   break;
                }
@@ -262,7 +264,7 @@ export const scrapeKeywordWithStrategy = async (
       return { ...errorResult, error: errorMsg };
    }
 
-   const finalSerp = getSerp(keyword.domain, allScrapedResults);
+   const finalSerp = getSerp(keyword.domain, allScrapedResults, subdomainMatching);
 
    // If domain not found and more than half of the scraped pages had errors,
    // the scraper was unreliable — treat as error to avoid false position=0.
@@ -290,9 +292,10 @@ export const scrapeKeywordWithStrategy = async (
  * For strategy-based multi-page scraping use scrapeKeywordWithStrategy().
  * @param {KeywordType} keyword - the keyword to search for in Google.
  * @param {SettingsType} settings - the App Settings
+ * @param {string} subdomainMatching - optional subdomain matching patterns
  * @returns {RefreshResult}
  */
-export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:SettingsType) : Promise<RefreshResult> => {
+export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:SettingsType, subdomainMatching?: string) : Promise<RefreshResult> => {
    let refreshedResults:RefreshResult = {
       ID: keyword.ID,
       keyword: keyword.keyword,
@@ -316,7 +319,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
       if (res && scrapeResult) {
          const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
          await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
-         const serp = getSerp(keyword.domain, extracted);
+         const serp = getSerp(keyword.domain, extracted, subdomainMatching);
          refreshedResults = { ID: keyword.ID, keyword: keyword.keyword, position: serp.position, url: serp.url, result: extracted, error: false };
          console.log('[SERP]: ', keyword.keyword, serp.position, serp.url);
       } else {
@@ -416,20 +419,40 @@ export const extractScrapedResult = (content: string, device: string): SearchRes
  * Find in the domain's position from the extracted search result.
  * @param {string} domainURL - URL Name to look for.
  * @param {SearchResult[]} result - The search result array extracted from the Google Search result.
+ * @param {string} subdomainMatching - Optional comma-separated subdomains to also match (e.g. "mail,blog" or "*").
  * @returns {SERPObject}
  */
-export const getSerp = (domainURL:string, result:SearchResult[]) : SERPObject => {
+export const getSerp = (domainURL:string, result:SearchResult[], subdomainMatching?: string) : SERPObject => {
    if (result.length === 0 || !domainURL) { return { position: 0, url: '' }; }
    const URLToFind = new URL(domainURL.includes('https://') ? domainURL : `https://${domainURL}`);
    const isURL = URLToFind.pathname !== '/';
    const stripWww = (hostname: string) => hostname.replace(/^www\./, '');
+   const baseDomain = stripWww(URLToFind.hostname);
+
+   // Build list of allowed hostnames: main domain + subdomain variants
+   const allowedHostnames = new Set<string>([baseDomain]);
+   let matchAllSubdomains = false;
+   if (subdomainMatching) {
+      const subs = subdomainMatching.split(',').map((s) => s.trim()).filter(Boolean);
+      for (const sub of subs) {
+         if (sub === '*') {
+            matchAllSubdomains = true;
+         } else {
+            allowedHostnames.add(`${sub}.${baseDomain}`);
+         }
+      }
+   }
+
    const foundItem = result.find((item) => {
       if (!item.url) { return false; }
       const itemURL = new URL(item.url.includes('https://') ? item.url : `https://${item.url}`);
-      if (isURL && `${stripWww(URLToFind.hostname)}${URLToFind.pathname}/` === stripWww(itemURL.hostname) + itemURL.pathname) {
+      const itemHost = stripWww(itemURL.hostname);
+      if (isURL && `${baseDomain}${URLToFind.pathname}/` === itemHost + itemURL.pathname) {
          return true;
       }
-      return stripWww(URLToFind.hostname) === stripWww(itemURL.hostname);
+      if (allowedHostnames.has(itemHost)) { return true; }
+      if (matchAllSubdomains && (itemHost === baseDomain || itemHost.endsWith(`.${baseDomain}`))) { return true; }
+      return false;
    });
    return { position: foundItem ? foundItem.position : 0, url: foundItem && foundItem.url ? foundItem.url : '' };
 };

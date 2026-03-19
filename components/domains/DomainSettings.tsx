@@ -19,7 +19,7 @@ type DomainSettingsError = {
 
 const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
    const router = useRouter();
-   const [currentTab, setCurrentTab] = useState<'notification'|'searchconsole'|'scraping'>('notification');
+   const [currentTab, setCurrentTab] = useState<'notification'|'searchconsole'|'scraping'>('scraping');
    const [showRemoveDomain, setShowRemoveDomain] = useState<boolean>(false);
    const [settingsError, setSettingsError] = useState<DomainSettingsError>({ type: '', msg: '' });
    const [domainSettings, setDomainSettings] = useState<DomainSettings>(() => ({
@@ -31,6 +31,7 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
       scrape_strategy: (domain && domain.scrape_strategy as ScrapeStrategy | '' | undefined) || '',
       scrape_pagination_limit: (domain && domain.scrape_pagination_limit) || 0,
       scrape_smart_full_fallback: (domain && domain.scrape_smart_full_fallback) || false,
+      subdomain_matching: (domain && domain.subdomain_matching) || '',
    }));
 
    const { mutate: updateMutate, error: domainUpdateError, isLoading: isUpdating } = useUpdateDomain(() => closeModal(false));
@@ -82,6 +83,11 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
                relative left-[-20px] w-[calc(100%+40px)] border-l-0 border-r-0 bg-[#f8f9ff]'>
                   <ul>
                      <li
+                     className={`${tabStyle} ${currentTab === 'scraping' ? ' bg-white text-blue-600 border-slate-200' : 'border-transparent'}`}
+                     onClick={() => setCurrentTab('scraping')}>
+                        <Icon type='scraper' /> Scraping
+                     </li>
+                     <li
                      className={`${tabStyle} ${currentTab === 'notification' ? ' bg-white text-blue-600 border-slate-200' : 'border-transparent'} `}
                      onClick={() => setCurrentTab('notification')}>
                        <Icon type='email' /> Notification
@@ -90,11 +96,6 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
                      className={`${tabStyle} ${currentTab === 'searchconsole' ? ' bg-white text-blue-600 border-slate-200' : 'border-transparent'}`}
                      onClick={() => setCurrentTab('searchconsole')}>
                         <Icon type='google' /> Search Console
-                     </li>
-                     <li
-                     className={`${tabStyle} ${currentTab === 'scraping' ? ' bg-white text-blue-600 border-slate-200' : 'border-transparent'}`}
-                     onClick={() => setCurrentTab('scraping')}>
-                        <Icon type='refresh' /> Scraping
                      </li>
                   </ul>
                </div>
@@ -167,6 +168,14 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
                   )}
                   {currentTab === 'scraping' && (
                      <div className="mb-4">
+                        <div className="mb-4">
+                           <InputField
+                              label='Subdomain Matching'
+                              onChange={(val:string) => setDomainSettings({ ...domainSettings, subdomain_matching: val })}
+                              value={domainSettings.subdomain_matching || ''}
+                              placeholder='amp, blog, * (comma separated)'
+                           />
+                        </div>
                         <div className="mb-5">
                            <SelectField
                               label='Scrape Strategy Override'
@@ -182,7 +191,7 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
                            />
                         </div>
                         {domainSettings.scrape_strategy === 'custom' && (
-                           <div className="mb-5">
+                           <div className="mb-4">
                               <SelectField
                                  label='Number of Pages to Scrape'
                                  options={paginationLimitOptions}
