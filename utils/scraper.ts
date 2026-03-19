@@ -11,6 +11,11 @@ type SearchResult = {
    position: number,
 }
 
+type PageScrapeResult = {
+   results: SearchResult[],
+   error?: string,
+}
+
 type SERPObject = {
    position:number,
    url:string
@@ -106,22 +111,24 @@ const scrapeSinglePage = async (
    settings: SettingsType,
    scraperObj: ScraperSettings | undefined,
    pagination: ScraperPagination,
-): Promise<SearchResult[]> => {
+): Promise<PageScrapeResult> => {
    const scraperType = settings?.scraper_type || '';
    const scraperClient = getScraperClient(keyword, settings, scraperObj, pagination);
-   if (!scraperClient) { return []; }
+   if (!scraperClient) { return { results: [], error: 'No scraper client available' }; }
    try {
       const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((result:any) => result.json());
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
-      const scrapeResult: string = (res.data || res.html || res.results || scraperResult || '');
+      const scrapeResult: string = (scraperResult || res.data || res.html || res.results || '');
       if (res && scrapeResult) {
          const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
-         return extracted.map((item, i) => ({ ...item, position: pagination.start + i + 1 }));
+         return { results: extracted.map((item, i) => ({ ...item, position: pagination.start + i + 1 })) };
       }
+      return { results: [], error: `Empty response from ${scraperType || 'scraper'}` };
    } catch (error:any) {
-      console.log('[ERROR] Scraping page', pagination.page, 'for keyword:', keyword.keyword, error?.message || '');
+      const msg = error?.message || 'Unknown scraping error';
+      console.log('[ERROR] Scraping page', pagination.page, 'for keyword:', keyword.keyword, msg);
+      return { results: [], error: msg };
    }
-   return [];
 };
 
 /**
@@ -158,7 +165,7 @@ const resolveStrategy = (
    // Domain override is active — use domain values, fall back to global for unset fields.
    const strategy: ScrapeStrategy = domainStrategy as ScrapeStrategy;
    const paginationLimit: number = domainSettings?.scrape_pagination_limit || settings.scrape_pagination_limit || 5;
-   const smartFullFallback: boolean = domainSettings?.scrape_smart_full_fallback ?? (settings.scrape_smart_full_fallback || false);
+   const smartFullFallback: boolean = domainSettings?.scrape_smart_full_fallback || settings.scrape_smart_full_fallback || false;
    return { strategy, paginationLimit, smartFullFallback };
 };
 
@@ -200,41 +207,74 @@ export const scrapeKeywordWithStrategy = async (
       pagesToScrape = Array.from({ length: limit }, (_, i) => i + 1);
    } else if (strategy === 'smart') {
       const lastPos = keyword.position;
-      const lastPage = lastPos > 0 ? Math.ceil(lastPos / PAGE_SIZE) : 1;
-      const neighbors = [lastPage - 1, lastPage, lastPage + 1].filter((p) => p >= 1 && p <= TOTAL_PAGES);
-      pagesToScrape = [...new Set(neighbors)];
+      if (lastPos === 0) {
+         // No prior position data — scrape only page 1; smartFullFallback will walk remaining pages if needed
+         pagesToScrape = [1];
+      } else {
+         const lastPage = Math.ceil(lastPos / PAGE_SIZE);
+         const neighbors = [lastPage - 1, lastPage, lastPage + 1].filter((p) => p >= 1 && p <= TOTAL_PAGES);
+         pagesToScrape = [...new Set(neighbors)];
+      }
    } else {
       pagesToScrape = [1]; // Basic: first page only
    }
 
    const allScrapedResults: SearchResult[] = [];
+   let pageErrors = 0;
+   let totalPagesAttempted = pagesToScrape.length;
    for (const pageNum of pagesToScrape) {
       const pagination: ScraperPagination = { start: (pageNum - 1) * PAGE_SIZE, num: PAGE_SIZE, page: pageNum };
       // eslint-disable-next-line no-await-in-loop
-      const pageResults = await scrapeSinglePage(keyword, settings, scraperObj, pagination);
-      if (pageResults.length > 0) { allScrapedResults.push(...pageResults); }
+      const pageResult = await scrapeSinglePage(keyword, settings, scraperObj, pagination);
+      const errTag = pageResult.error ? ` (error: ${pageResult.error})` : '';
+      if (pageResult.error) { pageErrors += 1; }
+      if (pageResult.results.length > 0) { allScrapedResults.push(...pageResult.results); }
    }
 
-   if (allScrapedResults.length === 0) { return errorResult; }
-   // Smart + full fallback: if domain not found on neighboring pages, scrape the rest
+   // Smart + full fallback: if domain not found on scraped pages, walk remaining pages one by one and stop early when found
    if (strategy === 'smart' && smartFullFallback) {
-      const serpCheck = getSerp(keyword.domain, allScrapedResults);
+      const serpCheck = allScrapedResults.length > 0 ? getSerp(keyword.domain, allScrapedResults) : { position: 0, url: '' };
       if (serpCheck.position === 0) {
          const alreadyScraped = new Set(pagesToScrape);
          const remainingPages = Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1).filter((p) => !alreadyScraped.has(p));
          for (const pageNum of remainingPages) {
             const pagination: ScraperPagination = { start: (pageNum - 1) * PAGE_SIZE, num: PAGE_SIZE, page: pageNum };
             // eslint-disable-next-line no-await-in-loop
-            const pageResults = await scrapeSinglePage(keyword, settings, scraperObj, pagination);
-            if (pageResults.length > 0) { allScrapedResults.push(...pageResults); }
+            const pageResult = await scrapeSinglePage(keyword, settings, scraperObj, pagination);
+            totalPagesAttempted += 1;
+            if (pageResult.error) { pageErrors += 1; }
+            if (pageResult.results.length > 0) {
+               allScrapedResults.push(...pageResult.results);
+               // Stop early if domain is found on this page
+               const earlyCheck = getSerp(keyword.domain, allScrapedResults);
+               if (earlyCheck.position > 0) {
+                  break;
+               }
+            }
          }
       }
    }
 
-   const finalSerp = getSerp(keyword.domain, allScrapedResults);
-   const fullResults = buildFullResults(allScrapedResults);
+   if (allScrapedResults.length === 0) {
+      const errorMsg = pageErrors > 0
+         ? `Scraper failed on all ${pageErrors} pages for ${keyword.keyword}`
+         : `No search results found on any of the ${totalPagesAttempted} scraped pages`;
+      return { ...errorResult, error: errorMsg };
+   }
 
-   console.log('[SERP]:', keyword.keyword, finalSerp.position, finalSerp.url, `(strategy: ${strategy})`);
+   const finalSerp = getSerp(keyword.domain, allScrapedResults);
+
+   // If domain not found and more than half of the scraped pages had errors,
+   // the scraper was unreliable — treat as error to avoid false position=0.
+   if (finalSerp.position === 0 && pageErrors > totalPagesAttempted / 2) {
+      const errorMsg = `${pageErrors}/${totalPagesAttempted} pages failed — scraper too unreliable to determine position`;
+      return { ...errorResult, error: errorMsg };
+   }
+
+   const fullResults = buildFullResults(allScrapedResults);
+   const skippedCount = fullResults.filter((r) => r.skipped).length;
+
+   console.log('[SERP]:', keyword.keyword, finalSerp.position, finalSerp.url, `(strategy: ${strategy}), Skipped ${skippedCount}`);
    return {
       ID: keyword.ID,
       keyword: keyword.keyword,
@@ -272,7 +312,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
    try {
       const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((result:any) => result.json());
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
-      const scrapeResult:string = (res.data || res.html || res.results || scraperResult || '');
+      const scrapeResult:string = (scraperResult || res.data || res.html || res.results || '');
       if (res && scrapeResult) {
          const extracted = scraperObj?.serpExtractor ? scraperObj.serpExtractor(scrapeResult) : extractScrapedResult(scrapeResult, keyword.device);
          await writeFile('result.txt', JSON.stringify(scrapeResult), { encoding: 'utf-8' }).catch((err) => { console.log(err); });
@@ -406,7 +446,12 @@ export const retryScrape = async (keywordID: number) : Promise<void> => {
 
    const filePath = `${process.cwd()}/data/failed_queue.json`;
    const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
-   currentQueue = currentQueueRaw ? JSON.parse(currentQueueRaw) : [];
+   try {
+      currentQueue = currentQueueRaw ? JSON.parse(currentQueueRaw) : [];
+   } catch (e) {
+      console.log('[WARN] Corrupt failed_queue.json, resetting queue.', e);
+      currentQueue = [];
+   }
 
    if (!currentQueue.includes(keywordID)) {
       currentQueue.push(Math.abs(keywordID));
@@ -426,7 +471,12 @@ export const removeFromRetryQueue = async (keywordID: number) : Promise<void> =>
 
    const filePath = `${process.cwd()}/data/failed_queue.json`;
    const currentQueueRaw = await readFile(filePath, { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
-   currentQueue = currentQueueRaw ? JSON.parse(currentQueueRaw) : [];
+   try {
+      currentQueue = currentQueueRaw ? JSON.parse(currentQueueRaw) : [];
+   } catch (e) {
+      console.log('[WARN] Corrupt failed_queue.json, resetting queue.', e);
+      currentQueue = [];
+   }
    currentQueue = currentQueue.filter((item) => item !== Math.abs(keywordID));
 
    await writeFile(filePath, JSON.stringify(currentQueue), { encoding: 'utf-8' }).catch((err) => { console.log(err); return '[]'; });
