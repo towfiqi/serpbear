@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/towfiqi/serpbear/compare/v3.0.0...v3.1.0) (2026-03-27)
+
+
+### Features
+
+* add subdomain matching functionality ([4533737](https://github.com/towfiqi/serpbear/commit/45337377dcef8bf7192fe34ae063d67be2337d3c)), closes [#324](https://github.com/towfiqi/serpbear/issues/324)
+
+
+### Bug Fixes
+
+* enhance error handling and response structure in scraper functions ([4f394c2](https://github.com/towfiqi/serpbear/commit/4f394c266b6be016f319bc79f55e53430e8385ad))
+* minor ui issue ([eecf88a](https://github.com/towfiqi/serpbear/commit/eecf88acaf6002f3689bd3f89597f805782ab90e))
+* prevent corrupt failed queue file to reset the app settings ([c306fa0](https://github.com/towfiqi/serpbear/commit/c306fa0489040b0d5d3da9b0e7598d2a1fa80917)), closes [#328](https://github.com/towfiqi/serpbear/issues/328)
+* resolves broken google ads oauth of instances behind reverse proxy ([a988b13](https://github.com/towfiqi/serpbear/commit/a988b13d7733ef0206149694d64cb4507bf13549)), closes [#326](https://github.com/towfiqi/serpbear/issues/326)
+* resolves cron issue with certain port mapping config ([d86616a](https://github.com/towfiqi/serpbear/commit/d86616a0a0c2e1ebca59d248cecb290b0f36c2cc))
+* resolves issue that prevents refreshing all keywords when one fails ([77cfa2f](https://github.com/towfiqi/serpbear/commit/77cfa2fe09e3721f6da125f49deeb656cc91ae06))
+
 ## [3.0.0](https://github.com/towfiqi/serpbear/compare/v2.0.7...v3.0.0) (2026-03-01)
 
 
