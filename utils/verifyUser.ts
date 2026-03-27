@@ -24,6 +24,11 @@ const verifyUser = (req: NextApiRequest, res: NextApiResponse): string => {
       'GET:/api/searchconsole',
       'GET:/api/insight',
    ];
+
+   if (process.env.ALLOW_KEYWORD_POST) {
+      allowedApiRoutes.push('POST:/api/keywords'); 
+   }
+   
    const verifiedAPI = req.headers.authorization ? req.headers.authorization.substring('Bearer '.length) === process.env.APIKEY : false;
    const accessingAllowedRoute = req.url && req.method && allowedApiRoutes.includes(`${req.method}:${req.url.replace(/\?(.*)/, '')}`);
    console.log(req.method, req.url);
