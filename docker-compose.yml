@@ -1,0 +1,29 @@
+services:
+  app:
+    image: towfiqi/serpbear:latest
+    # Build from source instead of pulling the image:
+    # build: .
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - USER_NAME=${USER:-admin}
+      - PASSWORD=${PASSWORD}
+      - SECRET=${SECRET}
+      - APIKEY=${APIKEY}
+      - SESSION_DURATION=${SESSION_DURATION:-24}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      # Optional: Google Search Console integration
+      - SEARCH_CONSOLE_CLIENT_EMAIL=${SEARCH_CONSOLE_CLIENT_EMAIL:-}
+      - SEARCH_CONSOLE_PRIVATE_KEY=${SEARCH_CONSOLE_PRIVATE_KEY:-}
+    volumes:
+      - serpbear_data:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  serpbear_data:
