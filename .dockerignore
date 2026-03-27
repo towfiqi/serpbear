@@ -4,11 +4,13 @@ Dockerfile
 node_modules
 npm-debug.log
 README.md
+CHANGELOG.md
+LICENSE
 .next
 .git
+.github
 .vscode
 fly.toml
 TODO
-data/database.sqlite
-data/settings.json
-data/failed_queue.json
+coverage
+data/
