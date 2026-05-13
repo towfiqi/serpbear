@@ -42,19 +42,32 @@ When you [integrate Google Search Console](https://docs.serpbear.com/miscellaneo
 
 If you don't want to use proxies, you can use third party Scraping services to scrape Google Search results.
 
-
-| Service           | Cost          | SERP Lookup    | API |
-| ----------------- | ------------- | -------------- | --- |
-| scrapingrobot.com | Free          | 5000/mo        | Yes |
-| serply.io         | $49/mo        | 5000/mo        | Yes |
-| serpapi.com       | From $50/mo   | From 5,000/mo  | Yes |
-| spaceserp.com     | $59/lifetime  | 15,000/mo      | Yes |
-| SearchApi.io      | From $40/mo   | From 10,000/mo | Yes |
-| valueserp.com     | Pay As You Go | $2.50/1000 req | No  |
-| serper.dev        | Pay As You Go | $1.00/1000 req | No  |
-| hasdata.com       | From $29/mo   | From 10,000/mo | Yes |
+| Service           | Cost          | SERP Lookup     | API | Scraping Performance |
+| ----------------- | ------------- | --------------- | --- | -------------------- |
+| serper.dev        | Pay As You Go | $1.00/1000 req  | No  | Great                |
+| serply.io         | $49/mo        | 5000/mo         | Yes | Good                 |
+| serpapi.com       | From $50/mo   | From 5,000/mo   | Yes | Good                 |
+| SearchApi.io      | From $40/mo   | From 10,000/mo  | Yes | Good                 |
+| valueserp.com     | Pay As You Go | $2.50/1000 req  | No  | Good                 |
+| hasdata.com       | From $29/mo   | From 10,000/mo  | Yes | Good                 |
+| crazyserp.com     | From $47/mo   | From 100,000/mo | Yes | Good                 |
+| spaceserp.com     | $59/lifetime  | 15,000/mo       | Yes | Doesn't work Anymore |
+| scrapingant.com   | From $19/mo   | 100,000/mo      | Yes | Doesn't work Anymore |
+| scrapingrobot.com | Free          | 5000/mo         | Yes | Doesn't work Anymore |
 
 **Tech Stack**
 
 - Next.js for Frontend & Backend.
 - Sqlite for Database.
+
+---
+
+<div>
+  <h3>Check out Pluton By the same author</h3>
+  <br />
+  <figure>
+    <a href="https://github.com/plutonhq/pluton">
+      <img src="https://docs.usepluton.com/assets/images/pluton-be6c5af7c03acc29d7e9c43e1399b811.gif" alt="Pluton Screenshot" />
+    </a>
+  </figure>
+</div>
