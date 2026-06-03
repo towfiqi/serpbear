@@ -3,6 +3,8 @@
 
 ---
 
+docker buildx build --platform linux/amd64,linux/arm64 -t hub.adure.io/serpbear --push .
+
 ![SerpBear](https://i.imgur.com/0S2zIH3.png)
 
 # SerpBear
@@ -50,6 +52,7 @@ If you don't want to use proxies, you can use third party Scraping services to s
 | Service           | Cost          | SERP Lookup     | API | Scraping Performance |
 | ----------------- | ------------- | --------------- | --- | -------------------- |
 | serper.dev        | Pay As You Go | $1.00/1000 req  | No  | Great                |
+| serpbase.dev      | Pay As You Go | 1 cr/req        | Yes | Good             |
 | serply.io         | $49/mo        | 5000/mo         | Yes | Good                 |
 | serpapi.com       | From $50/mo   | From 5,000/mo   | Yes | Good                 |
 | SearchApi.io      | From $40/mo   | From 10,000/mo  | Yes | Good                 |

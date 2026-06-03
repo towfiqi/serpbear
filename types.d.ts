@@ -270,6 +270,10 @@ interface ScraperSettings {
    headers?(keyword:KeywordType, settings: SettingsType): Object,
    /** Construct the API URL for scraping the data through your Scraper's API */
    scrapeURL?(keyword:KeywordType, settings:SettingsType, countries:countryData, pagination?: ScraperPagination): string,
+   /** HTTP method for the scraper API request. Defaults to GET. */
+   scrapeMethod?: 'GET' | 'POST',
+   /** JSON body for POST scraper requests. */
+   requestBody?(keyword:KeywordType, settings:SettingsType, countries:countryData, pagination?: ScraperPagination): Record<string, unknown>,
    /** Custom function to extract the serp result from the scraped data. The extracted data should be @return {scraperExtractedItem[]} */
    serpExtractor?(content:string): scraperExtractedItem[],
 }
