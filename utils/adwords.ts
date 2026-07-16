@@ -6,6 +6,7 @@ import Keyword from '../database/models/keyword';
 import parseKeywords from './parseKeywords';
 import countries from './countries';
 import { readLocalSCData } from './searchConsole';
+import { domainFromSlug } from './domainSlug';
 
 const memoryCache = new TTLCache({ max: 10000 });
 
@@ -384,7 +385,7 @@ export const updateKeywordsVolumeData = async (volumesData: false | Record<numbe
  */
 export const getLocalKeywordIdeas = async (domain:string): Promise<false | KeywordIdeasDatabase> => {
    try {
-      const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
+   const domainName = domain.includes('.') ? domain : domainFromSlug(domain);
       const filename = `IDEAS_${domainName}.json`;
       const keywordIdeasRaw = await readFile(`${process.cwd()}/data/${filename}`, { encoding: 'utf-8' });
       const keywordIdeasData = JSON.parse(keywordIdeasRaw) as KeywordIdeasDatabase;
@@ -407,7 +408,7 @@ export const getLocalKeywordIdeas = async (domain:string): Promise<false | Keywo
  */
 export const updateLocalKeywordIdeas = async (domain:string, data:IdeaDatabaseUpdateData): Promise<boolean> => {
    try {
-      const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
+   const domainName = domain.includes('.') ? domain : domainFromSlug(domain);
       const existingIdeas = await getLocalKeywordIdeas(domain);
       const filename = `IDEAS_${domainName}.json`;
       const fileContent = { ...existingIdeas, updated: new Date().getTime() };
