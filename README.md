@@ -27,7 +27,7 @@ SerpBear is an Open Source Search Engine Position Tracking and Keyword Research 
 
 #### How it Works
 
-The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SearchApi, SerpApi, HasData or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword.
+The App uses third party website scrapers like ScrapingAnt, ScrapingRobot, SearchApi, SerpApi, HasData, GoAnyAPI or Your given Proxy ips to scrape google search results to see if your domain appears in the search result for the given keyword.
 
 The Keyword Research and keyword generation feature works by integrating your Google Ads test accounts into SerpBear. You can also view the added keyword's monthly search volume data once you [integrate Google Ads](https://docs.serpbear.com/miscellaneous/integrate-google-ads).
 
@@ -56,6 +56,7 @@ If you don't want to use proxies, you can use third party Scraping services to s
 | valueserp.com     | Pay As You Go | $2.50/1000 req  | No  | Good                 |
 | hasdata.com       | From $29/mo   | From 10,000/mo  | Yes | Good                 |
 | crazyserp.com     | From $47/mo   | From 100,000/mo | Yes | Good                 |
+| goanyapi.com      | Pay As You Go | from $1.61/1000 req | Yes | Good                 |
 | spaceserp.com     | $59/lifetime  | 15,000/mo       | Yes | Doesn't work Anymore |
 | scrapingant.com   | From $19/mo   | 100,000/mo      | Yes | Doesn't work Anymore |
 | scrapingrobot.com | Free          | 5000/mo         | Yes | Doesn't work Anymore |
