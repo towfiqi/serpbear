@@ -56,7 +56,7 @@ If you don't want to use proxies, you can use third party Scraping services to s
 | valueserp.com     | Pay As You Go | $2.50/1000 req  | No  | Good                 |
 | hasdata.com       | From $29/mo   | From 10,000/mo  | Yes | Good                 |
 | crazyserp.com     | From $47/mo   | From 100,000/mo | Yes | Good                 |
-| goanyapi.com      | Pay As You Go | 2 credits/req   | Yes | Good                 |
+| goanyapi.com      | Pay As You Go | from $1.61/1000 req | Yes | Good                 |
 | spaceserp.com     | $59/lifetime  | 15,000/mo       | Yes | Doesn't work Anymore |
 | scrapingant.com   | From $19/mo   | 100,000/mo      | Yes | Doesn't work Anymore |
 | scrapingrobot.com | Free          | 5000/mo         | Yes | Doesn't work Anymore |
