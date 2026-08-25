@@ -11,19 +11,19 @@ const serpingapi:ScraperSettings = {
    name: 'Serping API',
    website: 'serpingapi.com',
    allowsCity: true,
-   nativePagination: true,
    headers: (keyword, settings) => {
       return {
          'Content-Type': 'application/json',
          'X-API-Key': settings.scaping_api,
       };
    },
-   scrapeURL: (keyword, settings, countryData) => {
+   scrapeURL: (keyword, settings, countryData, pagination) => {
       const country = keyword.country || 'US';
       const countryName = countries[country][0];
       const lang = countryData[country][2];
       const location = keyword.city && countryName ? `&location=${encodeURIComponent(`${keyword.city},${countryName}`)}` : '';
-      return `https://api.serpingapi.com/v1/search?q=${encodeURIComponent(keyword.keyword)}&num=100&gl=${country.toLowerCase()}&hl=${lang}${location}`;
+      const p = pagination || { start: 0, num: 10, page: 1 };
+      return `https://api.serpingapi.com/v1/search?q=${encodeURIComponent(keyword.keyword)}&num=${p.num}&page=${p.page}&gl=${country.toLowerCase()}&hl=${lang}${location}`;
    },
    resultObjectKey: 'organic',
    serpExtractor: (content) => {
