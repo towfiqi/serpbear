@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { diagnoseInvalidGoogleSerpHtml, formatSerpHtmlParseError } from '../../utils/serpHtmlDiagnostics';
 
 const proxy:ScraperSettings = {
    id: 'proxy',
@@ -19,7 +20,7 @@ const proxy:ScraperSettings = {
       let lastPosition = 0;
       const hasValidContent = $('body').find('#main');
       if (hasValidContent.length === 0) {
-         const msg = '[ERROR] Scraped search results from proxy do not adhere to expected format. Unable to parse results';
+         const msg = formatSerpHtmlParseError(diagnoseInvalidGoogleSerpHtml(content));
          console.log(msg);
          throw new Error(msg);
       }

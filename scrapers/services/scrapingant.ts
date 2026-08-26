@@ -13,7 +13,9 @@ const scrapingAnt:ScraperSettings = {
       const lang = countryData[country][2];
       const p = pagination || { start: 0, num: 10 };
       const url = encodeURI(`https://www.google.com/search?num=${p.num}&start=${p.start}&hl=${lang}&q=${keyword.keyword}`);
-      return `https://api.scrapingant.com/v2/extended?url=${url}&x-api-key=${settings.scaping_api}&proxy_country=${country}&browser=false`;
+      // Google Search requires JavaScript (since 2025). browser=false often returns
+      // non-SERP HTML that fails local Cheerio parsing.
+      return `https://api.scrapingant.com/v2/extended?url=${url}&x-api-key=${settings.scaping_api}&proxy_country=${country}&browser=true`;
    },
    resultObjectKey: 'result',
 };
