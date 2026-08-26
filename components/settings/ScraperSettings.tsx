@@ -64,6 +64,13 @@ const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSett
             minWidth={220}
             />
          </div>
+         {['scrapingrobot', 'scrapingant', 'proxy'].includes(settings.scraper_type) && (
+            <div className="mb-5 p-3 rounded border border-amber-200 bg-amber-50 text-amber-900 text-xs leading-relaxed">
+               HTML scrapers fetch raw Google pages. Since Google began requiring JavaScript for Search,
+               these providers often return consent, captcha, or JS-challenge HTML that SerpBear cannot parse.
+               For reliable rankings, prefer a JSON SERP API (Serper.dev, SearchApi.io, SerpApi, HasData, CrazySERP, …).
+            </div>
+         )}
          {settings.scraper_type !== 'none' && settings.scraper_type !== 'proxy' && (
             <div className="settings__section__secret mb-5">
                <SecretField
