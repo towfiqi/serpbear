@@ -4,6 +4,7 @@ import verifyUser from '../../utils/verifyUser';
 import {
    KeywordIdeasDatabase, getAdwordsCredentials, getAdwordsKeywordIdeas, getLocalKeywordIdeas, updateLocalKeywordIdeas,
 } from '../../utils/adwords';
+import { domainFromSlug } from '../../utils/keywordIdeasFile';
 
 type keywordsIdeasUpdateResp = {
    keywords: IdeaKeyword[],
@@ -37,7 +38,7 @@ const getKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyword
    try {
       const domain = req.query.domain as string;
       if (domain) {
-         const keywordsDatabase = await getLocalKeywordIdeas(domain);
+         const keywordsDatabase = await getLocalKeywordIdeas(domainFromSlug(domain));
          // console.log('keywords :', keywordsDatabase);
          if (keywordsDatabase) {
             return res.status(200).json({ data: keywordsDatabase });
@@ -96,7 +97,7 @@ const favoriteKeywords = async (req: NextApiRequest, res: NextApiResponse<keywor
             newFavorites.splice(existingKeywordIndex, 1);
          } else if (theKeyword) newFavorites.push(theKeyword);
 
-         const updated = await updateLocalKeywordIdeas(domain, { favorites: newFavorites });
+         const updated = await updateLocalKeywordIdeas(domainFromSlug(domain), { favorites: newFavorites });
 
          if (updated) {
             return res.status(200).json({ keywords: newFavorites, error: '' });

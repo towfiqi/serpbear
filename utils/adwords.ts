@@ -6,6 +6,7 @@ import Keyword from '../database/models/keyword';
 import parseKeywords from './parseKeywords';
 import countries from './countries';
 import { readLocalSCData } from './searchConsole';
+import { keywordIdeasFilename } from './keywordIdeasFile';
 
 const memoryCache = new TTLCache({ max: 10000 });
 
@@ -377,15 +378,15 @@ export const updateKeywordsVolumeData = async (volumesData: false | Record<numbe
 };
 
 /**
- * The function `getLocalKeywordIdeas` reads keyword ideas data from a local JSON file based on a domain slug and returns it as a Promise.
- * @param {string} domain - The `domain` parameter is the domain slug for which the keyword Ideas are fetched.
+ * The function `getLocalKeywordIdeas` reads keyword ideas data from a local JSON file for a
+ * (decoded) domain and returns it as a Promise.
+ * @param {string} domain - The real domain (already decoded from its slug) whose keyword Ideas are fetched.
  * @returns returns either a `KeywordIdeasDatabase` object if the data is successfully retrieved , or it returns `false` if
  * there are no keywords found in the retrieved data or if an error occurs during the process.
  */
 export const getLocalKeywordIdeas = async (domain:string): Promise<false | KeywordIdeasDatabase> => {
    try {
-      const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
-      const filename = `IDEAS_${domainName}.json`;
+      const filename = keywordIdeasFilename(domain);
       const keywordIdeasRaw = await readFile(`${process.cwd()}/data/${filename}`, { encoding: 'utf-8' });
       const keywordIdeasData = JSON.parse(keywordIdeasRaw) as KeywordIdeasDatabase;
       if (keywordIdeasData.keywords) {
@@ -400,16 +401,15 @@ export const getLocalKeywordIdeas = async (domain:string): Promise<false | Keywo
 
 /**
  * The function `updateLocalKeywordIdeas` updates a local JSON file containing keyword ideas for a specific domain with new data provided.
- * @param {string} domain - The `domain` parameter is the domain slug for which the keyword Ideas are being updated.
+ * @param {string} domain - The real domain (already decoded from its slug) whose keyword Ideas are updated.
  * @param {IdeaDatabaseUpdateData} data - The `data` parameter is an object of type `IdeaDatabaseUpdateData`.
  *  It contains the following properties: `keywords`, `favorites` & `settings`
  * @returns The function `updateLocalKeywordIdeas` returns a Promise<boolean>.
  */
 export const updateLocalKeywordIdeas = async (domain:string, data:IdeaDatabaseUpdateData): Promise<boolean> => {
    try {
-      const domainName = domain.replaceAll('-', '.').replaceAll('_', '-');
       const existingIdeas = await getLocalKeywordIdeas(domain);
-      const filename = `IDEAS_${domainName}.json`;
+      const filename = keywordIdeasFilename(domain);
       const fileContent = { ...existingIdeas, updated: new Date().getTime() };
       if (data.keywords && Array.isArray(data.keywords) && data.keywords.length > 0) {
          fileContent.keywords = data.keywords;
