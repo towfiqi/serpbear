@@ -9,6 +9,10 @@ import { readLocalSCData } from './searchConsole';
 
 const memoryCache = new TTLCache({ max: 10000 });
 
+export const getGoogleAdsLoginCustomerID = (customerID: string) => (
+   process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID || customerID
+).replaceAll('-', '');
+
 type keywordIdeasMetrics = {
    competition: IdeaKeyword['competition'],
    monthlySearchVolumes: {month : string, year : string, monthlySearches : string}[],
@@ -164,6 +168,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
       try {
          // API: https://developers.google.com/google-ads/api/rest/reference/rest/v23/customers/generateKeywordIdeas
          const customerID = account_id.replaceAll('-', '');
+         const loginCustomerID = getGoogleAdsLoginCustomerID(customerID);
          const geoTargetConstants = countries[country][3]; // '2840';
          const reqPayload: Record<string, any> = {
             geoTargetConstants: `geoTargetConstants/${geoTargetConstants}`,
@@ -183,7 +188,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
                'Content-Type': 'application/json',
                'developer-token': developer_token,
                Authorization: `Bearer ${accessToken}`,
-               'login-customer-id': customerID,
+               'login-customer-id': loginCustomerID,
             },
             body: JSON.stringify(reqPayload),
          });
@@ -218,7 +223,7 @@ export const getAdwordsKeywordIdeas = async (credentials:AdwordsCredentials, adw
  * that can contain two properties: `country` and `domain`.
  * @returns returns an array of `IdeaKeyword` array sorted based on the average monthly searches in descending order.
  */
-const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], options:Record<string, string>) => {
+export const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], options:Record<string, string>) => {
    const keywords: IdeaKeyword[] = [];
    if (keywordIdeas.length > 0) {
       const { country = '', domain = '' } = options;
@@ -231,7 +236,7 @@ const extractAdwordskeywordIdeas = (keywordIdeas:keywordIdeasResponseItem[], opt
             monthlySearchVolumes.forEach((item) => {
                searchVolumeTrend[`${item.month}-${item.year}`] = item.monthlySearches;
             });
-            if (searchVolume > 100) {
+            if (searchVolume > 0) {
                keywords.push({
                   uid: `${country.toLowerCase()}:${text.replaceAll(' ', '-')}`,
                   keyword: text,
@@ -298,6 +303,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
             try {
                // API: https://developers.google.com/google-ads/api/rest/reference/rest/v23/customers/generateKeywordHistoricalMetrics
                const customerID = account_id.replaceAll('-', '');
+               const loginCustomerID = getGoogleAdsLoginCustomerID(customerID);
                const geoTargetConstants = countries[country][3]; // '2840';
                const reqKeywords = keywordRequests[country].map((kw) => kw.keyword);
                const reqPayload: Record<string, any> = {
@@ -311,7 +317,7 @@ export const getKeywordsVolume = async (keywords: KeywordType[]): Promise<{error
                      'Content-Type': 'application/json',
                      'developer-token': developer_token,
                      Authorization: `Bearer ${accessToken}`,
-                     'login-customer-id': customerID,
+                     'login-customer-id': loginCustomerID,
                   },
                   body: JSON.stringify(reqPayload),
                });

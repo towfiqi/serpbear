@@ -13,6 +13,8 @@ services:
       - APIKEY=${APIKEY}
       - SESSION_DURATION=${SESSION_DURATION:-24}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      # Optional: manager account used for Google Ads API login-customer-id
+      - GOOGLE_ADS_LOGIN_CUSTOMER_ID=${GOOGLE_ADS_LOGIN_CUSTOMER_ID:-}
       # Optional: Google Search Console integration
       - SEARCH_CONSOLE_CLIENT_EMAIL=${SEARCH_CONSOLE_CLIENT_EMAIL:-}
       - SEARCH_CONSOLE_PRIVATE_KEY=${SEARCH_CONSOLE_PRIVATE_KEY:-}
