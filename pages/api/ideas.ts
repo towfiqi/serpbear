@@ -66,7 +66,7 @@ const updateKeywordIdeas = async (req: NextApiRequest, res: NextApiResponse<keyw
       if (adwordsCreds && client_id && client_secret && developer_token && account_id && refresh_token) {
          const ideaOptions = { country, language, keywords, domain, seedSCKeywords, seedCurrentKeywords, seedType };
          const keywordIdeas = await getAdwordsKeywordIdeas(adwordsCreds, ideaOptions);
-         if (keywordIdeas && Array.isArray(keywordIdeas) && keywordIdeas.length > 1) {
+         if (keywordIdeas && Array.isArray(keywordIdeas) && keywordIdeas.length > 0) {
             return res.status(200).json({ keywords: keywordIdeas });
          }
       }
