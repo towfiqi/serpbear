@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { CSSTransition } from 'react-transition-group';
 import toast, { Toaster } from 'react-hot-toast';
+import PanelTransition from '../../components/common/PanelTransition';
 import TopBar from '../../components/common/TopBar';
 import AddDomain from '../../components/domains/AddDomain';
 import Settings from '../../components/settings/Settings';
@@ -132,12 +132,12 @@ const Domains: NextPage = () => {
             </div>
          </div>
 
-         <CSSTransition in={showAddDomain} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showAddDomain} classNames="modal_anim">
             <AddDomain closeModal={() => setShowAddDomain(false)} domains={domainsData?.domains || []} />
-         </CSSTransition>
-         <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
+         </PanelTransition>
+         <PanelTransition in={showSettings} classNames="settings_anim">
              <Settings closeSettings={() => setShowSettings(false)} />
-         </CSSTransition>
+         </PanelTransition>
          <Footer currentVersion={appSettings?.version ? appSettings.version : ''} />
          <Toaster position='bottom-center' containerClassName="react_toaster" />
       </div>

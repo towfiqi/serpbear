@@ -9,7 +9,8 @@ import IntegrationSettings from './IntegrationSettings';
 
 type SettingsProps = {
    closeSettings: Function,
-   settings?: SettingsType
+   settings?: SettingsType,
+   ref?: React.Ref<HTMLDivElement>,
 }
 
 type SettingsError = {
@@ -35,11 +36,11 @@ export const defaultSettings: SettingsType = {
    keywordsColumns: ['Best', 'History', 'Volume', 'Search Console'],
 };
 
-const Settings = ({ closeSettings }:SettingsProps) => {
+const Settings = ({ closeSettings, ref }:SettingsProps) => {
    const [currentTab, setCurrentTab] = useState<string>('scraper');
    const [settings, setSettings] = useState<SettingsType>(defaultSettings);
    const [settingsError, setSettingsError] = useState<SettingsError|null>(null);
-   const { mutate: updateMutate, isLoading: isUpdating } = useUpdateSettings(() => console.log(''));
+   const { mutate: updateMutate, isPending: isUpdating } = useUpdateSettings(() => console.log(''));
    const { data: appSettings, isLoading } = useFetchSettings();
    useOnKey('Escape', closeSettings);
 
@@ -96,7 +97,7 @@ const Settings = ({ closeSettings }:SettingsProps) => {
    const tabStyleActive = 'bg-white text-blue-600 border-slate-200';
 
    return (
-       <div className="settings fixed w-full h-screen top-0 left-0 z-50" onClick={closeOnBGClick}>
+       <div ref={ref} className="settings fixed w-full h-screen top-0 left-0 z-50" onClick={closeOnBGClick}>
             <div className="absolute w-full max-w-md bg-white customShadow top-0 right-0 h-screen" data-loading={isLoading} >
                {isLoading && <div className='absolute flex content-center items-center h-full'><Icon type="loading" size={24} /></div>}
                <div className='settings__header px-5 py-4 text-slate-500'>

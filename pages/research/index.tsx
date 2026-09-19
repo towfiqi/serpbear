@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
-import { CSSTransition } from 'react-transition-group';
+import PanelTransition from '../../components/common/PanelTransition';
 import Icon from '../../components/common/Icon';
 import TopBar from '../../components/common/TopBar';
 import KeywordIdeasTable from '../../components/ideas/KeywordIdeasTable';
@@ -26,7 +26,7 @@ const Research: NextPage = () => {
    const adwordsConnected = !!(appSettings && appSettings?.settings?.adwords_refresh_token
       && appSettings?.settings?.adwords_developer_token, appSettings?.settings?.adwords_account_id);
    const { data: keywordIdeasData, isLoading: isLoadingIdeas, isError: errorLoadingIdeas } = useFetchKeywordIdeas(router, adwordsConnected);
-   const { mutate: updateKeywordIdeas, isLoading: isUpdatingIdeas } = useMutateKeywordIdeas(router);
+   const { mutate: updateKeywordIdeas, isPending: isUpdatingIdeas } = useMutateKeywordIdeas(router);
 
    const keywordIdeas:IdeaKeyword[] = keywordIdeasData?.data?.keywords || [];
    const favorites:IdeaKeyword[] = keywordIdeasData?.data?.favorites || [];
@@ -139,9 +139,9 @@ const Research: NextPage = () => {
                />
             </div>
          </div>
-         <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showSettings} classNames="settings_anim">
              <Settings closeSettings={() => setShowSettings(false)} />
-         </CSSTransition>
+         </PanelTransition>
          <Footer currentVersion={appSettings?.settings?.version ? appSettings.settings.version : ''} />
       </div>
    );

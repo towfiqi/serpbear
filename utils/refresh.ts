@@ -56,7 +56,23 @@ const refreshAndUpdateKeywords = async (rawKeyword:Keyword[], settings:SettingsT
  */
 const refreshAndUpdateKeyword = async (keyword: Keyword, settings: SettingsType, domainSettings?: DomainType): Promise<KeywordType> => {
    const currentKeyword = keyword.get({ plain: true });
-   const refreshedKeywordData = await scrapeKeywordWithStrategy(currentKeyword, settings, domainSettings);
+   let refreshedKeywordData: RefreshResult;
+   try {
+      refreshedKeywordData = await scrapeKeywordWithStrategy(currentKeyword, settings, domainSettings);
+   } catch (error: any) {
+      // Parsing/ranking can throw after the HTTP request has finished. Record
+      // the failed keyword so an exception cannot abandon the rest of the batch.
+      const message = typeof error?.message === 'string' ? error.message : 'Unknown scraping error';
+      console.log('[ERROR] Scraping keyword:', currentKeyword.ID, message);
+      refreshedKeywordData = {
+         ID: currentKeyword.ID,
+         keyword: currentKeyword.keyword,
+         position: currentKeyword.position,
+         url: currentKeyword.url,
+         result: currentKeyword.lastResult,
+         error: `Scraping failed: ${message}`,
+      };
+   }
    const updatedKeyword = refreshedKeywordData ? await updateKeywordPosition(keyword, refreshedKeywordData, settings) : currentKeyword;
    return updatedKeyword;
 };

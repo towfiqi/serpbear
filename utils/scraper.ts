@@ -32,6 +32,41 @@ export type RefreshResult = false | {
 
 const TOTAL_PAGES = 10;
 const PAGE_SIZE = 10;
+/** Pause before the single retry of a provider refusal, in milliseconds. */
+const PROVIDER_RETRY_DELAY = 5000;
+// Bright Data can freeze a query for 15 s after a CAPTCHA. A 5 s retry
+// falls inside that window; allow a margin while keeping the single retry.
+const BRIGHTDATA_RETRY_DELAY = 20000;
+
+/**
+ * How long one scraper API call may take before it is abandoned.
+ *
+ * `fetch` has no deadline of its own. Measured 2026-09-14: a Bright Data call
+ * for "open air cinema" (US) logged START SCRAPE at 12:02:20 UTC and had still
+ * answered nothing at 12:13 — and since keywords are scraped one after the
+ * other, the 33 behind it were frozen with it. The nightly run would hang the
+ * same way, and nothing would say so. Two minutes is well past what the SERP
+ * API takes when it answers at all (a few seconds; ~40 s under retry).
+ */
+const scraperCallTimeout = (): number => parseInt(process.env.SCRAPER_TIMEOUT_MS || '', 10) || 120000;
+
+/** Bound headers and body together, even when the transport ignores abort. */
+const withScraperDeadline = async <T>(work: (signal: AbortSignal) => Promise<T>): Promise<T> => {
+   const deadline = new AbortController();
+   let timer: ReturnType<typeof setTimeout> | undefined;
+   try {
+      const timeout = new Promise<never>((resolve, reject) => {
+         timer = setTimeout(() => {
+            reject(Object.assign(new Error(`no answer from the scraper API after ${Math.round(scraperCallTimeout() / 1000)} s`),
+               { name: 'TimeoutError' }));
+            deadline.abort();
+         }, scraperCallTimeout());
+      });
+      return await Promise.race([work(deadline.signal), timeout]);
+   } finally {
+      clearTimeout(timer);
+   }
+};
 
 /**
  * Creates a SERP Scraper client promise based on the app settings.
@@ -46,6 +81,7 @@ export const getScraperClient = (
    settings:SettingsType,
    scraper?: ScraperSettings,
    pagination?: ScraperPagination,
+   signal?: AbortSignal,
 ): Promise<AxiosResponse|Response> | false => {
    let apiURL = ''; let client: Promise<AxiosResponse|Response> | false = false;
    const headers: any = {
@@ -93,30 +129,86 @@ export const getScraperClient = (
 
       axiosConfig.httpsAgent = new (HttpsProxyAgent as any)(proxyURL.trim());
       axiosConfig.proxy = false;
+      axiosConfig.signal = signal;
       const axiosClient = axios.create(axiosConfig);
       const p = pagination || { start: 0, num: PAGE_SIZE };
       client = axiosClient.get(`https://www.google.com/search?num=${p.num}&start=${p.start}&q=${encodeURI(keyword.keyword)}`);
    } else {
-      client = fetch(apiURL, { method: 'GET', headers });
+      // Some scraper APIs (Bright Data's SERP API) take their parameters in a
+      // JSON payload rather than the query string, so a scraper may declare its
+      // own method and body. Everything else keeps the historical plain GET.
+      const method = scraper?.method || 'GET';
+      const payload = method !== 'GET' && scraper?.body ? scraper.body(keyword, settings, pagination) : null;
+      const init = payload
+         ? { method, headers, body: JSON.stringify(payload), signal }
+         : { method, headers, signal };
+      client = fetch(apiURL, init);
    }
 
    return client;
 };
 
+/** Marks a failure the provider reported instead of returning results — worth one more try. */
+const PROVIDER_REFUSAL = 'PROVIDER_REFUSAL: ';
+
 /**
- * Scrape a single page of Google Search results with absolute position offsets applied.
+ * Read a scraper API response as JSON, surfacing failures the provider hides.
+ *
+ * Bright Data answers HTTP 200 with an EMPTY body when Google hands its exit
+ * node a CAPTCHA or rejects a redirect; the real outcome only appears in the
+ * x-brd-error headers. Calling .json() on that body throws "Unexpected end of
+ * JSON input", which reached the keyword as the useless "Scraper failed on all
+ * 1 pages". Measured on the live API 2026-08-30: 2 of 8 then 1 of 6 calls came
+ * back empty with `x-brd-error: redirect location was rejected`,
+ * `x-brd-error-code: captcha`, `x-brd-status-code: 502`.
  */
-const scrapeSinglePage = async (
+export const readScraperResponse = async (response: any): Promise<any> => {
+   const body = await response.text();
+   const providerError = response.headers?.get?.('x-brd-error') || response.headers?.get?.('x-brd-error-code') || '';
+   if (!body.trim()) {
+      const detail = providerError || `no body, HTTP ${response.status}`;
+      throw new Error(`${PROVIDER_REFUSAL}the scraper API returned nothing (${detail})`);
+   }
+   try {
+      return JSON.parse(body);
+   } catch (error) {
+      // Bright Data also refuses a query in plain text ("This query is ...").
+      const detail = providerError ? `${providerError}: ` : '';
+      throw new Error(`${PROVIDER_REFUSAL}non-JSON response (HTTP ${response.status}) ${detail}${body.slice(0, 120)}`);
+   }
+};
+
+/**
+ * Append what actually went wrong to a page-level failure count.
+ *
+ * Without this the dashboard only ever showed "Scraper failed on all 1 pages",
+ * which names no cause: the real reason lived in the container logs, where
+ * nobody looks. Duplicates are collapsed because every page usually fails the
+ * same way, and the whole thing is capped so a long provider message cannot
+ * bloat the stored error.
+ */
+const describePageErrors = (messages: string[]): string => {
+   const seen = [...new Set(messages.map((m) => m.replace(PROVIDER_REFUSAL, '')))].filter(Boolean);
+   if (seen.length === 0) { return ''; }
+   return ` — ${seen.join('; ')}`.slice(0, 220);
+};
+
+/**
+ * One attempt at a single page of Google Search results, positions offset.
+ */
+const attemptSinglePage = async (
    keyword: KeywordType,
    settings: SettingsType,
    scraperObj: ScraperSettings | undefined,
    pagination: ScraperPagination,
 ): Promise<PageScrapeResult> => {
    const scraperType = settings?.scraper_type || '';
-   const scraperClient = getScraperClient(keyword, settings, scraperObj, pagination);
-   if (!scraperClient) { return { results: [], error: 'No scraper client available' }; }
    try {
-      const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((result:any) => result.json());
+      const res = await withScraperDeadline(async (signal) => {
+         const client = getScraperClient(keyword, settings, scraperObj, pagination, signal);
+         if (!client) { throw new Error('No scraper client available'); }
+         return scraperType === 'proxy' && settings.proxy ? client : client.then(readScraperResponse);
+      });
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
       const scrapeResult: string = (scraperResult || res.data || res.html || res.results || '');
       if (res && scrapeResult) {
@@ -125,10 +217,61 @@ const scrapeSinglePage = async (
       }
       return { results: [], error: `Empty response from ${scraperType || 'scraper'}` };
    } catch (error:any) {
-      const msg = error?.message || 'Unknown scraping error';
+      const abandoned = error?.name === 'AbortError' || error?.name === 'TimeoutError';
+      const msg = abandoned
+         ? `no answer from the scraper API after ${Math.round(scraperCallTimeout() / 1000)} s`
+         : (error?.message || 'Unknown scraping error');
       console.log('[ERROR] Scraping page', pagination.page, 'for keyword:', keyword.keyword, msg);
       return { results: [], error: msg };
    }
+};
+
+/**
+ * A refusal to wait out rather than retry.
+ *
+ * Bright Data freezes a query Google has just flagged, and says so in prose:
+ * "This query recently failed and cannot be attempted at this time. Please try
+ * again later, after a minimum of 15 seconds." Retrying after that stated delay
+ * plus a margin was STILL refused for the same reason — all 9 keywords that
+ * failed in the 2026-08-31 nightly run carried this message, so the freeze
+ * outlasts what it announces. Replaying a flagged query is also what Bright
+ * Data's own documentation warns against: it degrades the success rate of the
+ * whole zone, for every other keyword too.
+ *
+ * Nothing is lost by leaving it: on error the keyword's lastUpdated is not
+ * touched, so it simply comes back in the next run.
+ */
+const isCooldownRefusal = (message: string): boolean => (
+   /recently failed|minimum of \d+ seconds/i.test(message)
+);
+
+/**
+ * Scrape a single page, retrying ONCE when the provider refused rather than answered.
+ *
+ * Bright Data's attempts are not independent: a CAPTCHA can freeze the query
+ * for at least 15 seconds. Wait beyond that window before the single retry.
+ * A well-formed answer holding no result is never replayed, and neither is an
+ * explicit cooldown refusal (left for the next scheduled run).
+ */
+const scrapeSinglePage = async (
+   keyword: KeywordType,
+   settings: SettingsType,
+   scraperObj: ScraperSettings | undefined,
+   pagination: ScraperPagination,
+): Promise<PageScrapeResult> => {
+   const firstTry = await attemptSinglePage(keyword, settings, scraperObj, pagination);
+   if (!firstTry.error || !firstTry.error.startsWith(PROVIDER_REFUSAL)) { return firstTry; }
+   if (isCooldownRefusal(firstTry.error)) {
+      return { ...firstTry, error: `${firstTry.error} (left for the next run rather than replayed)` };
+   }
+
+   const retryDelay = settings.scraper_type === 'brightdata' ? BRIGHTDATA_RETRY_DELAY : PROVIDER_RETRY_DELAY;
+   await new Promise((resolve) => { setTimeout(resolve, retryDelay); });
+   const secondTry = await attemptSinglePage(keyword, settings, scraperObj, pagination);
+   if (secondTry.error) {
+      return { ...secondTry, error: `${secondTry.error} (twice)` };
+   }
+   return secondTry;
 };
 
 /**
@@ -221,14 +364,14 @@ export const scrapeKeywordWithStrategy = async (
    }
 
    const allScrapedResults: SearchResult[] = [];
+   const pageErrorMessages: string[] = [];
    let pageErrors = 0;
    let totalPagesAttempted = pagesToScrape.length;
    for (const pageNum of pagesToScrape) {
       const pagination: ScraperPagination = { start: (pageNum - 1) * PAGE_SIZE, num: PAGE_SIZE, page: pageNum };
       // eslint-disable-next-line no-await-in-loop
       const pageResult = await scrapeSinglePage(keyword, settings, scraperObj, pagination);
-      const errTag = pageResult.error ? ` (error: ${pageResult.error})` : '';
-      if (pageResult.error) { pageErrors += 1; }
+      if (pageResult.error) { pageErrors += 1; pageErrorMessages.push(pageResult.error); }
       if (pageResult.results.length > 0) { allScrapedResults.push(...pageResult.results); }
    }
 
@@ -244,7 +387,7 @@ export const scrapeKeywordWithStrategy = async (
             // eslint-disable-next-line no-await-in-loop
             const pageResult = await scrapeSinglePage(keyword, settings, scraperObj, pagination);
             totalPagesAttempted += 1;
-            if (pageResult.error) { pageErrors += 1; }
+            if (pageResult.error) { pageErrors += 1; pageErrorMessages.push(pageResult.error); }
             if (pageResult.results.length > 0) {
                allScrapedResults.push(...pageResult.results);
                // Stop early if domain is found on this page
@@ -259,7 +402,7 @@ export const scrapeKeywordWithStrategy = async (
 
    if (allScrapedResults.length === 0) {
       const errorMsg = pageErrors > 0
-         ? `Scraper failed on all ${pageErrors} pages for ${keyword.keyword}`
+         ? `Scraper failed on all ${pageErrors} pages for ${keyword.keyword}${describePageErrors(pageErrorMessages)}`
          : `No search results found on any of the ${totalPagesAttempted} scraped pages`;
       return { ...errorResult, error: errorMsg };
    }
@@ -269,7 +412,8 @@ export const scrapeKeywordWithStrategy = async (
    // If domain not found and more than half of the scraped pages had errors,
    // the scraper was unreliable — treat as error to avoid false position=0.
    if (finalSerp.position === 0 && pageErrors > totalPagesAttempted / 2) {
-      const errorMsg = `${pageErrors}/${totalPagesAttempted} pages failed — scraper too unreliable to determine position`;
+      const errorMsg = `${pageErrors}/${totalPagesAttempted} pages failed — scraper too unreliable`
+         + ` to determine position${describePageErrors(pageErrorMessages)}`;
       return { ...errorResult, error: errorMsg };
    }
 
@@ -307,13 +451,14 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
    const scraperType = settings?.scraper_type || '';
    const scraperObj = allScrapers.find((scraper:ScraperSettings) => scraper.id === scraperType);
    const nativePagination: ScraperPagination = { start: 0, num: 100, page: 1 };
-   const scraperClient = getScraperClient(keyword, settings, scraperObj, nativePagination);
-
-   if (!scraperClient) { return false; }
 
    let scraperError:any = null;
    try {
-      const res = scraperType === 'proxy' && settings.proxy ? await scraperClient : await scraperClient.then((result:any) => result.json());
+      const res = await withScraperDeadline(async (signal) => {
+         const client = getScraperClient(keyword, settings, scraperObj, nativePagination, signal);
+         if (!client) { throw new Error('No scraper client available'); }
+         return scraperType === 'proxy' && settings.proxy ? client : client.then((result:any) => result.json());
+      });
       const scraperResult = scraperObj?.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
       const scrapeResult:string = (scraperResult || res.data || res.html || res.results || '');
       if (res && scrapeResult) {
@@ -327,7 +472,7 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
          throw new Error(res);
       }
    } catch (error:any) {
-      refreshedResults.error = scraperError || 'Unknown Error';
+      refreshedResults.error = scraperError || error?.message || 'Unknown Error';
       if (settings.scraper_type === 'proxy' && error && error.response && error.response.statusText) {
          refreshedResults.error = `[${error.response.status}] ${error.response.statusText}`;
       } else if (settings.scraper_type === 'proxy' && error) {

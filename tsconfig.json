@@ -13,12 +13,13 @@
       "noEmit": true,
       "esModuleInterop": true,
       "module": "esnext",
-      "moduleResolution": "node",
+      "moduleResolution": "bundler",
       "resolveJsonModule": true,
       "isolatedModules": true,
-      "jsx": "preserve",
+      "jsx": "react-jsx",
       "incremental": true,
-      "experimentalDecorators": true
+      "experimentalDecorators": true,
+      "useDefineForClassFields": false
    },
    "include": [
       "next-env.d.ts",

@@ -1,5 +1,17 @@
 import * as cheerio from 'cheerio';
 
+/**
+ * Google serves result links in two shapes: wrapped in a redirect
+ * (`/url?q=https://example.com&sa=...`) in the no-JS layout, and as a plain
+ * absolute URL in the layout it currently returns. Unwrap the first, keep the
+ * second untouched — trimming it at `&` would corrupt legitimate query strings.
+ */
+const cleanResultURL = (url:string):string => {
+   if (url.startsWith('http')) { return url; }
+   const wrapped = url.match(/[?&](?:q|url)=(https?:\/\/[^&]*)/);
+   return wrapped ? decodeURIComponent(wrapped[1]) : '';
+};
+
 const proxy:ScraperSettings = {
    id: 'proxy',
    name: 'Proxy',
@@ -30,8 +42,8 @@ const proxy:ScraperSettings = {
       for (let index = 0; index < children.length; index += 1) {
          const title = $(children[index]).text();
          const url = $(children[index]).closest('a').attr('href');
-         const cleanedURL = url ? url.replaceAll(/^.+?(?=https:|$)/g, '').replaceAll(/(&).*/g, '') : '';
-         if (title && url) {
+         const cleanedURL = url ? cleanResultURL(url) : '';
+         if (title && cleanedURL) {
             lastPosition += 1;
             extractedResult.push({ title, url: cleanedURL, position: lastPosition });
          }

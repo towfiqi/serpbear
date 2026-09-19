@@ -3,6 +3,9 @@ import { Table, Model, Column, DataType, PrimaryKey, Unique } from 'sequelize-ty
 @Table({
   timestamps: false,
   tableName: 'domain',
+  // Named here, not from the class: the server build minifies class names, and
+  // two models both called 'l' overwrote each other in Sequelize.
+  modelName: 'Domain',
 })
 
 class Domain extends Model {

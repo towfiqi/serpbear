@@ -3,6 +3,9 @@ import { Table, Model, Column, DataType, PrimaryKey } from 'sequelize-typescript
 @Table({
   timestamps: false,
   tableName: 'keyword',
+  // Named here, not from the class: the server build minifies class names, and
+  // two models both called 'l' overwrote each other in Sequelize.
+  modelName: 'Keyword',
 })
 
 class Keyword extends Model {

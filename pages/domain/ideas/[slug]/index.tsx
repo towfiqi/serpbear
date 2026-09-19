@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { CSSTransition } from 'react-transition-group';
+import PanelTransition from '../../../../components/common/PanelTransition';
 import Sidebar from '../../../../components/common/Sidebar';
 import TopBar from '../../../../components/common/TopBar';
 import DomainHeader from '../../../../components/domains/DomainHeader';
@@ -79,20 +79,20 @@ const DiscoverPage: NextPage = () => {
             </div>
          </div>
 
-         <CSSTransition in={showAddDomain} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showAddDomain} classNames="modal_anim">
             <AddDomain closeModal={() => setShowAddDomain(false)} domains={domainsData?.domains || []} />
-         </CSSTransition>
+         </PanelTransition>
 
-         <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showDomainSettings} classNames="modal_anim">
             <DomainSettings
             domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
             closeModal={setShowDomainSettings}
             />
-         </CSSTransition>
+         </PanelTransition>
 
-         <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showSettings} classNames="settings_anim">
              <Settings closeSettings={() => setShowSettings(false)} />
-         </CSSTransition>
+         </PanelTransition>
 
          {showUpdateModal && activDomain?.domain && (
             <Modal closeModal={() => setShowUpdateModal(false) } title={'Load Keyword Ideas from Google Ads'} verticalCenter={true}>

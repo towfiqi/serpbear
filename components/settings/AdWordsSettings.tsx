@@ -23,8 +23,8 @@ const AdWordsSettings = ({ settings, settingsError, updateSettings, performUpdat
       adwords_refresh_token = '',
    } = settings || {};
 
-   const { mutate: testAdWordsIntegration, isLoading: isTesting } = useTestAdwordsIntegration();
-   const { mutate: getAllVolumeData, isLoading: isUpdatingVolume } = useMutateKeywordsVolume();
+   const { mutate: testAdWordsIntegration, isPending: isTesting } = useTestAdwordsIntegration();
+   const { mutate: getAllVolumeData, isPending: isUpdatingVolume } = useMutateKeywordsVolume();
 
    const cloudProjectIntegrated = adwords_client_id && adwords_client_secret && adwords_refresh_token;
    const hasAllCredentials = adwords_client_id && adwords_client_secret && adwords_refresh_token && adwords_developer_token && adwords_account_id;

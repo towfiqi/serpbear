@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import SingleDomain from '../../pages/domain/[slug]';
 import { useAddDomain, useDeleteDomain, useFetchDomains, useUpdateDomain } from '../../services/domains';
 import { useAddKeywords, useDeleteKeywords,
    useFavKeywords, useFetchKeywords, useRefreshKeywords, useFetchSingleKeyword } from '../../services/keywords';
 import { dummyDomain, dummyKeywords, dummySettings } from '../../__mocks__/data';
-import { useFetchSettings } from '../../services/settings';
+import { useFetchSettings, useUpdateSettings } from '../../services/settings';
 
 jest.mock('../../services/domains');
 jest.mock('../../services/keywords');
@@ -31,12 +31,14 @@ const useAddKeywordsFunc = useAddKeywords as jest.Mock<any>;
 const useUpdateDomainFunc = useUpdateDomain as jest.Mock<any>;
 const useDeleteDomainFunc = useDeleteDomain as jest.Mock<any>;
 const useFetchSettingsFunc = useFetchSettings as jest.Mock<any>;
+const useUpdateSettingsFunc = useUpdateSettings as jest.Mock<any>;
 const useFetchSingleKeywordFunc = useFetchSingleKeyword as jest.Mock<any>;
 
 describe('SingleDomain Page', () => {
    const queryClient = new QueryClient();
    beforeEach(() => {
       useFetchSettingsFunc.mockImplementation(() => ({ data: { settings: dummySettings }, isLoading: false }));
+      useUpdateSettingsFunc.mockImplementation(() => ({ mutate: () => { }, isLoading: false }));
       useFetchDomainsFunc.mockImplementation(() => ({ data: { domains: [dummyDomain] }, isLoading: false }));
       useFetchKeywordsFunc.mockImplementation(() => ({ keywordsData: { keywords: dummyKeywords }, keywordsLoading: false }));
       const fetchPayload = { history: dummyKeywords[0].history || [], searchResult: dummyKeywords[0].lastResult || [] };
@@ -119,10 +121,14 @@ describe('SingleDomain Page', () => {
       const countrySelect = document.querySelector('.country_filter .selected');
       if (countrySelect) fireEvent.click(countrySelect);
       expect(document.querySelector('.country_filter .select_list')).toBeVisible();
-      const firstCountry = document.querySelector('.country_filter .select_list ul li:nth-child(1)');
+      // The country list is built from the keywords themselves, so the fixtures
+      // (both US) yield exactly one option, and selecting it keeps both rows.
+      const countryItems = document.querySelectorAll('.country_filter .select_list ul li');
+      expect(countryItems.length).toBe(1);
+      const firstCountry = countryItems[0];
       if (firstCountry) fireEvent.click(firstCountry);
       const keywordsCount = document.querySelectorAll('.keyword').length;
-      expect(keywordsCount).toBe(0);
+      expect(keywordsCount).toBe(dummyKeywords.length);
    });
 
    // Tags Filter should function properly

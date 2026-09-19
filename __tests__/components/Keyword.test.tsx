@@ -15,6 +15,7 @@ const keywordProps = {
    selectKeyword: jest.fn(),
    manageTags: jest.fn(),
    showKeywordDetails: jest.fn(),
+   maxTitleColumnWidth: 400,
 };
 jest.mock('react-chartjs-2', () => ({
    Line: () => null,

@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState, useMemo } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import { useAddKeywords } from '../../services/keywords';
 import Icon from '../common/Icon';
@@ -38,11 +38,16 @@ const IdeasKeywordsTable = ({
    const [addKeywordDevice, setAddKeywordDevice] = useState<'desktop'|'mobile'>('desktop');
    const [addKeywordDomain, setAddKeywordDomain] = useState('');
    const { mutate: addKeywords } = useAddKeywords(() => { if (domain && domain.slug) router.push(`/domain/${domain.slug}`); });
-   const { mutate: faveKeyword, isLoading: isFaving } = useMutateFavKeywordIdeas(router);
+   const { mutate: faveKeyword, isPending: isFaving } = useMutateFavKeywordIdeas(router);
    const [isMobile] = useIsMobile();
    const isResearchPage = router.pathname === '/research';
 
-   const { data: domainsData } = useQuery('domains', () => fetchDomains(router, false), { enabled: selectedKeywords.length > 0, retry: false });
+   const { data: domainsData } = useQuery({
+      queryKey: ['domains'],
+      queryFn: () => fetchDomains(router, false),
+      enabled: selectedKeywords.length > 0,
+      retry: false,
+   });
    const theDomains: DomainType[] = (domainsData && domainsData.domains) || [];
 
    useWindowResize(() => setListHeight(window.innerHeight - (isMobile ? 200 : 400)));

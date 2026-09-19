@@ -9,6 +9,7 @@ const Markdown = React.lazy(() => import('react-markdown'));
 
 type ChangeLogProps = {
    closeChangeLog: Function,
+   ref?: React.Ref<HTMLDivElement>,
 }
 
 const ChangeLogloader = () => {
@@ -19,7 +20,7 @@ const ChangeLogloader = () => {
    );
 };
 
-const ChangeLog = ({ closeChangeLog }: ChangeLogProps) => {
+const ChangeLog = ({ closeChangeLog, ref }: ChangeLogProps) => {
    const { data: changeLogData, isLoading } = useFetchChangelog();
 
    useLayoutEffect(() => {
@@ -49,7 +50,7 @@ const ChangeLog = ({ closeChangeLog }: ChangeLogProps) => {
       return [];
    }, [changeLogData]);
 
-   return <SidePanel title='SerpBear Changelog' closePanel={onClose}>
+   return <SidePanel ref={ref} title='SerpBear Changelog' closePanel={onClose}>
             <React.Suspense fallback={<ChangeLogloader />}>
                {!isLoading && changeLogs.length > 0 && (
                   <div className='changelog-body bg-[#f8f9ff] px-6 pt-4 pb-10 overflow-y-auto styled-scrollbar'>

@@ -7,9 +7,10 @@ type SidePanelProps = {
    closePanel: Function,
    title?: string,
    width?: 'large' | 'medium' | 'small',
-   position?: 'left' | 'right'
+   position?: 'left' | 'right',
+   ref?: React.Ref<HTMLDivElement>,
 }
-const SidePanel = ({ children, closePanel, width, position = 'right', title = '' }:SidePanelProps) => {
+const SidePanel = ({ children, closePanel, width, position = 'right', title = '', ref }:SidePanelProps) => {
    useOnKey('Escape', closePanel);
    const closeOnBGClick = (e:React.SyntheticEvent) => {
       e.stopPropagation();
@@ -17,7 +18,7 @@ const SidePanel = ({ children, closePanel, width, position = 'right', title = ''
       if (e.target === e.currentTarget) { closePanel(); }
    };
    return (
-       <div className="SidePanel fixed w-full h-screen top-0 left-0 z-50" onClick={closeOnBGClick}>
+       <div ref={ref} className="SidePanel fixed w-full h-screen top-0 left-0 z-50" onClick={closeOnBGClick}>
          <div className={`absolute w-full max-w-md  border-l border-l-gray-400 bg-white customShadow top-0 
          ${position === 'left' ? 'left-0' : 'right-0'} h-screen`}>
             <div className='SidePanel__header px-5 py-4 text-slate-500 border-b border-b-gray-100'>

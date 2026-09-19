@@ -9,6 +9,7 @@ import valueSerp from './services/valueserp';
 import serper from './services/serper';
 import hasdata from './services/hasdata';
 import crazyserp from './services/crazyserp';
+import brightdata from './services/brightdata';
 
 export default [
    scrapingRobot,
@@ -22,4 +23,5 @@ export default [
    serper,
    hasdata,
    crazyserp,
+   brightdata,
 ];

@@ -15,7 +15,7 @@ type ScraperSettingsProps = {
 }
 
 const ScraperSettings = ({ settings, settingsError, updateSettings }:ScraperSettingsProps) => {
-   const { mutate: clearFailedMutate, isLoading: clearingQueue } = useClearFailedQueue(() => {});
+   const { mutate: clearFailedMutate, isPending: clearingQueue } = useClearFailedQueue(() => {});
 
    const scrapingOptions: SelectionOption[] = [
       { label: 'Daily', value: 'daily' },
