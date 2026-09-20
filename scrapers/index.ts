@@ -7,6 +7,7 @@ import proxy from './services/proxy';
 import searchapi from './services/searchapi';
 import valueSerp from './services/valueserp';
 import serper from './services/serper';
+import litescrape from './services/litescrape';
 import hasdata from './services/hasdata';
 import crazyserp from './services/crazyserp';
 
@@ -20,6 +21,7 @@ export default [
    searchapi,
    valueSerp,
    serper,
+   litescrape,
    hasdata,
    crazyserp,
 ];
