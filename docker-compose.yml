@@ -7,7 +7,7 @@ services:
     ports:
       - "${PORT:-3000}:3000"
     environment:
-      - USER_NAME=${USER:-admin}
+      - USER_NAME=${USER_NAME:-admin}
       - PASSWORD=${PASSWORD}
       - SECRET=${SECRET}
       - APIKEY=${APIKEY}
