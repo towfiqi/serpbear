@@ -1,3 +1,8 @@
+> [!NOTE]
+> Check out the new Open-source Backup management app, [Pluton](https://github.com/plutonhq/pluton) by the same author.
+
+---
+
 ![SerpBear](https://i.imgur.com/0S2zIH3.png)
 
 # SerpBear
