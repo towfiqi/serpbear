@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.1](https://github.com/towfiqi/serpbear/compare/v3.1.0...v3.1.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* require authentication for /api/notify ([12dc0a4](https://github.com/towfiqi/serpbear/commit/12dc0a4bd91f06de2dab96f797c495942f7ef8c9)), closes [#359](https://github.com/towfiqi/serpbear/issues/359)
+
 ## [3.1.0](https://github.com/towfiqi/serpbear/compare/v3.0.0...v3.1.0) (2026-03-27)
 
 
