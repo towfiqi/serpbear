@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import dayjs from 'dayjs';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import Icon from '../common/Icon';
 import countries from '../../utils/countries';
@@ -27,11 +27,12 @@ const IdeaDetails = ({ keyword, closeDetails }:IdeaDetailsProps) => {
    const searchResultContainer = useRef<HTMLDivElement>(null);
    const searchResultFound = useRef<HTMLDivElement>(null);
    const searchResultReqPayload = { keyword: keyword.keyword, country: keyword.country, device: 'desktop' };
-   const { data: keywordSearchResultData, refetch: fetchKeywordSearchResults, isLoading: fetchingResult } = useQuery(
-   `ideas:${keyword.uid}`,
-      () => fetchSearchResults(router, searchResultReqPayload),
-      { refetchOnWindowFocus: false, enabled: false },
-   );
+   const { data: keywordSearchResultData, refetch: fetchKeywordSearchResults, isLoading: fetchingResult } = useQuery({
+      queryKey: [`ideas:${keyword.uid}`],
+      queryFn: () => fetchSearchResults(router, searchResultReqPayload),
+      refetchOnWindowFocus: false,
+      enabled: false,
+   });
    const { monthlySearchVolumes } = keyword;
 
    useOnKey('Escape', closeDetails);

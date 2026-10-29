@@ -27,7 +27,7 @@ const KeywordIdeasUpdater = ({ onUpdate, settings, domain, searchConsoleConnecte
    const [language, setLanguage] = useState(() => settings?.language.toString() || '1000');
    const [countries, setCountries] = useState<string[]>(() => settings?.countries || ['US']);
    const [keywords, setKeywords] = useState(() => (settings?.keywords && Array.isArray(settings?.keywords) ? settings?.keywords.join(',') : ''));
-   const { mutate: updateKeywordIdeas, isLoading: isUpdatingIdeas } = useMutateKeywordIdeas(router, () => onUpdate && onUpdate());
+   const { mutate: updateKeywordIdeas, isPending: isUpdatingIdeas } = useMutateKeywordIdeas(router, () => onUpdate && onUpdate());
 
    const seedTypeOptions = useMemo(() => {
       const options = [

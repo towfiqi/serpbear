@@ -60,7 +60,7 @@ const KeywordsTable = (props: KeywordsTableProps) => {
    }, [titleColumnRef]);
 
    const tableColumns = settings?.keywordsColumns || ['Best', 'History', 'Volume', 'Search Console'];
-   const { mutate: updateMutate, isLoading: isUpdatingSettings } = useUpdateSettings(() => console.log(''));
+   const { mutate: updateMutate, isPending: isUpdatingSettings } = useUpdateSettings(() => console.log(''));
 
    const scDataObject:{ [k:string] : string} = {
       threeDays: 'Last Three Days',

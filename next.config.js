@@ -1,16 +1,12 @@
+// Built with webpack (`next build --webpack` in package.json), not Turbopack.
+// Turbopack always compiles class fields with define semantics: on the
+// sequelize-typescript models they shadow the attribute accessors Sequelize
+// installs, so reads come back undefined and assignments never reach the
+// database. Webpack follows useDefineForClassFields: false from tsconfig.
 /** @type {import('next').NextConfig} */
-const { version } = require('./package.json');
-
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: false,
   output: 'standalone',
-  serverRuntimeConfig: {
-    appURL: process.env.NEXT_PUBLIC_APP_URL || '',
-  },
-  publicRuntimeConfig: {
-   version,
- },
 };
 
 module.exports = nextConfig;

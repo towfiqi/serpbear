@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CSSTransition } from 'react-transition-group';
+import PanelTransition from './PanelTransition';
 import { useFetchChangelog } from '../../services/misc';
 import ChangeLog from '../settings/Changelog';
 
@@ -22,9 +22,9 @@ const Footer = ({ currentVersion = '' }: FooterProps) => {
                </a>
             )}
          </span>
-         <CSSTransition in={showChangelog} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showChangelog} classNames="settings_anim">
              <ChangeLog closeChangeLog={() => setShowChangelog(false)} />
-         </CSSTransition>
+         </PanelTransition>
       </footer>
    );
 };

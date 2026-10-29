@@ -1,13 +1,16 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import * as ReactQuery from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { dummyDomain } from '../../__mocks__/data';
 import Domains from '../../pages/domains';
 
 jest.mock('next/router', () => jest.requireActual('next-router-mock'));
-jest.spyOn(ReactQuery, 'useQuery').mockImplementation(jest.fn().mockReturnValue(
-   { data: { domains: [dummyDomain] }, isLoading: false, isSuccess: true },
-));
+// A module mock reaches every importer; a spy on the TanStack namespace does not.
+jest.mock('@tanstack/react-query', () => ({
+   ...jest.requireActual('@tanstack/react-query'),
+   useQuery: jest.fn().mockReturnValue({
+      data: { domains: [jest.requireActual('../../__mocks__/data').dummyDomain] }, isLoading: false, isSuccess: true,
+   }),
+}));
 
 fetchMock.mockIf(`${window.location.origin}/api/domains`, async () => {
    return new Promise((resolve) => {

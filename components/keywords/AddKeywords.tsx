@@ -10,7 +10,8 @@ type AddKeywordsProps = {
    scraperName: string,
    allowsCity: boolean,
    closeModal: Function,
-   domain: string
+   domain: string,
+   ref?: React.Ref<HTMLDivElement>,
 }
 
 type KeywordsInput = {
@@ -22,14 +23,14 @@ type KeywordsInput = {
    city?:string,
 }
 
-const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCity = false }: AddKeywordsProps) => {
+const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCity = false, ref }: AddKeywordsProps) => {
    const inputRef = useRef(null);
    const defCountry = localStorage.getItem('default_country') || 'US';
 
    const [error, setError] = useState<string>('');
    const [showTagSuggestions, setShowTagSuggestions] = useState(false);
    const [newKeywordsData, setNewKeywordsData] = useState<KeywordsInput>({ keywords: '', device: 'desktop', country: defCountry, domain, tags: '' });
-   const { mutate: addMutate, isLoading: isAdding } = useAddKeywords(() => closeModal(false));
+   const { mutate: addMutate, isPending: isAdding } = useAddKeywords(() => closeModal(false));
 
    const existingTags: string[] = useMemo(() => {
       const allTags = keywords.reduce((acc: string[], keyword) => [...acc, ...keyword.tags], []).filter((t) => t && t.trim() !== '');
@@ -85,7 +86,7 @@ const AddKeywords = ({ closeModal, domain, keywords, scraperName = '', allowsCit
    const deviceTabStyle = 'cursor-pointer px-2 py-2 rounded';
 
    return (
-      <Modal closeModal={() => { closeModal(false); }} title={'Add New Keywords'} width="[420px]">
+      <Modal ref={ref} closeModal={() => { closeModal(false); }} title={'Add New Keywords'} width="[420px]">
          <div data-testid="addkeywords_modal">
             <div>
                <div>

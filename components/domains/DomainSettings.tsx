@@ -9,7 +9,8 @@ import ToggleField from '../common/ToggleField';
 
 type DomainSettingsProps = {
    domain:DomainType|false,
-   closeModal: Function
+   closeModal: Function,
+   ref?: React.Ref<HTMLDivElement>,
 }
 
 type DomainSettingsError = {
@@ -17,7 +18,7 @@ type DomainSettingsError = {
    msg: string,
 }
 
-const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
+const DomainSettings = ({ domain, closeModal, ref }: DomainSettingsProps) => {
    const router = useRouter();
    const [currentTab, setCurrentTab] = useState<'notification'|'searchconsole'|'scraping'>('scraping');
    const [showRemoveDomain, setShowRemoveDomain] = useState<boolean>(false);
@@ -34,7 +35,7 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
       subdomain_matching: (domain && domain.subdomain_matching) || '',
    }));
 
-   const { mutate: updateMutate, error: domainUpdateError, isLoading: isUpdating } = useUpdateDomain(() => closeModal(false));
+   const { mutate: updateMutate, error: domainUpdateError, isPending: isUpdating } = useUpdateDomain(() => closeModal(false));
    const { mutate: deleteMutate } = useDeleteDomain(() => { closeModal(false); router.push('/domains'); });
 
    // Get the Full Domain Data along with the Search Console API Data.
@@ -76,7 +77,7 @@ const DomainSettings = ({ domain, closeModal }: DomainSettingsProps) => {
       { label: `${i + 1} Page${i > 0 ? 's' : ''}`, value: String(i + 1) }
    ));
    return (
-      <div>
+      <div ref={ref}>
          <Modal closeModal={() => closeModal(false)} title={'Domain Settings'} width="[500px]" verticalCenter={currentTab === 'searchconsole'} >
             <div data-testid="domain_settings" className=" text-sm">
                <div className=' mt-3 mb-5 border  border-slate-200 px-2 py-4 pb-0

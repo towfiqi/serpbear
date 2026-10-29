@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export async function fetchSettings() {
    const res = await fetch(`${window.location.origin}/api/settings`, { method: 'GET' });
@@ -7,13 +7,13 @@ export async function fetchSettings() {
 }
 
 export function useFetchSettings() {
-   return useQuery('settings', () => fetchSettings());
+   return useQuery({ queryKey: ['settings'], queryFn: () => fetchSettings() });
 }
 
 export const useUpdateSettings = (onSuccess:Function|undefined) => {
    const queryClient = useQueryClient();
 
-   return useMutation(async (settings: SettingsType) => {
+   return useMutation({ mutationFn: async (settings: SettingsType) => {
       // console.log('settings: ', JSON.stringify(settings));
 
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
@@ -23,13 +23,13 @@ export const useUpdateSettings = (onSuccess:Function|undefined) => {
          throw new Error('Bad response from server');
       }
       return res.json();
-   }, {
+   },
       onSuccess: async () => {
          if (onSuccess) {
             onSuccess();
          }
          toast('Settings Updated!', { icon: '✔️' });
-         queryClient.invalidateQueries(['settings']);
+         queryClient.invalidateQueries({ queryKey: ['settings'] });
       },
       onError: () => {
          console.log('Error Updating App Settings!!!');
@@ -40,7 +40,7 @@ export const useUpdateSettings = (onSuccess:Function|undefined) => {
 
 export function useClearFailedQueue(onSuccess:Function) {
    const queryClient = useQueryClient();
-   return useMutation(async () => {
+   return useMutation({ mutationFn: async () => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers };
       const res = await fetch(`${window.location.origin}/api/clearfailed`, fetchOpts);
@@ -48,11 +48,11 @@ export function useClearFailedQueue(onSuccess:Function) {
          throw new Error('Bad response from server');
       }
       return res.json();
-   }, {
+   },
       onSuccess: async () => {
          onSuccess();
          toast('Failed Queue Cleared', { icon: '✔️' });
-         queryClient.invalidateQueries(['settings']);
+         queryClient.invalidateQueries({ queryKey: ['settings'] });
       },
       onError: () => {
          console.log('Error Clearing Failed Queue!!!');
@@ -67,26 +67,26 @@ export async function fetchMigrationStatus() {
 }
 
 export function useCheckMigrationStatus() {
-   return useQuery('dbmigrate', () => fetchMigrationStatus());
+   return useQuery({ queryKey: ['dbmigrate'], queryFn: () => fetchMigrationStatus() });
 }
 
 export const useMigrateDatabase = (onSuccess:Function|undefined) => {
    const queryClient = useQueryClient();
 
-   return useMutation(async () => {
+   return useMutation({ mutationFn: async () => {
       // console.log('settings: ', JSON.stringify(settings));
       const res = await fetch(`${window.location.origin}/api/dbmigrate`, { method: 'POST' });
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
       return res.json();
-   }, {
+   },
       onSuccess: async (res) => {
          if (onSuccess) {
             onSuccess(res);
          }
          toast('Database Updated!', { icon: '✔️' });
-         queryClient.invalidateQueries(['settings']);
+         queryClient.invalidateQueries({ queryKey: ['settings'] });
       },
       onError: () => {
          console.log('Error Updating Database!!!');

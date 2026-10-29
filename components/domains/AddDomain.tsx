@@ -5,13 +5,14 @@ import { isValidUrl } from '../../utils/client/validators';
 
 type AddDomainProps = {
    domains: DomainType[],
-   closeModal: Function
+   closeModal: Function,
+   ref?: React.Ref<HTMLDivElement>,
 }
 
-const AddDomain = ({ closeModal, domains = [] }: AddDomainProps) => {
+const AddDomain = ({ closeModal, domains = [], ref }: AddDomainProps) => {
    const [newDomain, setNewDomain] = useState<string>('');
    const [newDomainError, setNewDomainError] = useState('');
-   const { mutate: addMutate, isLoading: isAdding } = useAddDomain(() => closeModal());
+   const { mutate: addMutate, isPending: isAdding } = useAddDomain(() => closeModal());
 
    const addDomain = () => {
       setNewDomainError('');
@@ -49,7 +50,7 @@ const AddDomain = ({ closeModal, domains = [] }: AddDomainProps) => {
    };
 
    return (
-      <Modal closeModal={() => { closeModal(false); }} title={'Add New Domain'}>
+      <Modal ref={ref} closeModal={() => { closeModal(false); }} title={'Add New Domain'}>
          <div data-testid="adddomain_modal">
             <h4 className='text-sm mt-4 pb-2'>Website URL(s)</h4>
             <textarea

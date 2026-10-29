@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { CSSTransition } from 'react-transition-group';
+import PanelTransition from '../../../components/common/PanelTransition';
 import Sidebar from '../../../components/common/Sidebar';
 import TopBar from '../../../components/common/TopBar';
 import DomainHeader from '../../../components/domains/DomainHeader';
@@ -85,20 +85,20 @@ const SingleDomain: NextPage = () => {
             </div>
          </div>
 
-         <CSSTransition in={showAddDomain} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showAddDomain} classNames="modal_anim">
             <AddDomain closeModal={() => setShowAddDomain(false)} domains={domainsData?.domains || []} />
-         </CSSTransition>
+         </PanelTransition>
 
-         <CSSTransition in={showDomainSettings} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+         <PanelTransition in={showDomainSettings} classNames="modal_anim">
             <DomainSettings
             domain={showDomainSettings && theDomains && activDomain && activDomain.domain ? activDomain : false}
             closeModal={setShowDomainSettings}
             />
-         </CSSTransition>
-         <CSSTransition in={showSettings} timeout={300} classNames="settings_anim" unmountOnExit mountOnEnter>
+         </PanelTransition>
+         <PanelTransition in={showSettings} classNames="settings_anim">
              <Settings closeSettings={() => setShowSettings(false)} />
-         </CSSTransition>
-         <CSSTransition in={showAddKeywords} timeout={300} classNames="modal_anim" unmountOnExit mountOnEnter>
+         </PanelTransition>
+         <PanelTransition in={showAddKeywords} classNames="modal_anim">
             <AddKeywords
                domain={activDomain?.domain || ''}
                scraperName={activeScraper?.label || ''}
@@ -106,7 +106,7 @@ const SingleDomain: NextPage = () => {
                allowsCity={!!activeScraper?.allowsCity}
                closeModal={() => setShowAddKeywords(false)}
                />
-         </CSSTransition>
+         </PanelTransition>
          <Footer currentVersion={appSettings?.version ? appSettings.version : ''} />
       </div>
    );

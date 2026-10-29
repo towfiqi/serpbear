@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { useRouter, NextRouter } from 'next/router';
 import toast from 'react-hot-toast';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type UpdatePayload = {
    domainSettings: DomainSettings,
@@ -63,21 +64,26 @@ export async function fetchDomainScreenshot(domain: string, screenshot_key:strin
 }
 
 export function useFetchDomains(router: NextRouter, withStats:boolean = false) {
-   return useQuery('domains', () => fetchDomains(router, withStats));
+   return useQuery({ queryKey: ['domains'], queryFn: () => fetchDomains(router, withStats) });
 }
 
 export function useFetchDomain(router: NextRouter, domainName:string, onSuccess: Function) {
-   return useQuery('domain', () => fetchDomain(router, domainName), {
-      onSuccess: async (data) => {
-         console.log('Domain Loaded!!!', data.domain);
-         onSuccess(data.domain);
-      } });
+   const query = useQuery({ queryKey: ['domain', domainName], queryFn: () => fetchDomain(router, domainName) });
+   const { data, dataUpdatedAt } = query;
+   // Stands in for the per-query onSuccess that v5 removed: runs once per successful fetch.
+   useEffect(() => {
+      if (!data) { return; }
+      console.log('Domain Loaded!!!', data.domain);
+      onSuccess(data.domain);
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [dataUpdatedAt]);
+   return query;
 }
 
 export function useAddDomain(onSuccess:Function) {
    const router = useRouter();
    const queryClient = useQueryClient();
-   return useMutation(async (domains:string[]) => {
+   return useMutation({ mutationFn: async (domains:string[]) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ domains }) };
       const res = await fetch(`${window.location.origin}/api/domains`, fetchOpts);
@@ -85,7 +91,7 @@ export function useAddDomain(onSuccess:Function) {
          throw new Error('Bad response from server');
       }
       return res.json();
-   }, {
+   },
       onSuccess: async (data) => {
          console.log('Domain Added!!!', data);
          const newDomain:DomainType[] = data.domains;
@@ -95,7 +101,7 @@ export function useAddDomain(onSuccess:Function) {
          if (singleDomain) {
             router.push(`/domain/${newDomain[0].slug}`);
          }
-         queryClient.invalidateQueries(['domains']);
+         queryClient.invalidateQueries({ queryKey: ['domains'] });
       },
       onError: () => {
          console.log('Error Adding New Domain!!!');
@@ -106,7 +112,7 @@ export function useAddDomain(onSuccess:Function) {
 
 export function useUpdateDomain(onSuccess:Function) {
    const queryClient = useQueryClient();
-   return useMutation(async ({ domainSettings, domain }: UpdatePayload) => {
+   return useMutation({ mutationFn: async ({ domainSettings, domain }: UpdatePayload) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify(domainSettings) };
       const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, fetchOpts);
@@ -115,12 +121,12 @@ export function useUpdateDomain(onSuccess:Function) {
          throw new Error(responseObj?.error || 'Bad response from server');
       }
       return responseObj;
-   }, {
+   },
       onSuccess: async () => {
          console.log('Settings Updated!!!');
          toast('Settings Updated!', { icon: '✔️' });
          onSuccess();
-         queryClient.invalidateQueries(['domains']);
+         queryClient.invalidateQueries({ queryKey: ['domains'] });
       },
       onError: (error) => {
          console.log('Error Updating Domain Settings!!!', error);
@@ -131,17 +137,17 @@ export function useUpdateDomain(onSuccess:Function) {
 
 export function useDeleteDomain(onSuccess:Function) {
    const queryClient = useQueryClient();
-   return useMutation(async (domain:DomainType) => {
+   return useMutation({ mutationFn: async (domain:DomainType) => {
       const res = await fetch(`${window.location.origin}/api/domains?domain=${domain.domain}`, { method: 'DELETE' });
       if (res.status >= 400 && res.status < 600) {
          throw new Error('Bad response from server');
       }
       return res.json();
-   }, {
+   },
       onSuccess: async () => {
          toast('Domain Removed Successfully!', { icon: '✔️' });
          onSuccess();
-         queryClient.invalidateQueries(['domains']);
+         queryClient.invalidateQueries({ queryKey: ['domains'] });
       },
       onError: () => {
          console.log('Error Removing Domain!!!');
