@@ -1,8 +1,8 @@
 # Stage 1: Install dependencies
 FROM node:22-alpine AS deps
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 
 # Stage 2: Build the application
 FROM node:22-alpine AS builder
@@ -25,6 +25,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@babel/runtime ./node_modules/@babel/runtime
 
 # Copy cron, migration, and email files
 COPY --from=builder --chown=nextjs:nodejs /app/cron.js ./
@@ -52,6 +53,11 @@ RUN chmod +x /app/entrypoint.sh && \
       @isaacs/ttlcache@1.4.1 && \
     npm cache clean --force && \
     rm -rf /tmp/* /root/.npm
+
+# Fail the build if a runtime package cannot load
+RUN npx concurrently --version && \
+    npx sequelize-cli --version && \
+    node -e "['croner','cryptr','dotenv','@googleapis/searchconsole','@isaacs/ttlcache'].forEach(m=>require(m))"
 
 USER nextjs
 
