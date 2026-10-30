@@ -42,7 +42,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/entrypoint.sh ./entrypoint.sh
 # - concurrently: process manager for server.js + cron.js
 RUN chmod +x /app/entrypoint.sh && \
     rm -f package.json && npm init -y && \
+    rm -rf node_modules/@babel/runtime && \
     npm install --no-package-lock \
+      @babel/runtime@7 \
       croner@9.0.0 \
       cryptr@6.4.0 \
       dotenv@16.0.3 \
@@ -50,6 +52,7 @@ RUN chmod +x /app/entrypoint.sh && \
       sequelize-cli@6.6.5 \
       concurrently@7.6.0 \
       @isaacs/ttlcache@1.4.1 && \
+    node -e "require('@babel/runtime/helpers/typeof')" && \
     npm cache clean --force && \
     rm -rf /tmp/* /root/.npm
 
