@@ -1,6 +1,28 @@
 import { NextRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { domainFromSlug } from '../utils/domainSlug';
+
+const getRouterSlug = (slug: string | string[] | undefined): string | undefined => {
+   if (typeof slug === 'string') {
+      return slug;
+   }
+
+   return undefined;
+};
+
+const getIdeasDomain = (router: NextRouter): string | undefined => {
+   if (router.pathname === '/research') {
+      return 'research';
+   }
+
+   const slug = getRouterSlug(router.query.slug);
+   if (!slug) {
+      return undefined;
+   }
+
+   return domainFromSlug(slug);
+};
 
 export function useTestAdwordsIntegration(onSuccess?: Function) {
    return useMutation(async (payload:{developer_token:string, account_id:string}) => {
@@ -26,9 +48,9 @@ export function useTestAdwordsIntegration(onSuccess?: Function) {
    });
 }
 
-export async function fetchAdwordsKeywordIdeas(router: NextRouter, domainSlug: string) {
+export async function fetchAdwordsKeywordIdeas(router: NextRouter, domain: string) {
    // if (!router.query.slug) { throw new Error('Invalid Domain Name'); }
-   const res = await fetch(`${window.location.origin}/api/ideas?domain=${domainSlug}`, { method: 'GET' });
+   const res = await fetch(`${window.location.origin}/api/ideas?domain=${encodeURIComponent(domain)}`, { method: 'GET' });
    if (res.status >= 400 && res.status < 600) {
       if (res.status === 401) {
          console.log('Unauthorized!!');
@@ -40,15 +62,14 @@ export async function fetchAdwordsKeywordIdeas(router: NextRouter, domainSlug: s
 }
 
 export function useFetchKeywordIdeas(router: NextRouter, adwordsConnected = false) {
-   const isResearch = router.pathname === '/research';
-   const domainSlug = isResearch ? 'research' : (router.query.slug as string);
-   const enabled = !!(adwordsConnected && domainSlug);
-   return useQuery(`keywordIdeas-${domainSlug}`, () => domainSlug && fetchAdwordsKeywordIdeas(router, domainSlug), { enabled, retry: false });
+   const domain = getIdeasDomain(router);
+   const enabled = !!(adwordsConnected && domain);
+   return useQuery(`keywordIdeas-${domain}`, () => domain && fetchAdwordsKeywordIdeas(router, domain), { enabled, retry: false });
 }
 
 export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
    const queryClient = useQueryClient();
-   const domainSlug = router.pathname === '/research' ? 'research' : router.query.slug as string;
+   const domain = getIdeasDomain(router);
    return useMutation(async (data:Record<string, any>) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'POST', headers, body: JSON.stringify({ ...data }) };
@@ -64,7 +85,9 @@ export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
          if (onSuccess) {
             onSuccess(false);
          }
-         queryClient.invalidateQueries([`keywordIdeas-${domainSlug}`]);
+         if (domain) {
+            queryClient.invalidateQueries([`keywordIdeas-${domain}`]);
+         }
       },
       onError: (error) => {
          console.log('Error Loading Keyword Ideas!!!', error);
@@ -75,7 +98,7 @@ export function useMutateKeywordIdeas(router:NextRouter, onSuccess?: Function) {
 
 export function useMutateFavKeywordIdeas(router:NextRouter, onSuccess?: Function) {
    const queryClient = useQueryClient();
-   const domainSlug = router.pathname === '/research' ? 'research' : router.query.slug as string;
+   const domain = getIdeasDomain(router);
    return useMutation(async (payload:Record<string, any>) => {
       const headers = new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' });
       const fetchOpts = { method: 'PUT', headers, body: JSON.stringify({ ...payload }) };
@@ -91,7 +114,9 @@ export function useMutateFavKeywordIdeas(router:NextRouter, onSuccess?: Function
          if (onSuccess) {
             onSuccess(false);
          }
-         queryClient.invalidateQueries([`keywordIdeas-${domainSlug}`]);
+         if (domain) {
+            queryClient.invalidateQueries([`keywordIdeas-${domain}`]);
+         }
       },
       onError: (error) => {
          console.log('Error Favorating Keywords', error);
