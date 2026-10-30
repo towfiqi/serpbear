@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.2](https://github.com/towfiqi/serpbear/compare/v3.1.1...v3.1.2) (2026-10-30)
+
+
+### Bug Fixes
+
+* resolve missing @babel/runtime module on startup ([232d9b7](https://github.com/towfiqi/serpbear/commit/232d9b7735cf45435b683e331a29124d2ffafb92)), closes [#362](https://github.com/towfiqi/serpbear/issues/362)
+
 ### [3.1.1](https://github.com/towfiqi/serpbear/compare/v3.1.0...v3.1.1) (2026-10-29)
 
 
