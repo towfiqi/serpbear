@@ -96,132 +96,36 @@ describe('Map Pack Support Flag Enforcement', () => {
     });
   });
 
-  it('computeMapPackTop3 returns false when no local results present', () => {
-    const response = {
-      organic_results: [
-        { title: 'Result 1', link: 'https://example.com/1', position: 1 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response);
-    expect(result).toBe(false);
+  it('computeMapPackTop3 returns false when there are no local results', () => {
+    expect(computeMapPackTop3('example.com', [])).toBe(false);
   });
 
-  it('computeMapPackTop3 returns true when domain is in top 3 local results', () => {
-    const response = {
-      local_results: [
-        { title: 'Business 1', website: 'https://example.com', position: 1 },
-        { title: 'Business 2', website: 'https://other.com', position: 2 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response);
-    expect(result).toBe(true);
+  it('computeMapPackTop3 returns true when the business name is in the top 3 local results', () => {
+    const locals = [
+      { position: 1, title: 'Business 1' },
+      { position: 2, title: 'Business 2' },
+    ];
+    expect(computeMapPackTop3('example.com', locals, 'Business 1')).toBe(true);
   });
 
-  it('computeMapPackTop3 returns false when domain is not in top 3 local results', () => {
-    const response = {
-      local_results: [
-        { title: 'Business 1', website: 'https://other1.com', position: 1 },
-        { title: 'Business 2', website: 'https://other2.com', position: 2 },
-        { title: 'Business 3', website: 'https://other3.com', position: 3 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response);
-    expect(result).toBe(false);
+  it('computeMapPackTop3 returns false when the business name is not in the top 3', () => {
+    const locals = [
+      { position: 1, title: 'Business 1' },
+      { position: 2, title: 'Business 2' },
+      { position: 3, title: 'Business 3' },
+      { position: 4, title: 'My Business' },
+    ];
+    expect(computeMapPackTop3('example.com', locals, 'My Business')).toBe(false);
   });
 
-  it('computeMapPackTop3 matches by business name when no URL is present', () => {
-    const response = {
-      local_results: [
-        { title: 'My Business', position: 1 },
-        { title: 'Other Business', position: 2 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, 'My Business');
-    expect(result).toBe(true);
+  it('computeMapPackTop3 is case-insensitive and trims the business name', () => {
+    const locals = [{ position: 1, title: 'MY BUSINESS' }];
+    expect(computeMapPackTop3('example.com', locals, '  my business ')).toBe(true);
   });
 
-  it('computeMapPackTop3 matches by business name when URL exists but does not match', () => {
-    const response = {
-      local_results: [
-        { title: 'My Business', website: 'https://google.com/maps/some-place', position: 1 },
-        { title: 'Other Business', website: 'https://other.com', position: 2 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, 'My Business');
-    expect(result).toBe(true);
-  });
-
-  it('computeMapPackTop3 is case-insensitive for business name matching', () => {
-    const response = {
-      local_results: [
-        { title: 'MY BUSINESS', position: 1 },
-        { title: 'Other Business', position: 2 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, 'my business');
-    expect(result).toBe(true);
-  });
-
-  it('computeMapPackTop3 returns false when business name does not match any titles', () => {
-    const response = {
-      local_results: [
-        { title: 'Different Business', position: 1 },
-        { title: 'Another Business', position: 2 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, 'My Business');
-    expect(result).toBe(false);
-  });
-
-  it('computeMapPackTop3 prefers URL matching over business name matching', () => {
-    const response = {
-      local_results: [
-        { title: 'Different Name', website: 'https://example.com', position: 1 },
-        { title: 'My Business', position: 2 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, 'My Business');
-    expect(result).toBe(true);
-  });
-
-  it('computeMapPackTop3 handles trimmed business names correctly', () => {
-    const response = {
-      local_results: [
-        { title: 'My Business', position: 1 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, '  My Business  ');
-    expect(result).toBe(true);
-  });
-
-  it('computeMapPackTop3 returns false when business name is only whitespace', () => {
-    const response = {
-      local_results: [
-        { title: 'Some Business', position: 1 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, '   ');
-    expect(result).toBe(false);
-  });
-
-  it('computeMapPackTop3 returns false when business name is null', () => {
-    const response = {
-      local_results: [
-        { title: 'Some Business', position: 1 },
-      ],
-    };
-
-    const result = computeMapPackTop3('example.com', response, null);
-    expect(result).toBe(false);
+  it('computeMapPackTop3 returns false when the business name is only whitespace or null', () => {
+    const locals = [{ position: 1, title: 'Some Business' }];
+    expect(computeMapPackTop3('example.com', locals, '   ')).toBe(false);
+    expect(computeMapPackTop3('example.com', locals, null)).toBe(false);
   });
 });

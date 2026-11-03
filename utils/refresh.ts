@@ -49,37 +49,6 @@ const resolveEffectiveSettings = (
 ): SettingsType => domainSpecificSettings.get(domain) ?? globalSettings;
 
 /**
- * Normalizes a location string for use in cache keys to ensure consistent
- * matching between desktop and mobile keyword pairs.
- *
- * - Treats undefined/null as an empty string.
- * - Trims leading/trailing whitespace.
- * - Collapses consecutive internal whitespace to a single space.
- * - Converts to lowercase for case-insensitive comparison.
- * - Attempts to decode URI-encoded strings (e.g., "New%20York") without
- *   throwing if the string is not valid URI-encoded text.
- */
-const normalizeLocationForCache = (location?: string | null): string => {
-   if (!location) {
-      return '';
-   }
-
-   let normalized = location.trim();
-
-   // Best-effort decode of URI-encoded locations; ignore failures.
-   try {
-      normalized = decodeURIComponent(normalized);
-   } catch {
-      // If decoding fails, fall back to the trimmed original.
-   }
-
-   // Collapse multiple whitespace characters into a single space and lowercase.
-   normalized = normalized.replace(/\s+/g, ' ').toLowerCase();
-
-   return normalized;
-};
-
-/**
  * Normalizes a device string to either 'desktop' or 'mobile'.
  * Treats undefined, null, or any non-'mobile' value as 'desktop'.
  * @param {string | undefined} device - The device type
@@ -102,15 +71,6 @@ const getParallelScrapeConcurrency = (): number => {
 
    return parsedConcurrency;
 };
-
-/**
- * Generates a cache key for matching desktop and mobile keyword pairs.
- * The key is used to store and retrieve desktop mapPackTop3 values for mobile keywords.
- * @param {KeywordType} keyword - The keyword to generate a cache key for
- * @returns {string} A unique cache key combining keyword, domain, country, and location
- */
-const generateKeywordCacheKey = (keyword: KeywordType): string =>
-   `${keyword.keyword}|${keyword.domain}|${keyword.country}|${normalizeLocationForCache(keyword.location)}`;
 
 type KeywordRefreshPartition = {
    keywordsToRefresh: Keyword[];
@@ -376,10 +336,6 @@ const refreshAndUpdateKeywords = async (rawkeyword:Keyword[], settings:SettingsT
             return 0;
          });
 
-         // Map to store desktop results for each keyword (by keyword+domain+country+location)
-         // This cache allows scrapers like valueserp to use desktop mapPackTop3 for mobile when needed
-         const desktopMapPackCache = new Map<string, number>();
-
          const parallelScrapeConcurrency = getParallelScrapeConcurrency();
          const keywordsByDomain = new Map<string, Keyword[]>();
          for (const keyword of sortedKeywords) {
@@ -404,23 +360,15 @@ const refreshAndUpdateKeywords = async (rawkeyword:Keyword[], settings:SettingsT
                         const keyword = phaseKeywords[nextKeywordIndex++];
                         const keywordPlain = keyword.get({ plain: true });
                         logger.info('Processing keyword refresh', { keywordId: keywordPlain.ID, keyword: keywordPlain.keyword });
-                        const keywordKey = generateKeywordCacheKey(keywordPlain);
-                        const fallbackMapPackTop3 = device === DEVICE_MOBILE
-                           ? desktopMapPackCache.get(keywordKey)
-                           : undefined;
                         const domainStrategy = domainStrategyMap.get(domain);
                         const updatedKeyword = await refreshAndUpdateKeyword(
                            keyword,
                            settings,
                            domainSpecificSettings,
-                           fallbackMapPackTop3,
                            domainStrategy,
                         );
 
                         updatedKeywords.push(updatedKeyword);
-                        if (device === DEVICE_DESKTOP && updatedKeyword.mapPackTop3 !== undefined) {
-                           desktopMapPackCache.set(keywordKey, toDbBool(updatedKeyword.mapPackTop3));
-                        }
 
                         if (batchDelay > 0 && nextKeywordIndex < phaseKeywords.length) {
                            await sleep(batchDelay);
@@ -488,7 +436,6 @@ const refreshAndUpdateKeywords = async (rawkeyword:Keyword[], settings:SettingsT
  * @param {Keyword} keyword - Keywords to scrape
  * @param {SettingsType} settings - The App Settings that contain the Scraper settings
  * @param {Map<string, SettingsType>} domainSpecificSettings - Domain-specific settings
- * @param {boolean} fallbackMapPackTop3 - Optional fallback mapPackTop3 value from desktop keyword (for valueserp mobile)
  * @param {Partial<DomainType>} domainStrategy - Optional domain-level scrape strategy overrides
  * @returns {Promise<KeywordType>}
  */
@@ -496,17 +443,10 @@ const refreshAndUpdateKeyword = async (
    keyword: Keyword,
    settings: SettingsType,
    domainSpecificSettings: Map<string, SettingsType>,
-   fallbackMapPackTop3?: number,
    domainStrategy?: Partial<DomainType>,
 ): Promise<KeywordType> => {
    const currentkeyword = keyword.get({ plain: true });
-   const baseEffectiveSettings = resolveEffectiveSettings(currentkeyword.domain, settings, domainSpecificSettings);
-
-   // For valueserp mobile keywords, pass the fallback mapPackTop3 from desktop
-   const effectiveSettings: SettingsType & { fallback_mapPackTop3?: number } =
-      fallbackMapPackTop3 !== undefined && baseEffectiveSettings.scraper_type === 'valueserp'
-         ? { ...baseEffectiveSettings, fallback_mapPackTop3: fallbackMapPackTop3 }
-         : baseEffectiveSettings;
+   const effectiveSettings = resolveEffectiveSettings(currentkeyword.domain, settings, domainSpecificSettings);
    let refreshedkeywordData: RefreshResult | false = false;
    let scraperError: string | false = false;
 

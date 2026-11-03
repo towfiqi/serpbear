@@ -100,7 +100,6 @@ describe('refreshAndUpdateKeywords', () => {
     const completedIds = new Set<number>();
     const desktopQueueRefillChecks: boolean[] = [];
     const mobileBarrierChecks: boolean[] = [];
-    const mobileFallbackValues: unknown[] = [];
     const slowDesktopReleases: Array<() => void> = [];
     const refillSignals = new Map<string, () => void>();
     const refillPromises = domains.map((domain) => new Promise<void>((resolve) => {
@@ -115,7 +114,6 @@ describe('refreshAndUpdateKeywords', () => {
       const device = keyword.device as string;
       if (device === 'mobile') {
         mobileBarrierChecks.push(Array.from(desktopIdsByDomain.values()).flat().every((id) => completedIds.has(id)));
-        mobileFallbackValues.push(effectiveSettings.fallback_mapPackTop3);
       } else if (keywordId % 100 === 4) {
         const firstDesktopId = desktopIdsByDomain.get(domain)?.[0];
         const laterDesktopIds = desktopIdsByDomain.get(domain)?.slice(1, 3) || [];
@@ -183,7 +181,6 @@ describe('refreshAndUpdateKeywords', () => {
     expect(peakTotal).toBe(6);
     expect(desktopQueueRefillChecks).toEqual([true, true]);
     expect(mobileBarrierChecks).toEqual([true, true]);
-    expect(mobileFallbackValues).toEqual([1, 1]);
   });
 
   it('forces updating reset when scrape fails before updateKeywordPosition', async () => {

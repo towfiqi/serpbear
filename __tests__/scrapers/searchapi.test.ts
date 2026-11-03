@@ -55,7 +55,7 @@ describe('searchapi scraper', () => {
         { title: 'Other', link: 'https://other.com/page', position: 2 },
       ],
       local_results: [
-        { title: 'Example Maps', website: 'https://example.com', position: 1 },
+        { title: 'Example Maps', link: 'https://www.google.com/searchviewer/10?svid=1', position: 1 },
       ],
     };
 
@@ -63,7 +63,7 @@ describe('searchapi scraper', () => {
       keyword,
       response,
       result: response.organic_results,
-      settings: { scraping_api: 'searchapi-key' } as SettingsType,
+      settings: { scraping_api: 'searchapi-key', business_name: 'Example Maps' } as any,
     });
 
     expect(extraction.organic).toEqual([
@@ -71,5 +71,8 @@ describe('searchapi scraper', () => {
       { title: 'Other', url: 'https://other.com/page', position: 2 },
     ]);
     expect(extraction.mapPackTop3).toBe(true);
+    expect(extraction.localResults).toEqual([
+      { position: 1, title: 'Example Maps', url: 'https://www.google.com/searchviewer/10?svid=1' },
+    ]);
   });
 });

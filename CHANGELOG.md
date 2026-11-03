@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file. Releases no
 ### Features
 - Added a Settings action to immediately retry all keywords in the failed retry queue.
 - Added `PARALLEL_SCRAPE_CONCURRENCY` to control simultaneous keyword scrapes per domain for sequential scraper providers.
+- Added PrismCrawl (`prismcrawl`) scraper integration with organic results and map pack matching from `serp_features` `local_results` (URL first, business name fallback).
+- Added DataForSEO (`dataforseo`) scraper integration using the Google Organic Live Advanced endpoint, with map pack detection from `local_pack` results. The API key field takes `login:password` for HTTP Basic auth.
+- Scraper settings can now declare a POST method and JSON request body (`method` / `body` on `ScraperSettings`); GET remains the default.
+- Extractor input now includes the requested pagination, so providers that return a deeper result set can slice out the requested page.
 
 ### Changed
 - Removed the deprecated SpaceSerp, ScrapingAnt, ScrapingRobot, and custom proxy scraper integrations along with the legacy raw Google HTML fallback path.

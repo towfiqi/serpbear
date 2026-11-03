@@ -183,6 +183,7 @@ describe('valueSerp scraper', () => {
         keyword,
         response: mockResponse,
         result: mockResponse.organic_results,
+        settings: { business_name: 'Pizza Place 1' } as any,
       });
 
       expect(extraction.organic).toHaveLength(2);
@@ -304,6 +305,7 @@ describe('valueSerp scraper', () => {
         keyword,
         response: mockResponse,
         result: [],
+        settings: { business_name: 'Shop 1' } as any,
       });
 
       expect(extraction.mapPackTop3).toBe(true);
@@ -331,10 +333,9 @@ describe('valueSerp scraper', () => {
         location: '',
       };
 
-      // Test with places field instead of local_results
       const mockResponse = {
         organic_results: [],
-        places: [
+        local_results: [
           { title: 'Plumber 1', link: 'https://example.com', position: 1 },
         ],
       };
@@ -343,229 +344,10 @@ describe('valueSerp scraper', () => {
         keyword,
         response: mockResponse,
         result: [],
+        settings: { business_name: 'Plumber 1' } as any,
       });
 
       expect(extraction.mapPackTop3).toBe(true);
-    });
-
-    it('uses fallback mapPackTop3 from desktop when mobile has no local results section in API response', () => {
-      const mobileKeyword: KeywordType = {
-        ID: 1,
-        keyword: 'coffee shop',
-        device: 'mobile',
-        country: 'US',
-        domain: 'example.com',
-        lastUpdated: '',
-        volume: 0,
-        added: '',
-        position: 0,
-        sticky: false,
-        history: {},
-        lastResult: [],
-        url: '',
-        tags: [],
-        updating: false,
-        lastUpdateError: false,
-        mapPackTop3: false,
-        location: '',
-      };
-
-      // Mobile response with NO local results section at all
-      const mobileResponse = {
-        organic_results: [
-          { title: 'Result 1', link: 'https://example.com/page1', position: 1 },
-        ],
-      };
-
-      const settingsWithFallback = {
-        scraping_api: 'token-123',
-        fallback_mapPackTop3: 1, // Desktop keyword had mapPackTop3 = 1
-      };
-
-      const extraction = valueSerp.serpExtractor!({
-        keyword: mobileKeyword,
-        response: mobileResponse,
-        result: mobileResponse.organic_results,
-        settings: settingsWithFallback as any,
-      });
-
-      expect(extraction.organic).toHaveLength(1);
-      expect(extraction.mapPackTop3).toBe(true); // Uses desktop's mapPackTop3
-    });
-
-    it('computes mapPackTop3 normally for mobile when local results section exists even if empty', () => {
-      const mobileKeyword: KeywordType = {
-        ID: 1,
-        keyword: 'coffee shop',
-        device: 'mobile',
-        country: 'US',
-        domain: 'example.com',
-        lastUpdated: '',
-        volume: 0,
-        added: '',
-        position: 0,
-        sticky: false,
-        history: {},
-        lastResult: [],
-        url: '',
-        tags: [],
-        updating: false,
-        lastUpdateError: false,
-        mapPackTop3: false,
-        location: '',
-      };
-
-      // Mobile response WITH local results section (even if empty or domain not in it)
-      const mobileResponse = {
-        organic_results: [
-          { title: 'Result 1', link: 'https://example.com/page1', position: 1 },
-        ],
-        local_results: [], // Local results section exists but is empty
-      };
-
-      const settingsWithFallback = {
-        scraping_api: 'token-123',
-        fallback_mapPackTop3: 1, // Desktop had mapPackTop3 = 1
-      };
-
-      const extraction = valueSerp.serpExtractor!({
-        keyword: mobileKeyword,
-        response: mobileResponse,
-        result: mobileResponse.organic_results,
-        settings: settingsWithFallback as any,
-      });
-
-      expect(extraction.organic).toHaveLength(1);
-      expect(extraction.mapPackTop3).toBe(false); // Computes normally, not using fallback
-    });
-
-    it('does not use fallback for desktop keywords even when provided', () => {
-      const desktopKeyword: KeywordType = {
-        ID: 1,
-        keyword: 'coffee shop',
-        device: 'desktop',
-        country: 'US',
-        domain: 'example.com',
-        lastUpdated: '',
-        volume: 0,
-        added: '',
-        position: 0,
-        sticky: false,
-        history: {},
-        lastResult: [],
-        url: '',
-        tags: [],
-        updating: false,
-        lastUpdateError: false,
-        mapPackTop3: false,
-        location: '',
-      };
-
-      const desktopResponse = {
-        organic_results: [
-          { title: 'Result 1', link: 'https://example.com/page1', position: 1 },
-        ],
-      };
-
-      const settingsWithFallback = {
-        scraping_api: 'token-123',
-        fallback_mapPackTop3: 1, // Should be ignored for desktop
-      };
-
-      const extraction = valueSerp.serpExtractor!({
-        keyword: desktopKeyword,
-        response: desktopResponse,
-        result: desktopResponse.organic_results,
-        settings: settingsWithFallback as any,
-      });
-
-      expect(extraction.mapPackTop3).toBe(false); // Computes normally, ignores fallback
-    });
-
-    it('handles numeric fallback value 1 as true for mobile with no local results', () => {
-      const mobileKeyword: KeywordType = {
-        ID: 1,
-        keyword: 'coffee shop',
-        device: 'mobile',
-        country: 'US',
-        domain: 'example.com',
-        lastUpdated: '',
-        volume: 0,
-        added: '',
-        position: 0,
-        sticky: false,
-        history: {},
-        lastResult: [],
-        url: '',
-        tags: [],
-        updating: false,
-        lastUpdateError: false,
-        mapPackTop3: false,
-        location: '',
-      };
-
-      const mobileResponse = {
-        organic_results: [
-          { title: 'Result 1', link: 'https://example.com/page1', position: 1 },
-        ],
-      };
-
-      const settingsWithNumericFallback = {
-        scraping_api: 'token-123',
-        fallback_mapPackTop3: 1, // Numeric value from refresh.ts (desktop had mapPackTop3 = 1)
-      };
-
-      const extraction = valueSerp.serpExtractor!({
-        keyword: mobileKeyword,
-        response: mobileResponse,
-        result: mobileResponse.organic_results,
-        settings: settingsWithNumericFallback as any,
-      });
-
-      expect(extraction.mapPackTop3).toBe(true); // 1 coerced to true
-    });
-
-    it('handles numeric fallback value 0 as false for mobile with no local results', () => {
-      const mobileKeyword: KeywordType = {
-        ID: 1,
-        keyword: 'coffee shop',
-        device: 'mobile',
-        country: 'US',
-        domain: 'example.com',
-        lastUpdated: '',
-        volume: 0,
-        added: '',
-        position: 0,
-        sticky: false,
-        history: {},
-        lastResult: [],
-        url: '',
-        tags: [],
-        updating: false,
-        lastUpdateError: false,
-        mapPackTop3: false,
-        location: '',
-      };
-
-      const mobileResponse = {
-        organic_results: [
-          { title: 'Result 1', link: 'https://example.com/page1', position: 1 },
-        ],
-      };
-
-      const settingsWithNumericFallback = {
-        scraping_api: 'token-123',
-        fallback_mapPackTop3: 0, // Numeric value from refresh.ts (desktop had mapPackTop3 = 0)
-      };
-
-      const extraction = valueSerp.serpExtractor!({
-        keyword: mobileKeyword,
-        response: mobileResponse,
-        result: mobileResponse.organic_results,
-        settings: settingsWithNumericFallback as any,
-      });
-
-      expect(extraction.mapPackTop3).toBe(false); // 0 coerced to false
     });
   });
 });

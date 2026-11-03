@@ -2,7 +2,6 @@ import countries, { getGoogleDomain } from "../../utils/countries";
 import { resolveCountryCode } from "../../utils/scraperHelpers";
 import { parseLocation } from "../../utils/location";
 import { computeMapPackTop3 } from "../../utils/mapPack";
-import { logger } from "../../utils/logger";
 import { DEVICE_MOBILE } from "../../utils/constants";
 
 const decodeIfEncoded = (value: string): string => {
@@ -100,35 +99,15 @@ const valueSerp: ScraperSettings = {
       }
     }
 
+    const localResults = (Array.isArray(response?.local_results) ? response.local_results : []).map((item: any, index: number) => ({
+      position: index + 1,
+      title: item.title as string,
+      url: (item.link || undefined) as string | undefined,
+    }));
     const businessName = (settings as ExtendedSettings)?.business_name ?? null;
-    
-    // Check if this is a mobile keyword and if the API response has NO local results section at all
-    const isMobile = keyword.device === DEVICE_MOBILE;
-    const hasLocalResultsSection = !!(
-      response &&
-      (
-        Array.isArray((response as ScraperResponseWithLocalResults).local_results) ||
-        Array.isArray((response as ScraperResponseWithLocalResults).localResults) ||
-        (typeof (response as ScraperResponseWithLocalResults).local_map === "object" && (response as ScraperResponseWithLocalResults).local_map !== null) ||
-        Array.isArray((response as ScraperResponseWithLocalResults).places) ||
-        Array.isArray((response as ScraperResponseWithLocalResults).places_results)
-      )
-    );
-    
-    let mapPackTop3: boolean;
-    
-    // If mobile AND no local results section in API response, use fallback from desktop
-    const fallbackValue = (settings as ExtendedSettings)?.fallback_mapPackTop3;
-    if (isMobile && !hasLocalResultsSection && fallbackValue !== undefined) {
-      // Fallback value is always a number (0 or 1) from desktop keyword, convert to boolean
-      mapPackTop3 = fallbackValue === 1;
-      logger.debug(`[VALUESERP] Mobile keyword "${keyword.keyword}" has no local results in API response, using desktop mapPackTop3: ${mapPackTop3}`);
-    } else {
-      // Otherwise compute normally
-      mapPackTop3 = computeMapPackTop3(keyword.domain, response, businessName);
-    }
+    const mapPackTop3 = computeMapPackTop3(keyword.domain, localResults, businessName);
 
-    return { organic: extractedResult, mapPackTop3 };
+    return { organic: extractedResult, mapPackTop3, localResults };
   },
 };
 

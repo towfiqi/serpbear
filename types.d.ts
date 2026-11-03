@@ -279,11 +279,14 @@ type ScraperExtractorInput = {
    response: any,
    result?: unknown,
    settings?: SettingsType,
+   pagination?: ScraperPagination,
 }
 
 type ScraperExtractorResult = {
    organic: scraperExtractedItem[],
    mapPackTop3?: boolean,
+   /** Local (map pack) results built from this provider's own response. */
+   localResults?: { position: number, title: string, url?: string }[],
 }
 
 type ScraperPagination = {
@@ -316,6 +319,10 @@ interface ScraperSettings {
    headers?(keyword:KeywordType, settings: SettingsType): Record<string, string | undefined>,
    /** Construct the API URL for scraping the data through your Scraper's API */
    scrapeURL?(keyword:KeywordType, settings:SettingsType, countries:countryData, pagination?: ScraperPagination): string,
+   /** HTTP method used for the scraper API request. Defaults to GET. */
+   method?: 'GET' | 'POST',
+   /** Build the JSON request body for POST scrapers (object or array). Ignored for GET requests. */
+   body?(keyword:KeywordType, settings:SettingsType, countries:countryData, pagination?: ScraperPagination): unknown,
    /**
     * Custom function to extract SERP results from the provider payload.
     * Should return the organic listings and, when available, whether the tracked
@@ -371,7 +378,6 @@ type ScraperResponseWithLocalResults = {
 // Settings with extended properties
 type ExtendedSettings = SettingsType & {
    business_name?: string | null,
-   fallback_mapPackTop3?: number,
 }
 
 // Request with custom properties

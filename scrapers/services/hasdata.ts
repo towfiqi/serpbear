@@ -102,9 +102,13 @@ const hasdata: ScraperSettings = {
     }
 
     const businessName = (settings as ExtendedSettings)?.business_name ?? null;
-    const mapPackTop3 = computeMapPackTop3(keyword.domain, response, businessName);
+    const localResults = (Array.isArray(response?.localResults?.places) ? response.localResults.places : []).map((place: any, index: number) => ({
+      position: index + 1,
+      title: place.title as string,
+    }));
+    const mapPackTop3 = computeMapPackTop3(keyword.domain, localResults, businessName);
 
-    return { organic: extractedResult, mapPackTop3 };
+    return { organic: extractedResult, mapPackTop3, localResults };
   },
 };
 

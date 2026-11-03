@@ -62,9 +62,14 @@ const serply:ScraperSettings = {
       }
 
       const businessName = (settings as ExtendedSettings)?.business_name ?? null;
-      const mapPackTop3 = computeMapPackTop3(keyword.domain, response, businessName);
+      const localResults = (Array.isArray(response?.local_businesses) ? response.local_businesses : []).map((business: any, index: number) => ({
+        position: index + 1,
+        title: business.title as string,
+        url: (business.url || undefined) as string | undefined,
+      }));
+      const mapPackTop3 = computeMapPackTop3(keyword.domain, localResults, businessName);
 
-      return { organic: extractedResult, mapPackTop3 };
+      return { organic: extractedResult, mapPackTop3, localResults };
    },
 };
 

@@ -204,6 +204,8 @@ SerpBear integrates with several managed SERP APIs. The table below summarises t
 | Serper (`serper`) | ✅ | Credit-based 50,000 for $50 | City-level | No – organic listings only | Strategy-controlled (10 per page, up to 10 pages) | Query string `api_key` |
 | HasData (`hasdata`) | ✅ | Free 1,000/mo + Plans from $49/mo | City-level | **Yes** – extracts local map pack | Strategy-controlled (10 per page, up to 10 pages) | Header `x-api-key` |
 | CrazySERP (`crazyserp`) | ? | Pay-as-you-go | City-level | No – organic listings only | Strategy-controlled (10 per page, up to 10 pages) | Header `Authorization: Bearer` |
+| PrismCrawl (`prismcrawl`) | ? | Free 100 credits on signup; one-time packages from $5 (e.g. $100 = 476,191 credits, ~$0.21 per 1,000); credits valid 90 days; no subscription | City-level | **Yes** – matches local results by URL, or by business name when no URL is returned | Strategy-controlled (10 per page, up to 10 pages) | Header `x-api-key` (POST JSON body) |
+| DataForSEO (`dataforseo`) | ? | Pay as you go; no subscriptions; $50 minimum top-up | City-level | **Yes** – extracts `local_pack` results | Strategy-controlled (10 per page, up to 10 pages; each request fetches the depth needed for the page) | HTTP Basic auth with `login:password` in the API key field (POST JSON array body) |
 
 \*Pricing details are indicative; confirm current pricing with each vendor before purchasing. All managed integrations authenticate with the headers or query parameters shown in the final column, exactly as implemented in the `/scrapers/services` directory. ✅ = recently validated in production; ? = implemented but not recently validated against the live API.
 

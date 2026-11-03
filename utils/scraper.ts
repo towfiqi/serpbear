@@ -2,7 +2,7 @@ import countries from './countries';
 import { serializeError } from './errorSerialization';
 import allScrapers from '../scrapers/index';
 import { GOOGLE_BASE_URL, DEVICE_MOBILE } from './constants';
-import { computeMapPackTop3, extractLocalResultsFromPayload } from './mapPack';
+import { computeMapPackTop3 } from './mapPack';
 import { logger } from './logger';
 import { retryQueueManager } from './retryQueueManager';
 
@@ -63,9 +63,13 @@ export const getScraperClient = (
       headers['User-Agent'] = mobileAgent;
    }
 
+   let requestBody: string | undefined;
    if (scraper) {
       const scrapeHeaders = scraper.headers ? scraper.headers(keyword, settings) : null;
       const scraperAPIURL = scraper.scrapeURL ? scraper.scrapeURL(keyword, settings, countries, pagination) : null;
+      if (scraper.method === 'POST' && scraper.body) {
+         requestBody = JSON.stringify(scraper.body(keyword, settings, countries, pagination));
+      }
       if (scrapeHeaders && Object.keys(scrapeHeaders).length > 0) {
          Object.keys(scrapeHeaders).forEach((headerItemKey:string) => {
             headers[headerItemKey] = scrapeHeaders[headerItemKey as keyof object];
@@ -84,8 +88,9 @@ export const getScraperClient = (
    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
    client = fetch(apiURL, {
-      method: 'GET',
+      method: scraper?.method ?? 'GET',
       headers,
+      body: requestBody,
       signal: controller.signal,
    }).finally(() => clearTimeout(timeoutId));
 
@@ -172,11 +177,10 @@ const scrapeSinglePage = async (
          const scraperResult = scraperObj.resultObjectKey && res[scraperObj.resultObjectKey] ? res[scraperObj.resultObjectKey] : '';
          const scrapeResult = res.data || res.results || scraperResult || null;
          if (res && scrapeResult) {
-            const extraction = scraperObj.serpExtractor({ keyword, response: res, result: scrapeResult, settings });
+            const extraction = scraperObj.serpExtractor({ keyword, response: res, result: scrapeResult, settings, pagination });
             const organic = extraction.organic;
             const mapPackTop3 = extraction.mapPackTop3 ?? false;
-            const debugMode = process.env.NODE_ENV === 'development';
-            const localResults = extractLocalResultsFromPayload(res, debugMode);
+            const localResults = extraction.localResults ?? [];
             return {
                results: organic.map((item, i) => ({ ...item, position: i + 1 })),
                mapPackTop3,
@@ -411,12 +415,12 @@ export const scrapeKeywordFromGoogle = async (keyword:KeywordType, settings:Sett
             let localResults: any[] = [];
             if (scraperObj.supportsMapPack !== false) {
                const businessName = (settings as ExtendedSettings).business_name ?? null;
+               localResults = extraction.localResults ?? [];
                computedMapPack = typeof extraction.mapPackTop3 === 'boolean'
                   ? extraction.mapPackTop3
-                  : computeMapPackTop3(keyword.domain, res, businessName);
+                  : computeMapPackTop3(keyword.domain, localResults, businessName);
 
                const debugMode = process.env.NODE_ENV === 'development';
-               localResults = extractLocalResultsFromPayload(res, debugMode);
                if (debugMode && keyword.device === DEVICE_MOBILE) {
                   logger.debug(`[MAP_PACK] Mobile keyword: ${keyword.keyword}, mapPackTop3: ${computedMapPack}, localResults count: ${localResults.length}`);
                }

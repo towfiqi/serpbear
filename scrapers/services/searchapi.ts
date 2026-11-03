@@ -90,9 +90,15 @@ const searchapi:ScraperSettings = {
      }
 
      const businessName = (settings as ExtendedSettings)?.business_name ?? null;
-     const mapPackTop3 = computeMapPackTop3(keyword.domain, response, businessName);
+     const rawLocal: any[] = Array.isArray(response?.local_results) ? response.local_results : [];
+     const localResults = rawLocal.map((place: any, index: number) => ({
+       position: index + 1,
+       title: place.title as string,
+       url: (place.link || undefined) as string | undefined,
+     }));
+     const mapPackTop3 = computeMapPackTop3(keyword.domain, localResults, businessName);
 
-     return { organic: extractedResult, mapPackTop3 };
+     return { organic: extractedResult, mapPackTop3, localResults };
   },
 };
 
