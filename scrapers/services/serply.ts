@@ -2,7 +2,46 @@ interface SerplyResult {
    title: string,
    link: string,
    realPosition: number,
+   metadata?: {
+      display_url?: string,
+   },
 }
+
+/**
+ * Serply often returns Google redirect links (e.g. `https://www.google.com/url?q=CAES...`) instead of the
+ * actual result URL, so the tracked domain is never matched and the keyword falls back to position 0.
+ * Resolve the real URL from the redirect's query parameters when it is present in plain text, otherwise
+ * fall back to the hostname shown in `metadata.display_url` (e.g. `example.com › blog › post`).
+ * @param {SerplyResult} result - A single organic result returned by Serply.
+ * @returns {string}
+ */
+export const resolveSerplyLink = (result: SerplyResult): string => {
+   const { link } = result;
+   let parsedURL: URL;
+   try {
+      parsedURL = new URL(link);
+   } catch (error) {
+      return link;
+   }
+
+   const isGoogleHost = /(^|\.)google\.[a-z.]+$/i.test(parsedURL.hostname);
+   const isRedirectPath = /^\/(url|goto)\/?$/i.test(parsedURL.pathname);
+   if (!isGoogleHost || !isRedirectPath) {
+      return link;
+   }
+
+   for (const param of ['q', 'url']) {
+      const value = parsedURL.searchParams.get(param);
+      if (value && /^https?:\/\//i.test(value)) {
+         return value;
+      }
+   }
+
+   const displayURL = result.metadata?.display_url || '';
+   const displayHost = displayURL.split('›')[0].trim().replace(/^https?:\/\//i, '').split(/[\s/]/)[0];
+   return displayHost ? `https://${displayHost}` : link;
+};
+
 const scraperCountries = ['US', 'CA', 'IE', 'GB', 'FR', 'DE', 'SE', 'IN', 'JP', 'KR', 'SG', 'AU', 'BR'];
 
 const serply:ScraperSettings = {
@@ -31,7 +70,7 @@ const serply:ScraperSettings = {
          if (result.title && result.link) {
             extractedResult.push({
                title: result.title,
-               url: result.link,
+               url: resolveSerplyLink(result),
                position: result.realPosition,
             });
          }
